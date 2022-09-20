@@ -1,9 +1,19 @@
 # Project ideas
 
-- EPA
-    - Radon
+## [Environmental Protection Agency](https://www.epa.ie/environment-and-you/radon/)
 
-- Spanish related topic
+Anonimised radon data could be processed to provide information on safety levels, exposure times, etc.
 
-- Medical
+## Spanish related topic
 
+- Possiblities
+  - Translation
+  - Spanish language support can be added to any project
+  - ...
+
+## Tallaght university hospital
+
+- Working with a team
+- Unknown task
+- Professional aspect
+- Less freedom
