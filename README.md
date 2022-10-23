@@ -2,7 +2,7 @@
 
 ## About
 
-TomaNota is a note learning application aimed at languages that helps memorise the notes that we take using spaced repition. 
+TomaNota is a note learning application aimed at languages that helps memorise the notes that we take using spaced repetition. 
 
 ### Scope
 
