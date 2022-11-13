@@ -16,6 +16,9 @@
     <!-- CSS -->
     <link rel="stylesheet" href="./sources/style.css">
 
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
     <title>TomaNota</title>
 </head>
 
@@ -27,19 +30,11 @@
             </div>
             <hr class="no-m">
             <div class="card-body mx-1">
-                <form id="prompt_area">
-                    <h4>Prompt 1</h4>
-                    <hr>
-                    <label for="header_1">Heading</label>
-                    <input autocomplete="off" type="text" name="header_1" id="header_1">
-                    <br>
-
-                    <label for="body_1">Body</label>
-                    <input autocomplete="off" type="text" name="body_1" id="body_1">
-                    <br>
-                    <button id="create_json" type="submit">Create</button>
-                </form>
+                <input autocomplete='off' type="text" name="title" id="title" placeholder="Document title">
+                <ul id="fieldList">
+                </ul>
                 <button id="add_prompts">Add another prompt</button>
+                <button id="create_json" disabled>Create</button>
             </div>
         </div>
     </div>

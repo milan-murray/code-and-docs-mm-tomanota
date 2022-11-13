@@ -1,11 +1,12 @@
 html {
-    height: 100%;
+    height: 300%;
     scroll-behavior: smooth;
 }
 
 hr.no-m {
     width: 99.8%;
     margin: 0;
+    margin-bottom: 2em;
 }
 
 body {
@@ -114,6 +115,16 @@ button {
     margin-top: 1em;
     font-size: 95%;
     font-weight: bold;
+    min-width: 15em;
+}
+
+ul {
+    padding: 0;
+    margin: 0;
+}
+
+ul li {
+    list-style: none;
 }
 
 hr {
@@ -158,7 +169,6 @@ hr {
     .bg-secondary {
         background-color: #1d1c1c;
         background-image: linear-gradient(to bottom right, #740fef, #1f4ed0);
-        /* background-image: -moz-linear-gradient(#740FEF, #1f4ed0); */
     }
 
     .bg-main {
