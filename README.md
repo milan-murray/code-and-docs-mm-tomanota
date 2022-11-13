@@ -1,5 +1,13 @@
 # TomaNota ~ Milan Murray X00162027
 
+## Setup steps
+
+cd code/client
+
+npm install
+
+npm run dev
+
 ## About
 
 TomaNota is a note learning application aimed at languages that helps memorise the notes that we take using spaced repetition. 
