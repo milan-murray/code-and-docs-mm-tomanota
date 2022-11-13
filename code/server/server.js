@@ -10,7 +10,7 @@ const PORT = 5000;
 let app = express();
 
 // adding Helmet to enhance your API's security
-//app.use(helmet());
+// app.use(helmet());
 
 // Application settings
 app.use((req, res, next) => {
@@ -26,16 +26,15 @@ app.use(express.json());
 // support url encoded bodies
 app.use(express.urlencoded({ extended: true }));
 
-// cors
-// https://www.npmjs.com/package/cors
-// https://codesquery.com/enable-cors-nodejs-express-app/
-// Simple Usage (Enable All CORS Requests)
 app.use(cors());
 app.options('*', cors()) // include before other routes
 
 /* Configure app Routes to handle requests from browser */
 // The home page 
 app.use('/', require('./controllers/index'));
+
+// Quiz page
+app.use('/quiz', require('./controllers/doc_quiz'));
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {

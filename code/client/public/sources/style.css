@@ -1,11 +1,12 @@
 html {
-    height: 100%;
+    height: 300%;
     scroll-behavior: smooth;
 }
 
 hr.no-m {
     width: 99.8%;
     margin: 0;
+    margin-bottom: 2em;
 }
 
 body {
@@ -36,6 +37,7 @@ body {
     padding-left: 2em;
     padding-right: 2em;
     padding-bottom: 1em;
+    min-height: 30em;
 }
 
 .clearfix {
@@ -63,7 +65,7 @@ body {
     margin-right: auto;
     margin-top: 2em;
     margin-bottom: 2em;
-    max-width: 70em;
+    max-width: 100em;
 }
 
 p.indent {
@@ -93,6 +95,19 @@ p.indent {
     margin-right: 1%;
 }
 
+.big-button {
+    width: 40em;
+    height: 10em;
+}
+
+.big-text {
+    font-size: 22px;
+}
+
+.btn-container {
+    text-align: center;
+}
+
 button {
     border-radius: 0.3em;
     border-style: solid;
@@ -100,6 +115,16 @@ button {
     margin-top: 1em;
     font-size: 95%;
     font-weight: bold;
+    min-width: 15em;
+}
+
+ul {
+    padding: 0;
+    margin: 0;
+}
+
+ul li {
+    list-style: none;
 }
 
 hr {
@@ -118,7 +143,7 @@ hr {
 }
 
 .btn-colour:hover {
-    background-color: #d2e3f3;
+    background-color: #f3e0d2;
 }
 
 .text-colour {
@@ -126,7 +151,6 @@ hr {
 }
 
 .bg-secondary {
-    /* height: 200em; */
     background-color: rgb(221, 222, 223);
     background-image: linear-gradient(to bottom right, #740fef, #ba3918);
     /* background-image: linear-gradient(to bottom right, #740fef, #1f4ed0); */
@@ -145,7 +169,6 @@ hr {
     .bg-secondary {
         background-color: #1d1c1c;
         background-image: linear-gradient(to bottom right, #740fef, #1f4ed0);
-        /* background-image: -moz-linear-gradient(#740FEF, #1f4ed0); */
     }
 
     .bg-main {
