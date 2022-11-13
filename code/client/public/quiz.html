@@ -16,9 +16,6 @@
     <!-- CSS -->
     <link rel="stylesheet" href="./sources/style.css">
 
-    <!-- jQuery -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-
     <title>TomaNota</title>
 </head>
 
@@ -30,18 +27,29 @@
             </div>
             <hr class="no-m">
             <div class="card-body mx-1">
-                <input autocomplete='off' type="text" name="title" id="title" placeholder="Document title">
-                <ul id="fieldList">
-                </ul>
-                <button id="add_prompts">Add another prompt</button>
-                <button id="create_json" disabled>Create</button>
+                <div id="upload-container">
+                    <form id="upload">
+                        <label for="file">Upload document</label>
+                        <input type="file" id="file" accept=".json">
+
+                        <button>Upload</button>
+                    </form>
+                </div>
+                <div id="quiz-container" style="display: none;">
+                    <h3 id="doc-title" class="text-center">Document</h3>
+                    <hr>
+                    <h2 id="header"></h2>
+                    <input autocomplete='off' type="text" name="responseText" id="responseText">
+                    <button id="submit-answer">Submit answer</button>
+                    <h2 style="color: #e24d4d;" id="incorrect-guide"></h2>
+                </div>
             </div>
         </div>
     </div>
-    <a id="download_prompts" style="display: none;" target="_blank"></a>
+
 </body>
 
 <!-- JS -->
-<script src="./sources/create.js"></script>
+<script src="./sources/quiz.js"></script>
 
 </html>

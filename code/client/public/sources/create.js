@@ -1,13 +1,22 @@
+// URL serverside
+const URL = '127.0.0.1:5000';
+
+var promptsObj = {};
+
 function createJson() {
     const inputs = document.getElementsByTagName("input");
-    var promptsObj = {};
+    promptsObj = {};
     promptsObj.prompts = [];
 
     if (inputs.length > 0) {
         promptsObj.title = inputs[0].value;
         for (let i = 1; i < inputs.length; i = i + 2) {
-            promptsObj.prompts.push({ 'heading': inputs[i].value, 'body': inputs[i + 1].value, 'score' : 0 });
+            promptsObj.prompts.push({ 'heading': inputs[i].value, 'body': inputs[i + 1].value, 'score': 0 });
         }
+        document.getElementById("download_prompts").setAttribute('href', "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(promptsObj)));
+        var title = document.getElementsByTagName("input")[0].value + ".json";
+        document.getElementById("download_prompts").setAttribute('download', title);
+        document.getElementById("download_prompts").click();
         console.log(promptsObj);
     }
 }
@@ -16,6 +25,7 @@ document.getElementById("create_json").addEventListener('click', createJson);
 
 var num_prompts = 0;
 
+// Create more fields
 $(function () {
     $("#add_prompts").click(function (e) {
         num_prompts += 1;
@@ -40,3 +50,4 @@ $(document).ready(function () {
 })
 
 document.getElementById("create_json").disabled = false;
+// document.getElementById("download_prompts").setAttribute('download', "title.json");
