@@ -3,12 +3,28 @@
 
 <PageTitle>Quiz: @prompts.title</PageTitle>
 
-<button @onclick="StartQuiz">Start Quiz</button>
+<h3>@currentHeading</h3>
+
+<input type="text" value="@response"/>
+
+<h3 style="display: @err">That's not quite right</h3>
+
+<h3 style="display: @err">Correct answer: @ans</h3>
+
+<button @onclick="AdvanceQuiz">@btnText</button>
 
 
 @code
 {
     private DocPrompts? prompts;
+    bool validResponse = true;
+    bool beganQuiz = false;
+    String err = "None";
+    public String response;
+    public String ans;
+    public String btnText = "Start Quiz!";
+    public String currentHeading { get; set; }
+    public int quizIndex = 0;
 
     protected override async Task OnInitializedAsync()
     {
@@ -21,8 +37,42 @@
         public List<List<object>> prompts { get; set; }
     }
 
-    public void StartQuiz()
+    public void AdvanceQuiz()
     {
-        Console.WriteLine("Quiz Started");
+        ans = "";
+        if (!beganQuiz) {
+            beganQuiz = true;
+            currentHeading = prompts.prompts[quizIndex][0].ToString();
+            btnText = "Check answer";
+        } 
+        else 
+        {
+            if (validResponse) {
+                err = "";
+                btnText = "Check answer";
+                if (quizIndex < prompts.prompts.Count())
+                {
+                    if (response == prompts.prompts[quizIndex][1])
+                    {
+                        int score = (int) prompts.prompts[quizIndex][2];
+                        if (score < 10) {
+                            score += 1;
+                        }
+                        Console.WriteLine("Correct! ", score);
+                    }
+                    else
+                    {
+                        validResponse = false;
+                        err = "";
+                        ans = prompts.prompts[quizIndex][1].ToString();
+                        btnText = "Continue";
+                    }
+                }
+            }
+            else {
+                validResponse = true;
+                err = "";
+            }
+        }
     }
 }
