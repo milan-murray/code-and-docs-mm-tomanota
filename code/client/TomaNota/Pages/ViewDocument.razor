@@ -1,0 +1,51 @@
+﻿@page "/view-document"
+@inject HttpClient Http
+
+<PageTitle>View Document</PageTitle>
+
+@if (prompts == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <h1>@prompts.title</h1>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Prompt Heading</th>
+                <th>Prompt Body</th>
+                <th>Current Score</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var prompt in prompts.prompts)
+            {
+                <tr>
+                    <td>@prompt[0]</td>
+                    <td>@prompt[1]</td>
+                    <td>@prompt[2]</td>
+                </tr>
+            }
+
+        </tbody>
+    </table>
+}
+
+@code {
+    private DocPrompts? prompts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        prompts = await Http.GetFromJsonAsync<DocPrompts>("sample-data/español-viajes-1.json");
+        Console.WriteLine("Received: " + prompts.prompts[0]);
+        Console.WriteLine("Received title: " + prompts.title);
+    }
+
+    public class DocPrompts
+    {
+        public String title { get; set; }
+        public List<List<object>> prompts { get; set; }
+    }
+
+}

@@ -1,0 +1,30 @@
+﻿@page "/prompt-creation"
+
+<PageTitle>TomaNota - Prompt Creation</PageTitle>
+
+<h1>Prompt Creation</h1>
+
+<input autocomplete='off' type="text" name="title" id="title" placeholder="Document title">
+
+<div id="prompt-inputs">
+    <input type="text" autocomplete="off" name="heading-1" id="heading-1" placeholder="Heading 1">
+    <input type="text" autocomplete="off" name="body-1" id="body-1" placeholder="Body 1">
+</div>
+
+<p>Number of prompts in document: @Counter</p>
+
+<button @onclick="AddPropmts">Add another prompt</button>
+<button id="create_json" disabled>Create</button>
+
+
+@code {
+    public int Counter = 1;
+
+    public List<List<object>> prompts { get; set; }
+
+    private void AddPropmts()
+    {
+        
+        Counter += 1;
+    }
+}
