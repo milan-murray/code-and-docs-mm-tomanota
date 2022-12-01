@@ -1,0 +1,28 @@
+@page "/quiz"
+@inject HttpClient Http
+
+<PageTitle>Quiz: @prompts.title</PageTitle>
+
+<button @onclick="StartQuiz">Start Quiz</button>
+
+
+@code
+{
+    private DocPrompts? prompts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        prompts = await Http.GetFromJsonAsync<DocPrompts>("sample-data/español-viajes-1.json");
+    }
+
+    public class DocPrompts
+    {
+        public String title { get; set; }
+        public List<List<object>> prompts { get; set; }
+    }
+
+    public void StartQuiz()
+    {
+        Console.WriteLine("Quiz Started");
+    }
+}
