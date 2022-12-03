@@ -3,28 +3,36 @@
 
 <PageTitle>Quiz: @prompts.title</PageTitle>
 
-<h3>@currentHeading</h3>
+<h3>@CurrentHeading</h3>
 
-<input type="text" value="@response"/>
+<input type="text" value="@Response" />
 
-<h3 style="display: @err">That's not quite right</h3>
+<div style="display: @CorrectDisplay">
+    <h3>Correct!</h3>
+</div>
 
-<h3 style="display: @err">Correct answer: @ans</h3>
+<div style="display: @IncorrectDisplay">
+    <h3>That's not quite right</h3>
+    <h3>Correct answer: @Ans</h3>
+</div>
 
-<button @onclick="AdvanceQuiz">@btnText</button>
-
+<button style="display: @QuizComplete" @onclick="AdvanceQuiz">@BtnText</button>
 
 @code
 {
     private DocPrompts? prompts;
-    bool validResponse = true;
+    bool promptComplete = true;
     bool beganQuiz = false;
-    String err = "None";
-    public String response;
-    public String ans;
-    public String btnText = "Start Quiz!";
-    public String currentHeading { get; set; }
-    public int quizIndex = 0;
+    String CorrectDisplay { get; set; } = "None";
+    String IncorrectDisplay { get; set;} = "None";
+    String Response { get; set; } = "A";
+    String Ans { get; set; }
+    String QuizComplete { get; set; }
+    String BtnText { get; set; } = "Start Quiz!";
+    int score;
+    String CurrentHeading { get; set; }
+    int quizIndex = 0;
+    int numOfPrompts;
 
     protected override async Task OnInitializedAsync()
     {
@@ -39,39 +47,47 @@
 
     public void AdvanceQuiz()
     {
-        ans = "";
         if (!beganQuiz) {
             beganQuiz = true;
-            currentHeading = prompts.prompts[quizIndex][0].ToString();
-            btnText = "Check answer";
+            CurrentHeading = prompts.prompts[quizIndex][0].ToString();
+            BtnText = "Check answer";
+            numOfPrompts = prompts.prompts.Count();
         } 
-        else 
+        else
         {
-            if (validResponse) {
-                err = "";
-                btnText = "Check answer";
-                if (quizIndex < prompts.prompts.Count())
+            if (promptComplete)
+            {
+                promptComplete = false;
+                CorrectDisplay = "None";
+                IncorrectDisplay = "None";
+                BtnText = "Continue";
+                if (Response.ToString() == prompts.prompts[quizIndex][1].ToString())
                 {
-                    if (response == prompts.prompts[quizIndex][1])
-                    {
-                        int score = (int) prompts.prompts[quizIndex][2];
-                        if (score < 10) {
-                            score += 1;
-                        }
-                        Console.WriteLine("Correct! ", score);
-                    }
-                    else
-                    {
-                        validResponse = false;
-                        err = "";
-                        ans = prompts.prompts[quizIndex][1].ToString();
-                        btnText = "Continue";
-                    }
+                    CorrectDisplay = "";
                 }
+                else
+                {
+                    IncorrectDisplay = "";
+                    Ans = prompts.prompts[quizIndex][1].ToString();
+                }
+                Console.WriteLine(Response.ToString());
             }
-            else {
-                validResponse = true;
-                err = "";
+            else
+            {
+                BtnText = "Check Answer";
+                promptComplete = true;
+                CorrectDisplay = "None";
+                IncorrectDisplay = "None";
+                Response = "";
+                if (quizIndex < numOfPrompts)
+                {
+                    quizIndex++;
+                    CurrentHeading = prompts.prompts[quizIndex][0].ToString();
+                }
+                else
+                {
+                    QuizComplete = "None";
+                }
             }
         }
     }
