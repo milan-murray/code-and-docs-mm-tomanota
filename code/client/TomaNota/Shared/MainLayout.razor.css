@@ -4,6 +4,14 @@
     flex-direction: column;
 }
 
+.secondary-bg {
+	background-color: #1d1c1c;
+}
+
+.main-bg {
+    background-color: rgb(47, 53, 58);
+}
+
 main {
     flex: 1;
 }

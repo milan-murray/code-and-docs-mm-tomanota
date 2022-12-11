@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "NfOVbM4oberr+XNHDmXfu7kRUJ2UBiBFrdEZ50uJzyT5Y3BdY4p+1qIoHpc9J2cW7eMiD3/c9jkQfhuPrbQIWQ==",
+  "dgSpecHash": "KdU2JlU1LxI94v/35G36LKe47T5Th/4R+A7NQka+l8BZIH4Cai3jEMwNv+isUydofYGVoPXG0lrmY9XwcsRZsw==",
   "success": true,
   "projectFilePath": "/home/milan/source-code/code-and-docs-milan-murray/code/client/TomaNota/TomaNota.csproj",
   "expectedPackageFiles": [
+    "/home/milan/.nuget/packages/blazored.localstorage/4.3.0/blazored.localstorage.4.3.0.nupkg.sha512",
     "/home/milan/.nuget/packages/microsoft.aspnetcore.authorization/6.0.10/microsoft.aspnetcore.authorization.6.0.10.nupkg.sha512",
     "/home/milan/.nuget/packages/microsoft.aspnetcore.components/6.0.10/microsoft.aspnetcore.components.6.0.10.nupkg.sha512",
     "/home/milan/.nuget/packages/microsoft.aspnetcore.components.analyzers/6.0.10/microsoft.aspnetcore.components.analyzers.6.0.10.nupkg.sha512",
@@ -33,7 +34,7 @@
     "/home/milan/.nuget/packages/system.runtime.compilerservices.unsafe/6.0.0/system.runtime.compilerservices.unsafe.6.0.0.nupkg.sha512",
     "/home/milan/.nuget/packages/system.text.encodings.web/6.0.0/system.text.encodings.web.6.0.0.nupkg.sha512",
     "/home/milan/.nuget/packages/system.text.json/6.0.0/system.text.json.6.0.0.nupkg.sha512",
-    "/home/milan/.nuget/packages/microsoft.netcore.app.runtime.mono.browser-wasm/6.0.10/microsoft.netcore.app.runtime.mono.browser-wasm.6.0.10.nupkg.sha512"
+    "/home/milan/.nuget/packages/microsoft.netcore.app.runtime.mono.browser-wasm/6.0.11/microsoft.netcore.app.runtime.mono.browser-wasm.6.0.11.nupkg.sha512"
   ],
   "logs": []
 }

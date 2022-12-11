@@ -3,20 +3,26 @@
 
 <PageTitle>Quiz: @prompts.title</PageTitle>
 
-<h3>@CurrentHeading</h3>
-
-<input type="text" value="@Response" />
-
-<div style="display: @CorrectDisplay">
-    <h3>Correct!</h3>
+<div class="card-header text-center">
+    <h3>@CurrentHeading</h3>
 </div>
 
-<div style="display: @IncorrectDisplay">
-    <h3>That's not quite right</h3>
-    <h3>Correct answer: @Ans</h3>
-</div>
+<div class="card-body">
 
-<button style="display: @QuizComplete" @onclick="AdvanceQuiz">@BtnText</button>
+    <input type="text" value="@Response" />
+
+    <div style="display: @CorrectDisplay">
+        <h3>Correct!</h3>
+    </div>
+
+    <div style="display: @IncorrectDisplay">
+        <h3>That's not quite right</h3>
+        <h3>Correct answer: @Ans</h3>
+    </div>
+
+    <button style="display: @QuizComplete" @onclick="AdvanceQuiz">@BtnText</button>
+
+</div>
 
 @code
 {
@@ -30,7 +36,7 @@
     String QuizComplete { get; set; }
     String BtnText { get; set; } = "Start Quiz!";
     int score;
-    String CurrentHeading { get; set; }
+    String CurrentHeading { get; set; } = "Select a quiz";
     int quizIndex = 0;
     int numOfPrompts;
 

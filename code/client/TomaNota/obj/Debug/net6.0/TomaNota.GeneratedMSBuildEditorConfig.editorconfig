@@ -22,10 +22,6 @@ build_property._RazorSourceGeneratorDebug =
 build_metadata.AdditionalFiles.TargetPath = QXBwLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[/home/milan/source-code/code-and-docs-milan-murray/code/client/TomaNota/Pages/Index.razor]
-build_metadata.AdditionalFiles.TargetPath = UGFnZXMvSW5kZXgucmF6b3I=
-build_metadata.AdditionalFiles.CssScope = 
-
 [/home/milan/source-code/code-and-docs-milan-murray/code/client/TomaNota/Pages/Quiz.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXMvUXVpei5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
@@ -41,6 +37,10 @@ build_metadata.AdditionalFiles.CssScope =
 [/home/milan/source-code/code-and-docs-milan-murray/code/client/TomaNota/_Imports.razor]
 build_metadata.AdditionalFiles.TargetPath = X0ltcG9ydHMucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
+
+[/home/milan/source-code/code-and-docs-milan-murray/code/client/TomaNota/Pages/Index.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvSW5kZXgucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-4tv79ep76g
 
 [/home/milan/source-code/code-and-docs-milan-murray/code/client/TomaNota/Pages/PropmtCreation.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXMvUHJvcG10Q3JlYXRpb24ucmF6b3I=

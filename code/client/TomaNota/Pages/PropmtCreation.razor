@@ -1,30 +1,41 @@
 ﻿@page "/prompt-creation"
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
 
 <PageTitle>TomaNota - Prompt Creation</PageTitle>
 
-<h1>Prompt Creation</h1>
+<div class="card-header text-center">
+    <h1>Prompt Creation</h1>
+</div>
+<div class="card-body">
 
-<input autocomplete='off' type="text" name="title" id="title" placeholder="Document title">
+    <input autocomplete='off' type="text" name="title" id="title" placeholder="Document title">
 
-<div id="prompt-inputs">
-    <input type="text" autocomplete="off" name="heading-1" id="heading-1" placeholder="Heading 1">
-    <input type="text" autocomplete="off" name="body-1" id="body-1" placeholder="Body 1">
+    <div class="form-group" id="prompt-inputs">
+        <input type="text" autocomplete="off" placeholder="Heading" @bind="headding">
+        <input type="text" autocomplete="off" placeholder="Body" @bind="body">
+    </div>
+
+    <p>Number of prompts in document: @Counter</p>
+
+    <button @onclick="AddPropmts">Add another prompt</button>
+    <button id="createJson" disabled>Create</button>
+
 </div>
 
-<p>Number of prompts in document: @Counter</p>
-
-<button @onclick="AddPropmts">Add another prompt</button>
-<button id="create_json" disabled>Create</button>
-
-
 @code {
+    public string heading;
+    public string body;
     public int Counter = 1;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await localStorage.SetItemAsync("promptList", {});        
+    }
 
     public List<List<object>> prompts { get; set; }
 
     private void AddPropmts()
     {
-        
         Counter += 1;
     }
 }

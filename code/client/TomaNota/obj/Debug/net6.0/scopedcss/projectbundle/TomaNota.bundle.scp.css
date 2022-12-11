@@ -1,3 +1,11 @@
+/* /Pages/Index.razor.rz.scp.css */
+.secondary-bg[b-4tv79ep76g] {
+	background-color: #1d1c1c;
+}
+
+.main-bg[b-4tv79ep76g] {
+    background-color: rgb(47, 53, 58);
+}
 /* /Pages/PropmtCreation.razor.rz.scp.css */
 #prompt-inputs[b-b8mudh1tnk] {
     margin: 2em;
@@ -7,6 +15,14 @@
     position: relative;
     display: flex;
     flex-direction: column;
+}
+
+.secondary-bg[b-9nk8njy7tj] {
+	background-color: #1d1c1c;
+}
+
+.main-bg[b-9nk8njy7tj] {
+    background-color: rgb(47, 53, 58);
 }
 
 main[b-9nk8njy7tj] {
