@@ -8,8 +8,7 @@
 </div>
 
 <div class="card-body">
-
-    <input type="text" value="@Response" />
+    <input type="text" @bind="@Response" />
 
     <div style="display: @CorrectDisplay">
         <h3>Correct!</h3>
@@ -31,7 +30,7 @@
     bool beganQuiz = false;
     String CorrectDisplay { get; set; } = "None";
     String IncorrectDisplay { get; set;} = "None";
-    String Response { get; set; } = "A";
+    String Response { get; set; } = String.Empty;
     String Ans { get; set; }
     String QuizComplete { get; set; }
     String BtnText { get; set; } = "Start Quiz!";

@@ -197,13 +197,13 @@
       "mscorlib.dll": "sha256-cx\/3nJhFns3tZhQNQOyiRyKJESKxOjLVufzWnri6KSA=",
       "netstandard.dll": "sha256-yWufW5W4SSfjocBcWTEDqnFwTd\/VYtLMc2Y9mPmlggc=",
       "System.Private.CoreLib.dll": "sha256-H009wzPwRoDZlwvpN4KLCsUwN7Y1AmjKB3PIEHA7ObQ=",
-      "TomaNota.dll": "sha256-JAKuBf0NPJMcZF4KarsIAgO26X6iIpxbriL36JDOX5s="
+      "TomaNota.dll": "sha256-7DNCL25JewdLZlL3YpOUt+sxqU8k+O8A48ORwGW6xH0="
     },
     "extensions": null,
     "lazyAssembly": null,
     "libraryInitializers": null,
     "pdb": {
-      "TomaNota.pdb": "sha256-ILorxrCxTtbFiEH7ytQ+sF077nZ\/87E5k0wTcoBaNTw="
+      "TomaNota.pdb": "sha256-m6Ko8Uj5Qpf2SGDXA1w9Ftd25kkAZp1tjF+wiE9hMWo="
     },
     "runtime": {
       "dotnet.6.0.11.oh1oqo9g37.js": "sha256-F30V+6jU3jwJYFZoLuwMAqzTiOXu6q7zGgOdjYBofDI=",

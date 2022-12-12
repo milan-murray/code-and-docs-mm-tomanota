@@ -9,27 +9,31 @@
 }
 else
 {
-    <h1>@prompts.title</h1>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Prompt Heading</th>
-                <th>Prompt Body</th>
-                <th>Current Score</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var prompt in prompts.prompts)
-            {
+    <div class="card-header text-center">
+        <h1>@prompts.title</h1>
+    </div>
+    <div class="card-body">
+        <table class="table text-light">
+            <thead>
                 <tr>
-                    <td>@prompt[0]</td>
-                    <td>@prompt[1]</td>
-                    <td>@prompt[2]</td>
+                    <th>Prompt Heading</th>
+                    <th>Prompt Body</th>
+                    <th>Current Score</th>
                 </tr>
-            }
+            </thead>
+            <tbody>
+                @foreach (var prompt in prompts.prompts)
+                {
+                    <tr>
+                        <td>@prompt[0]</td>
+                        <td>@prompt[1]</td>
+                        <td>@prompt[2]</td>
+                    </tr>
+                }
 
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </div>
 }
 
 @code {

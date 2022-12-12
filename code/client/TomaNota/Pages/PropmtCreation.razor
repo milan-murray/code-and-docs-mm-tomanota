@@ -1,5 +1,9 @@
 ﻿@page "/prompt-creation"
+@using System.Text.Json;
+@using System.Text.Json.Serialization;
+@*
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
+*@
 
 <PageTitle>TomaNota - Prompt Creation</PageTitle>
 
@@ -10,14 +14,15 @@
 
     <input autocomplete='off' type="text" name="title" id="title" placeholder="Document title">
 
+    <p>Prompt number: @Counter</p>
+
     <div class="form-group" id="prompt-inputs">
-        <input type="text" autocomplete="off" placeholder="Heading" @bind="headding">
+        <input type="text" autocomplete="off" placeholder="Heading" @bind="heading">
         <input type="text" autocomplete="off" placeholder="Body" @bind="body">
+        <button @onclick="NextPropmts">Next prompt</button>
+        <button @onclick="PreviousPrompts" disabled>Previous prompt</button>
     </div>
 
-    <p>Number of prompts in document: @Counter</p>
-
-    <button @onclick="AddPropmts">Add another prompt</button>
     <button id="createJson" disabled>Create</button>
 
 </div>
@@ -25,17 +30,44 @@
 @code {
     public string heading;
     public string body;
+    public List<List<string>> DocumentPrompts { get; set; } = new List<List<string>>();
+    public Prompts newDocument { get; set; }
     public int Counter = 1;
 
-    protected override async Task OnInitializedAsync()
+    //protected override async Task OnInitializedAsync()
+    //{
+    //    await localStorage.SetItemAsync("promptList", newDocument);        
+    //}
+
+    public class Prompts
     {
-        await localStorage.SetItemAsync("promptList", {});        
+        public String Title { get; set; }
+        public List<List<string>> prompts { get; set; }
     }
 
-    public List<List<object>> prompts { get; set; }
-
-    private void AddPropmts()
+    private void NextPropmts()
     {
+        Console.WriteLine(heading + " " + body);
+        List<string> thisPrompt = new List<string>() {
+            heading,
+            body
+        };
+        //newDocument.prompts
+        //Console.WriteLine(myList[0]);
+        
+        //DocumentPrompts[Counter - 1] = thisPrompt;
+        //Console.WriteLine(DocumentPrompts[Counter - 1]);
         Counter += 1;
+        heading = "";
+        body = "";
+    }
+
+    private void PreviousPrompts()
+    {
+        //Console.WriteLine(heading + " " + body);
+        //newDocument.prompts[Counter - 1][0] = heading;
+        //newDocument.prompts[Counter - 1][1] = body;
+        //Console.WriteLine(newDocument.prompts[Counter - 1]);
+        //Counter -= 1;
     }
 }
