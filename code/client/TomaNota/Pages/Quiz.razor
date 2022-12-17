@@ -31,8 +31,8 @@
     String CorrectDisplay { get; set; } = "None";
     String IncorrectDisplay { get; set;} = "None";
     String Response { get; set; } = String.Empty;
-    String Ans { get; set; }
-    String QuizComplete { get; set; }
+    String? Ans { get; set; }
+    String? QuizComplete { get; set; }
     String BtnText { get; set; } = "Start Quiz!";
     int score;
     String CurrentHeading { get; set; } = "Select a quiz";
@@ -46,15 +46,23 @@
 
     public class DocPrompts
     {
-        public String title { get; set; }
-        public List<List<object>> prompts { get; set; }
+        public String? title { get; set; }
+        public List<List<object>>? prompts { get; set; }
     }
 
     public void AdvanceQuiz()
     {
         if (!beganQuiz) {
             beganQuiz = true;
-            CurrentHeading = prompts.prompts[quizIndex][0].ToString();
+            if (prompts.prompts[quizIndex][0].ToString() != null)
+            {
+                CurrentHeading = prompts.prompts[quizIndex][0].ToString();
+
+            }
+            else
+            {
+                CurrentHeading = "";
+            }
             BtnText = "Check answer";
             numOfPrompts = prompts.prompts.Count();
         } 

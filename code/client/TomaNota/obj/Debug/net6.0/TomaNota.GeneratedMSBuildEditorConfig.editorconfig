@@ -5,51 +5,41 @@ build_property.UsingMicrosoftNETSdkWeb =
 build_property.ProjectTypeGuids = 
 build_property.InvariantGlobalization = false
 build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = browser
-build_property.EnableSingleFileAnalyzer = 
-build_property.EnableTrimAnalyzer = true
-build_property.IncludeAllContentForSelfExtract = 
 build_property.RootNamespace = TomaNota
 build_property.RootNamespace = TomaNota
-build_property.ProjectDir = /home/milan/source-code/code-and-docs-milan-murray/code/client/TomaNota/
+build_property.ProjectDir = C:\Users\milan\source-code\code-and-docs-milan-murray\code\client\TomaNota\
 build_property.RazorLangVersion = 6.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = /home/milan/source-code/code-and-docs-milan-murray/code/client/TomaNota
+build_property.MSBuildProjectDirectory = C:\Users\milan\source-code\code-and-docs-milan-murray\code\client\TomaNota
 build_property._RazorSourceGeneratorDebug = 
 
-[/home/milan/source-code/code-and-docs-milan-murray/code/client/TomaNota/App.razor]
+[C:/Users/milan/source-code/code-and-docs-milan-murray/code/client/TomaNota/App.razor]
 build_metadata.AdditionalFiles.TargetPath = QXBwLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[/home/milan/source-code/code-and-docs-milan-murray/code/client/TomaNota/Pages/Quiz.razor]
-build_metadata.AdditionalFiles.TargetPath = UGFnZXMvUXVpei5yYXpvcg==
+[C:/Users/milan/source-code/code-and-docs-milan-murray/code/client/TomaNota/Pages/Quiz.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUXVpei5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[/home/milan/source-code/code-and-docs-milan-murray/code/client/TomaNota/Pages/ViewDocument.razor]
-build_metadata.AdditionalFiles.TargetPath = UGFnZXMvVmlld0RvY3VtZW50LnJhem9y
+[C:/Users/milan/source-code/code-and-docs-milan-murray/code/client/TomaNota/Pages/ViewDocument.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcVmlld0RvY3VtZW50LnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[/home/milan/source-code/code-and-docs-milan-murray/code/client/TomaNota/Shared/SurveyPrompt.razor]
-build_metadata.AdditionalFiles.TargetPath = U2hhcmVkL1N1cnZleVByb21wdC5yYXpvcg==
-build_metadata.AdditionalFiles.CssScope = 
-
-[/home/milan/source-code/code-and-docs-milan-murray/code/client/TomaNota/_Imports.razor]
+[C:/Users/milan/source-code/code-and-docs-milan-murray/code/client/TomaNota/_Imports.razor]
 build_metadata.AdditionalFiles.TargetPath = X0ltcG9ydHMucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[/home/milan/source-code/code-and-docs-milan-murray/code/client/TomaNota/Pages/Index.razor]
-build_metadata.AdditionalFiles.TargetPath = UGFnZXMvSW5kZXgucmF6b3I=
-build_metadata.AdditionalFiles.CssScope = b-4tv79ep76g
+[C:/Users/milan/source-code/code-and-docs-milan-murray/code/client/TomaNota/Pages/Index.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSW5kZXgucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-ic95qjbmmn
 
-[/home/milan/source-code/code-and-docs-milan-murray/code/client/TomaNota/Pages/PropmtCreation.razor]
-build_metadata.AdditionalFiles.TargetPath = UGFnZXMvUHJvcG10Q3JlYXRpb24ucmF6b3I=
-build_metadata.AdditionalFiles.CssScope = b-b8mudh1tnk
+[C:/Users/milan/source-code/code-and-docs-milan-murray/code/client/TomaNota/Pages/PropmtCreation.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUHJvcG10Q3JlYXRpb24ucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-9deb3x4jqv
 
-[/home/milan/source-code/code-and-docs-milan-murray/code/client/TomaNota/Shared/MainLayout.razor]
-build_metadata.AdditionalFiles.TargetPath = U2hhcmVkL01haW5MYXlvdXQucmF6b3I=
-build_metadata.AdditionalFiles.CssScope = b-9nk8njy7tj
-
-[/home/milan/source-code/code-and-docs-milan-murray/code/client/TomaNota/Shared/NavMenu.razor]
-build_metadata.AdditionalFiles.TargetPath = U2hhcmVkL05hdk1lbnUucmF6b3I=
-build_metadata.AdditionalFiles.CssScope = b-kg22xoscnk
+[C:/Users/milan/source-code/code-and-docs-milan-murray/code/client/TomaNota/Shared/MainLayout.razor]
+build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXE1haW5MYXlvdXQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-u1hcweldc7

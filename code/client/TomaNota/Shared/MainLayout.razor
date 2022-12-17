@@ -1,21 +1,28 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
-
+<div class="page bg-dark text-light h-100">
     <main>
-        <div class="top-row px-4">
-            <a href="#" target="_blank">About</a>
-        </div>
+		<nav class="navbar navbar-expand-lg bg-dark">
+			<div class="container-fluid">
+				<a class="navbar-brand" href="#">TomaNota</a>
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+					<div class="navbar-nav">
+						<a class="nav-link" href="quiz">Start Quiz</a>
+						<a class="nav-link" href="view-document">Review Document</a>
+						<a class="nav-link" href="prompt-creation">Create Document</a>
+					</div>
+				</div>
+			</div>
+		</nav>
 
-        <article class="content bg-light text-light">
-            <div class="container">
-                <div class="card bg-dark text-light shadow-lg">
-                    @Body
-                </div>
-            </div>
-        </article>
+		<div class="container">
+			<div class="card bg-dark text-light shadow">
+				@Body
+			</div>
+		</div>
+
     </main>
 </div>
