@@ -16,7 +16,7 @@
 
     <div style="display: @IncorrectDisplay">
         <h3>That's not quite right</h3>
-        <h3>Correct answer: @Ans</h3>
+        <h3>@Feedback</h3>
     </div>
 
     <button style="display: @QuizComplete" @onclick="AdvanceQuiz">@BtnText</button>
@@ -31,13 +31,22 @@
     String CorrectDisplay { get; set; } = "None";
     String IncorrectDisplay { get; set;} = "None";
     String Response { get; set; } = String.Empty;
+    Outcome RoundResult { get; set; } = new Outcome();
     String? Ans { get; set; }
+    String? Feedback { get; set; }
     String? QuizComplete { get; set; }
     String BtnText { get; set; } = "Start Quiz!";
     int score;
     String CurrentHeading { get; set; } = "Select a quiz";
     int quizIndex = 0;
     int numOfPrompts;
+	
+	public class Outcome
+	{
+		public bool areEqual { get; set; }
+        public string? userResponse { get; set; }
+        public string? correctAnswer { get; set; }	
+	}
 
     protected override async Task OnInitializedAsync()
     {
@@ -49,15 +58,19 @@
         public String? title { get; set; }
         public List<List<object>>? prompts { get; set; }
     }
-
-    public void AdvanceQuiz()
+	
+	public async Task GetResponseAsync()
+	{
+		RoundResult = await Http.GetFromJsonAsync<Outcome>($"https://europe-west1-tomanota-374115.cloudfunctions.net/check-prompts?q={Response.ToString()}&a={Ans}");
+	}
+	
+    public async void AdvanceQuiz()
     {
         if (!beganQuiz) {
             beganQuiz = true;
             if (prompts.prompts[quizIndex][0].ToString() != null)
             {
                 CurrentHeading = prompts.prompts[quizIndex][0].ToString();
-
             }
             else
             {
@@ -74,16 +87,24 @@
                 CorrectDisplay = "None";
                 IncorrectDisplay = "None";
                 BtnText = "Continue";
-                if (Response.ToString() == prompts.prompts[quizIndex][1].ToString())
+				
+				Ans = prompts.prompts[quizIndex][1].ToString();
+						
+				await GetResponseAsync();
+							
+				Console.WriteLine("Correct: " + RoundResult.areEqual);
+
+                if (RoundResult.areEqual)
                 {
-                    CorrectDisplay = "";
+                    CorrectDisplay = "block";
+					Console.WriteLine("Showing correct message");
                 }
                 else
                 {
-                    IncorrectDisplay = "";
-                    Ans = prompts.prompts[quizIndex][1].ToString();
+                    IncorrectDisplay = "block";
+					Feedback = $"Your attempt: {RoundResult.userResponse}\nExpected answer: {RoundResult.correctAnswer}";
+					Console.WriteLine("Showing incorrect message");
                 }
-                Console.WriteLine(Response.ToString());
             }
             else
             {
