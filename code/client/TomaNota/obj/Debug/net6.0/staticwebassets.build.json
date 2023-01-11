@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "V5o0zRDcci+kKYAThwbsMhfhqQUEorQhuazZXVs/lcE=",
+  "Hash": "ILRRcsQ+AORGquL/azEY593cUXsoEwLZ+kgHvM7hA8M=",
   "Source": "TomaNota",
   "BasePath": "/",
   "Mode": "Root",
@@ -7121,23 +7121,6 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\index.html"
-    },
-    {
-      "Identity": "C:\\Users\\milan\\source-code\\code-and-docs-milan-murray\\code\\client\\TomaNota\\wwwroot\\sample-data\\español-viajes-1.json",
-      "SourceId": "TomaNota",
-      "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\milan\\source-code\\code-and-docs-milan-murray\\code\\client\\TomaNota\\wwwroot\\",
-      "BasePath": "/",
-      "RelativePath": "sample-data/español-viajes-1.json",
-      "AssetKind": "All",
-      "AssetMode": "All",
-      "AssetRole": "Primary",
-      "RelatedAsset": "",
-      "AssetTraitName": "",
-      "AssetTraitValue": "",
-      "CopyToOutputDirectory": "Never",
-      "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot\\sample-data\\español-viajes-1.json"
     }
   ]
 }

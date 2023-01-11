@@ -1,55 +1,59 @@
 ﻿@page "/view-document"
+@page "/view-document/{title}"
 @inject HttpClient Http
 
 <PageTitle>View Document</PageTitle>
 
-@if (prompts == null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
-    <div class="card-header text-center">
-        <h1>@prompts.title</h1>
-    </div>
-    <div class="card-body">
-        <table class="table text-light">
-            <thead>
-                <tr>
-                    <th>Prompt Heading</th>
-                    <th>Prompt Body</th>
-                    <th>Current Score</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var prompt in prompts.prompts)
-                {
-                    <tr>
-                        <td>@prompt[0]</td>
-                        <td>@prompt[1]</td>
-                        <td>@prompt[2]</td>
-                    </tr>
-                }
 
-            </tbody>
-        </table>
-    </div>
-}
+<div class="card bg-dark text-light my-3 shadow">
+	@if (Prompts == null)
+	{
+		<p><em>Loading...</em></p>
+	}
+	else
+	{
+		<div class="card-header text-center">
+			<h1>@Prompts.title</h1>
+		</div>
+		<div class="card-body">
+			<table class="table text-light">
+				<thead>
+					<tr>
+						<th>Prompt Heading</th>
+						<th>Prompt Body</th>
+						<th>Current Score</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (var prompt in Prompts.prompts)
+					{
+						<tr>
+							<td>@prompt[0]</td>
+							<td>@prompt[1]</td>
+							<td>@prompt[2]</td>
+						</tr>
+					}
+
+				</tbody>
+			</table>
+		</div>
+	}
+</div>
 
 @code {
-    private DocPrompts? prompts;
+	[Parameter]
+	public String? Title { get; set; }
+	private DocPrompts? Prompts { get; set; }
 
-    protected override async Task OnInitializedAsync()
-    {
-        prompts = await Http.GetFromJsonAsync<DocPrompts>("sample-data/español-viajes-1.json");
-        Console.WriteLine("Received: " + prompts.prompts[0]);
-        Console.WriteLine("Received title: " + prompts.title);
-    }
+	protected override async Task OnInitializedAsync()
+	{
+		Prompts = await Http.GetFromJsonAsync<DocPrompts>("" + Title);
+	}
 
-    public class DocPrompts
-    {
-        public String title { get; set; }
-        public List<List<object>> prompts { get; set; }
-    }
+	public class DocPrompts
+	{
+		public String title { get; set; }
+		public List<List<object>> prompts { get; set; }
+	}
 
 }

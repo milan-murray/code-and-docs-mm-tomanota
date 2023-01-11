@@ -1,128 +1,132 @@
 @page "/quiz"
 @inject HttpClient Http
 
-<PageTitle>Quiz: @prompts.title</PageTitle>
+<PageTitle>Note Learning Session</PageTitle>
 
-<div class="card-header text-center">
-    <h3>@CurrentHeading</h3>
-</div>
+<div class="card bg-dark text-light my-3 shadow">
+	<div class="card-header text-center">
+		<h3>@CurrentHeading</h3>
+	</div>
 
-<div class="card-body">
-    <input type="text" @bind="@Response" />
+	<div class="card-body">
+		<input type="text" @bind="@Response" />
 
-    <div style="display: @CorrectDisplay">
-        <h3>Correct!</h3>
-    </div>
+		<div style="display: @CorrectDisplay">
+			<h3>Correct!</h3>
+		</div>
 
-    <div style="display: @IncorrectDisplay">
-        <h3>That's not quite right</h3>
-        <h3>@Feedback</h3>
-    </div>
+		<div style="display: @IncorrectDisplay">
+			<h3>That's not quite right</h3>
+			<h3>@Feedback</h3>
+		</div>
 
-    <button style="display: @QuizComplete" @onclick="AdvanceQuiz">@BtnText</button>
+		<button style="display: @QuizComplete" @onclick="AdvanceQuiz">@BtnText</button>
 
+	</div>
 </div>
 
 @code
 {
-    private DocPrompts? prompts;
-    bool promptComplete = true;
-    bool beganQuiz = false;
-    String CorrectDisplay { get; set; } = "None";
-    String IncorrectDisplay { get; set;} = "None";
-    String Response { get; set; } = String.Empty;
-    Outcome RoundResult { get; set; } = new Outcome();
-    String? Ans { get; set; }
-    String? Feedback { get; set; }
-    String? QuizComplete { get; set; }
-    String BtnText { get; set; } = "Start Quiz!";
-    int score;
-    String CurrentHeading { get; set; } = "Select a quiz";
-    int quizIndex = 0;
-    int numOfPrompts;
-	
+	private DocPrompts? prompts;
+	bool promptComplete = true;
+	bool beganQuiz = false;
+	String CorrectDisplay { get; set; } = "None";
+	String IncorrectDisplay { get; set; } = "None";
+	String Response { get; set; } = String.Empty;
+	Outcome RoundResult { get; set; } = new Outcome();
+	String? Ans { get; set; }
+	String? Feedback { get; set; }
+	String? QuizComplete { get; set; }
+	String BtnText { get; set; } = "Start Quiz!";
+	int score;
+	String CurrentHeading { get; set; } = "Select a quiz";
+	int quizIndex = 0;
+	int numOfPrompts;
+
 	public class Outcome
 	{
 		public bool areEqual { get; set; }
-        public string? userResponse { get; set; }
-        public string? correctAnswer { get; set; }	
+		public string? userResponse { get; set; }
+		public string? correctAnswer { get; set; }
 	}
 
-    protected override async Task OnInitializedAsync()
-    {
-        prompts = await Http.GetFromJsonAsync<DocPrompts>("sample-data/español-viajes-1.json");
-    }
+	protected override async Task OnInitializedAsync()
+	{
+		prompts = await Http.GetFromJsonAsync<DocPrompts>("sample-data/español-viajes-1.json");
+	}
 
-    public class DocPrompts
-    {
-        public String? title { get; set; }
-        public List<List<object>>? prompts { get; set; }
-    }
-	
+	public class DocPrompts
+	{
+		public String? title { get; set; }
+		public List<List<object>>? prompts { get; set; }
+	}
+
 	public async Task GetResponseAsync()
 	{
-		RoundResult = await Http.GetFromJsonAsync<Outcome>($"https://europe-west1-tomanota-374115.cloudfunctions.net/check-prompts?q={Response.ToString()}&a={Ans}");
+		RoundResult = await
+		Http.GetFromJsonAsync<Outcome>($"https://europe-west1-tomanota-374115.cloudfunctions.net/check-prompts?q={Response.ToString()}&a={Ans}");
 	}
-	
-    public async void AdvanceQuiz()
-    {
-        if (!beganQuiz) {
-            beganQuiz = true;
-            if (prompts.prompts[quizIndex][0].ToString() != null)
-            {
-                CurrentHeading = prompts.prompts[quizIndex][0].ToString();
-            }
-            else
-            {
-                CurrentHeading = "";
-            }
-            BtnText = "Check answer";
-            numOfPrompts = prompts.prompts.Count();
-        } 
-        else
-        {
-            if (promptComplete)
-            {
-                promptComplete = false;
-                CorrectDisplay = "None";
-                IncorrectDisplay = "None";
-                BtnText = "Continue";
-				
+
+	public async void AdvanceQuiz()
+	{
+		if (!beganQuiz)
+		{
+			beganQuiz = true;
+			if (prompts.prompts[quizIndex][0].ToString() != null)
+			{
+				CurrentHeading = prompts.prompts[quizIndex][0].ToString();
+			}
+			else
+			{
+				CurrentHeading = "";
+			}
+			BtnText = "Check answer";
+			numOfPrompts = prompts.prompts.Count();
+		}
+		else
+		{
+			if (promptComplete)
+			{
+				promptComplete = false;
+				CorrectDisplay = "None";
+				IncorrectDisplay = "None";
+				BtnText = "Continue";
+
 				Ans = prompts.prompts[quizIndex][1].ToString();
-						
+
 				await GetResponseAsync();
-							
+
 				Console.WriteLine("Correct: " + RoundResult.areEqual);
 
-                if (RoundResult.areEqual)
-                {
-                    CorrectDisplay = "block";
+				if (RoundResult.areEqual)
+				{
+					CorrectDisplay = "block";
 					Console.WriteLine("Showing correct message");
-                }
-                else
-                {
-                    IncorrectDisplay = "block";
+				}
+				else
+				{
+					IncorrectDisplay = "block";
 					Feedback = $"Your attempt: {RoundResult.userResponse}\nExpected answer: {RoundResult.correctAnswer}";
 					Console.WriteLine("Showing incorrect message");
-                }
-            }
-            else
-            {
-                BtnText = "Check Answer";
-                promptComplete = true;
-                CorrectDisplay = "None";
-                IncorrectDisplay = "None";
-                Response = "";
-                if (quizIndex < numOfPrompts)
-                {
-                    quizIndex++;
-                    CurrentHeading = prompts.prompts[quizIndex][0].ToString();
-                }
-                else
-                {
-                    QuizComplete = "None";
-                }
-            }
-        }
-    }
+				}
+			}
+			else
+			{
+				BtnText = "Check Answer";
+				promptComplete = true;
+				CorrectDisplay = "None";
+				IncorrectDisplay = "None";
+				Response = "";
+				if (quizIndex < numOfPrompts)
+				{
+					quizIndex++;
+					CurrentHeading = prompts.prompts[quizIndex][0].ToString();
+				}
+				else
+				{
+					QuizComplete = "None";
+				}
+			}
+		}
+	}
 }
