@@ -50,20 +50,24 @@
 	</div>
 </div>
 <div class="card bg-light mx-5">
-	<div class="card-header text-center">
+	<div class="card-header text-center text-dark">
 		@if (SelectedTitle == null)
 		{
-			<h3 class="text-info">Selected: No Notes Selected</h3>
-		}
+			<div class="spinner-grow" role="status">
+				<span class="visually-hidden">Loading...</span>
+			</div>
+			<p>Waiting for document...</p>
+	}
 		else
 		{
-			<h3 class="text-dark">Selected: @SelectedTitle</h3>
+			<h3 class="text-dark">@SelectedTitle</h3>
 		}
 	</div>
 	<div class="card-body">
 		<div class="d-flex justify-content-evenly">
 			<div>
-				<button class="btn btn-dark px-5" disabled="@TitleIsReady" @onclick="NavigateToReview">Review Notes</button>
+				<button class="btn btn-dark px-5" disabled="@TitleIsReady" @onclick="NavigateToReview">Review
+					Notes</button>
 			</div>
 			<div>
 				<button class="btn btn-dark px-5" disabled="@TitleIsReady">Start Quiz</button>
