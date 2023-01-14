@@ -56,7 +56,7 @@
 			<div class="spinner-grow" role="status">
 				<span class="visually-hidden">Loading...</span>
 			</div>
-			<p>Waiting for document...</p>
+			<p>Select a document...</p>
 	}
 		else
 		{
@@ -70,7 +70,7 @@
 					Notes</button>
 			</div>
 			<div>
-				<button class="btn btn-dark px-5" disabled="@TitleIsReady">Start Quiz</button>
+				<button class="btn btn-dark px-5" disabled="@TitleIsReady" @onclick="NavigateToQuiz">Start Quiz</button>
 			</div>
 		</div>
 	</div>
@@ -96,6 +96,15 @@
 			NavigationManager.NavigateTo("view-document/" + SelectedTitle);
 		}
 	}
+	
+	private void NavigateToQuiz()
+	{
+		if (SelectedTitle != null)
+		{
+			NavigationManager.NavigateTo("quiz/" + SelectedTitle);
+		}
+	}
+	
 	
 	private void NavigateToCreate()
 	{

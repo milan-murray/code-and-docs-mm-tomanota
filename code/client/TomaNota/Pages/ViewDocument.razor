@@ -44,7 +44,7 @@
 @code {
 	[Parameter]
 	public String? Title { get; set; }
-	public DocPrompts? returnedPrompts = new DocPrompts();
+	private DocPrompts? returnedPrompts = new DocPrompts();
 
 	public class DocPrompts
 	{
