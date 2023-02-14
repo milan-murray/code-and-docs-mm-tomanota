@@ -1,0 +1,166 @@
+@page "/quiz"
+@page "/quiz/{title}"
+@using System.Text.Json
+@inject HttpClient Http
+
+<PageTitle>Note Learning Session</PageTitle>
+
+<div class="card bg-dark text-light my-3 shadow">
+	<div class="card-header text-center">
+		<h3>@Title</h3>
+	</div>
+
+	<div class="@CardResponse">
+		@if (CurrentHeading == string.Empty)
+		{
+			<div class="spinner-border" role="status">
+				<span class="sr-only"></span>
+			</div>
+		}
+		else
+		{
+			<h3>@CurrentHeading</h3>
+		}
+		<hr>
+		<textarea type="text" @bind="@Response" cols="50" rows="1"></textarea>
+
+		<div class="clearfix">
+			<button class="btn btn-light float-end" style="display: @QuizComplete" @onclick="AdvanceQuiz">
+				@BtnText
+			</button>
+		</div>
+	</div>
+</div>
+<div class="card text-center bg-light text-dark my-3 mx-5">
+	<div class="card-header">
+		<h3>Response</h3>
+	</div>
+	<div class="card-body">
+		@if (promptComplete)
+		{
+			@if (correctDisplay)
+			{
+				<h3>Correct</h3>
+			} else
+			{
+				<h3>Incorrect</h3>
+				<h3>@Feedback</h3>
+			}
+			
+		}
+	</div>
+</div>
+
+@code
+{
+	public String? urlGetPrompts = "";
+
+	[Parameter]
+	public string Title { get; set; } = string.Empty;
+
+	String CardResponse { get; set; } = "card-body text-center";
+	private DocPrompts returnedPrompts = new DocPrompts();
+
+	// Quiz Logic
+	bool promptComplete = false;
+	bool correctDisplay = false;
+	string Response { get; set; } = string.Empty;
+	Outcome RoundResult { get; set; } = new Outcome();
+	string Ans { get; set; } = string.Empty;
+	string Feedback { get; set; } = string.Empty;
+	string QuizComplete { get; set; } = string.Empty;
+	string BtnText { get; set; } = "Check Answer";
+
+
+	int score;
+	string CurrentHeading { get; set; } = "";
+	int quizIndex = 0;
+
+	public class Outcome
+	{
+		public bool areEqual { get; set; }
+		public string userResponse { get; set; }
+		public string correctAnswer { get; set; }
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		var jsonString = await Http.GetStringAsync("https://europe-west1-tomanota-374115.cloudfunctions.net/get-prompts?q=" +
+		Title.ToString());
+		returnedPrompts.Prompts = JsonSerializer.Deserialize<List<List<object>>>(jsonString);
+		returnedPrompts.numOfPrompts = returnedPrompts.Prompts.Count();
+		Console.WriteLine(returnedPrompts.Prompts[0][1].ToString());
+		CurrentHeading = returnedPrompts.Prompts[0][0].ToString();
+	}
+
+	public class DocPrompts
+	{
+		public List<List<object>>? Prompts { get; set; } = new List<List<object>>();
+		public int numOfPrompts { get; set; }
+
+	}
+
+	public async Task GetResponseAsync()
+	{
+		RoundResult = await
+		Http.GetFromJsonAsync<Outcome>($"https://europe-west1-tomanota-374115.cloudfunctions.net/check-prompts?q={Response.ToString()}&a={Ans}");
+	}
+
+	public void DisplayAns()
+	{
+		Console.WriteLine("Correct: " + RoundResult.areEqual);
+
+		if (RoundResult.areEqual)
+		{
+			Feedback = "Correct";
+			correctDisplay = true;
+			CardResponse = "card-body text-center bg-success";
+			Console.WriteLine(Feedback);
+		}
+		else
+		{
+			CardResponse = "card-body text-center bg-danger";
+			Feedback = $"Your attempt: {RoundResult.userResponse} Expected answer: {RoundResult.correctAnswer}";
+			Console.WriteLine(Feedback);
+		}
+		promptComplete = true;
+	}
+
+	public async void AdvanceQuiz()
+	{
+		@* To check answer *@
+		if (!promptComplete)
+		{
+			BtnText = "Continue";
+			Console.WriteLine("Quiz index: " + quizIndex);
+
+			Ans = returnedPrompts.Prompts[quizIndex][1].ToString();
+
+			await GetResponseAsync();
+
+			DisplayAns();
+			await InvokeAsync(StateHasChanged);
+		}
+		else
+		{
+			CardResponse = "card-body text-center bg-dark";
+			BtnText = "Check Answer";
+			promptComplete = false;
+			Feedback = "";
+			correctDisplay = false;
+			Response = "";
+
+			if (quizIndex < returnedPrompts.numOfPrompts - 1)
+			{
+				quizIndex++;
+				CurrentHeading = returnedPrompts.Prompts[quizIndex][0].ToString();
+			}
+			else
+			{
+				QuizComplete = "None";
+			}
+			Console.WriteLine("Quiz index: " + quizIndex);
+
+		}
+	}
+}
