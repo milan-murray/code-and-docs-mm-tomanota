@@ -1,16 +1,58 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="secondary-bg text-light">
-    <main>
-		<nav class="navbar navbar-expand-lg bg-dark">
-			<div class="container-fluid">
-				<a class="navbar-brand text-light" href="#">TomaNota</a>
-			</div>
-		</nav>
+<style type="text/css">
+	html, main {
+		min-height: 100vh;
+	}
 
-		<div class="container py-3">
+	.secondary-bg {
+		background-image: linear-gradient(to top left, #8665f4, #b692eb, #2e9eef);
+		@*background-color: #1D1C1C;*@
+	}
+
+	main {
+		flex: 1;
+	}
+
+	a {
+		color: #FFFEFE;
+		text-decoration: none;
+	}
+
+	a:hover {
+		color: #eebbfe;
+	}
+
+	a.disabled {
+		pointer-events: none;
+		cursor: default;
+	}
+
+	.nav-text {
+		text-align: center;	
+		font-size: 120%;
+	}
+
+</style>
+
+<main class="text-light secondary-bg">
+    <div class="container-fluid">
+		<div class="bg-dark rounded-bottom px-2 shadow">
+			<div class="bg-dark p-2 nav-text">
+				<div class="d-flex justify-content-between align-items-center flex-wrap">
+					<a href="#">TomaNota</a>
+					<div class="d-flex align-items-center">
+						<h5 class="mx-1 align-middle mt-2">Welcome!</h5>
+						<a href="#"><button class="btn btn-light mx-1" disabled>Log In</button></a>
+						<a href="#"><button class="btn btn-light mx-1" disabled>Sign Up</button></a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="py-5">
 			@Body
 		</div>
 
-    </main>
-</div>
+    </div>
+</main>

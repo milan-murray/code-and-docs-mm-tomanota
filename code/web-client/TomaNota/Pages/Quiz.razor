@@ -5,49 +5,69 @@
 
 <PageTitle>Note Learning Session</PageTitle>
 
-<div class="card bg-dark text-light my-3 shadow">
-	<div class="card-header text-center">
+<style>
+	.quiz-element {
+		height: 50vh;
+		align-content: center;
+		text-align:center;
+	}
+
+	.quiz-input {
+		width: 100%;
+		padding: 0.5em;
+		border:none;
+		border-radius: 0.3em;
+	}
+
+	.btn-block {
+		width: 100%;
+	}
+</style>
+
+<div class="card bg-dark text-light shadow">
+	<div class="card-header">
 		<h3>@Title</h3>
 	</div>
 
-	<div class="@CardResponse">
-		@if (CurrentHeading == string.Empty)
-		{
-			<div class="spinner-border" role="status">
-				<span class="sr-only"></span>
-			</div>
-		}
-		else
-		{
-			<h3>@CurrentHeading</h3>
-		}
-		<hr>
-		<textarea type="text" @bind="@Response" cols="50" rows="1"></textarea>
-
-		<div class="clearfix">
-			<button class="btn btn-light float-end" style="display: @QuizComplete" @onclick="AdvanceQuiz">
-				@BtnText
-			</button>
-		</div>
-	</div>
-</div>
-<div class="card text-center bg-light text-dark my-3 mx-5">
-	<div class="card-header">
-		<h3>Response</h3>
-	</div>
-	<div class="card-body">
-		@if (promptComplete)
-		{
-			@if (correctDisplay)
+	<div class="quiz-element @responsiveBg">
+		<div class="container mt-5">
+			@if (CurrentHeading == string.Empty)
 			{
-				<h3>Correct</h3>
-			} else
-			{
-				<h3>Incorrect</h3>
-				<h3>@Feedback</h3>
+				<div class="spinner-border" role="status">
+					<span class="sr-only"></span>
+				</div>
 			}
-			
-		}
+			else
+			{
+				<h3>@CurrentHeading</h3>
+			}
+
+			<div class="">
+				<input type="text" class="quiz-input shadow-lg" @bind="@Response" />
+				<div class="mt-5">
+					<div class="text-center">
+						@if (promptComplete)
+						{
+							@if (correctDisplay)
+							{
+								<h3 class="text-center">Correct</h3>
+							}
+							else
+							{
+								<h3 class="tet-center">@Feedback</h3>
+							}
+						}
+						else
+						{
+							<p></p>
+						}
+					</div>
+				</div>
+				<button class="btn btn-light btn-lg btn-block" style="display: @QuizComplete" @onclick="AdvanceQuiz">
+					@BtnText
+				</button>
+			</div>
+		</div>
 	</div>
 </div>
 
@@ -58,10 +78,10 @@
 	[Parameter]
 	public string Title { get; set; } = string.Empty;
 
-	String CardResponse { get; set; } = "card-body text-center";
 	private DocPrompts returnedPrompts = new DocPrompts();
 
 	// Quiz Logic
+	String responsiveBg = "card-body text-center bg-dark text-light";
 	bool promptComplete = false;
 	bool correctDisplay = false;
 	string Response { get; set; } = string.Empty;
@@ -108,19 +128,17 @@
 
 	public void DisplayAns()
 	{
-		Console.WriteLine("Correct: " + RoundResult.areEqual);
-
 		if (RoundResult.areEqual)
 		{
 			Feedback = "Correct";
+			responsiveBg = "card-body text-center bg-success text-light";
 			correctDisplay = true;
-			CardResponse = "card-body text-center bg-success";
 			Console.WriteLine(Feedback);
 		}
 		else
 		{
-			CardResponse = "card-body text-center bg-danger";
-			Feedback = $"Your attempt: {RoundResult.userResponse} Expected answer: {RoundResult.correctAnswer}";
+			Feedback = $"Expected answer: {RoundResult.correctAnswer}";
+			responsiveBg = "card-body text-center bg-danger text-light";
 			Console.WriteLine(Feedback);
 		}
 		promptComplete = true;
@@ -134,21 +152,25 @@
 			BtnText = "Continue";
 			Console.WriteLine("Quiz index: " + quizIndex);
 
-			Ans = returnedPrompts.Prompts[quizIndex][1].ToString();
+			//if (!String.IsNullOrEmpty(returnedPrompts.Prompts[quizIndex][1].ToString())) {
+				Ans = returnedPrompts.Prompts[quizIndex][1].ToString();
+				await GetResponseAsync();
+				
+				DisplayAns();
+				await InvokeAsync(StateHasChanged);
+			//}
 
-			await GetResponseAsync();
 
-			DisplayAns();
-			await InvokeAsync(StateHasChanged);
+
 		}
 		else
 		{
-			CardResponse = "card-body text-center bg-dark";
 			BtnText = "Check Answer";
 			promptComplete = false;
 			Feedback = "";
 			correctDisplay = false;
 			Response = "";
+			responsiveBg = "card-body text-center bg-dark text-light";
 
 			if (quizIndex < returnedPrompts.numOfPrompts - 1)
 			{

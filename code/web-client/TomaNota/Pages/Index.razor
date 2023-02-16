@@ -4,74 +4,99 @@
 
 <PageTitle>TomaNota</PageTitle>
 
-<div class="card bg-dark text-light my-3 shadow">
-	<div class="card-header">
-		<h3>Available Notes</h3>
+<style>
+	.top-section
+	{
+		min-height: 50vh;
+		margin-bottom: 10em;
+	}
+
+	.bottom-section
+	{
+		max-height: 10em;
+	}
+
+	.btn-block
+	{
+		width: 100%;
+	}
+</style>
+
+<div class="top-section">
+	<div class="card bg-dark text-light shadow mb-3">
+		<div class="card-header">
+			<h3>Premade Documents</h3>
+		</div>
+		<div class="card-body">
+			<div class="card bg-light text-dark mb-3">
+				<div class="card-header">
+					<h5>Spanish</h5>
+				</div>
+				<div class="card-body">
+					<div class="d-flex justify-content-evenly flex-wrap">
+						@if (SpanishTitles == null)
+						{
+							<div class="spinner-border" role="status">
+								<span class="sr-only"></span>
+							</div>
+						}
+						else
+						{
+							@foreach (var title in SpanishTitles)
+							{
+								<button class="btn btn-dark m-1" @onclick="@(e => SelectNote(title))">@title</button>
+							}
+						}
+					</div>
+				</div>
+			</div>
+			<div class="card bg-light text-dark">
+				<div class="card-header">
+					<h5>German</h5>
+				</div>
+				<div class="card-body">
+					<div class="d-flex justify-content-evenly flex-wrap">
+						@if (GermanTitles == null)
+						{
+							<div class="spinner-border" role="status">
+								<span class="sr-only"></span>
+							</div>
+						}
+						else
+						{
+							@foreach (var title in GermanTitles)
+							{
+								<button class="btn btn-light">@title</button>
+							}
+						}
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
-	<div class="card-body">
-		<h5>Spanish</h5>
-		<hr>
-		<div class="d-flex justify-content-evenly">
-			@if (SpanishTitles == null)
-			{
-				<div class="spinner-border" role="status">
-					<span class="sr-only"></span>
-				</div>
-			}
-			else
-			{
-				@foreach (var title in SpanishTitles)
-				{
-					<button class="btn btn-light" @onclick="@(e => SelectNote(title))">@title</button>
-				}
-			}
+
+	<div class="card bg-dark mt-5">
+		<div class="card-header">
+			<h5>Your Notes</h5>
 		</div>
-		<h5>German</h5>
-		<hr>
-		<div class="d-flex justify-content-evenly">
-			@if (GermanTitles == null)
-			{
-				<div class="spinner-border" role="status">
-					<span class="sr-only"></span>
-				</div>
-			}
-			else
-			{
-				@foreach (var title in GermanTitles)
-				{
-					<button class="btn btn-light">@title</button>
-				}
-			}
+		<div class="card-body">
+			<p>Sign in to view notes.</p>
+			<div class="d-flex justify-content-center">
+				<button class="btn btn-light" @onclick="NavigateToCreate">Create New</button>
+			</div>
 		</div>
-		<hr>
-		<div class="d-flex justify-content-center">
-			<button class="btn btn-light" @onclick="NavigateToCreate">Create New</button>
-		</div>
+
 	</div>
 </div>
-<div class="card bg-light mx-5">
-	<div class="card-header text-center text-dark">
-		@if (SelectedTitle == null)
-		{
-			<div class="spinner-grow" role="status">
-				<span class="visually-hidden">Loading...</span>
-			</div>
-			<p>Select a document...</p>
-	}
-		else
-		{
-			<h3 class="text-dark">@SelectedTitle</h3>
-		}
-	</div>
+
+<div class="rounded-top bg-dark mt-3 mx-1 fixed-bottom bottom-section shadow">
 	<div class="card-body">
-		<div class="d-flex justify-content-evenly">
-			<div>
-				<button class="btn btn-dark px-5" disabled="@TitleIsReady" @onclick="NavigateToReview">Review
-					Notes</button>
-			</div>
-			<div>
-				<button class="btn btn-dark px-5" disabled="@TitleIsReady" @onclick="NavigateToQuiz">Start Quiz</button>
-			</div>
+		<div>
+			<button class="btn btn-light btn-lg btn-block my-1" disabled="@TitleIsReady" @onclick="NavigateToReview">Review
+				Notes</button>
+		</div>
+		<div>
+			<button class="btn btn-light btn-lg btn-block my-1" disabled="@TitleIsReady" @onclick="NavigateToQuiz">Attempt Notes</button>
 		</div>
 	</div>
 </div>
