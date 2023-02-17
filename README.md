@@ -1,5 +1,16 @@
 # TomaNota ~ Milan Murray X00162027
 
+## Setup Steps
+
+### Web Client (Local)
+
+	cd code/web-client/TomaNota/
+	dotnet run
+
+### Web Client (Deployed)
+
+	URL: Currently Unavailable
+
 ## About
 
 TomaNota is a note learning application aimed at languages that helps memorise the notes that we take using spaced repetition. 
