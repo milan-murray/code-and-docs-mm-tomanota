@@ -1,0 +1,27 @@
+﻿@page "/sign-up"
+@inject NavigationManager NavigationManager
+@inject IJSRuntime Javascript
+
+
+<h3>SignUp</h3>
+<div class="form-group">
+	<label for="username">Username:</label>
+	<input id="username" type="text" value="@Username"/>
+</div>
+<div>
+	<label for="password">Password:</label>
+	<input id="password" type="password" value="@Password"/>
+</div>
+
+<button @onclick="SignUpNewUser">Sign Up</button>
+
+
+@code {
+	String Username = "";
+	String Password = "";
+
+	void SignUpNewUser()
+	{
+		Console.WriteLine(Javascript.InvokeAsync<String>("firebaseCreateUser", Username, Password));
+	}
+}

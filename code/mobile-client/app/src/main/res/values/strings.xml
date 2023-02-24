@@ -1,16 +1,12 @@
 <resources>
-    <string name="app_name">TomaNota</string>
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title" translatable="false">TomaNota</string>
-    <string name="start_message">Select an otion to get started</string>
-    <string name="nav_header_subtitle">Learn your way</string>
-    <string name="nav_header_desc">Navigation header</string>
+    <string name="app_name">tomanota</string>
     <string name="action_settings">Settings</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
 
-    <string name="menu_home">Welcome</string>
-    <string name="menu_gallery">Gallery</string>
-    <string name="menu_slideshow">Slideshow</string>
-    <string name="premade_notes">Premade Notes</string>
-    <string name="your_notes">Your Notes</string>
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
 </resources>

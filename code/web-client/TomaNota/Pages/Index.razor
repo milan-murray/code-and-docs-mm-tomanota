@@ -1,6 +1,7 @@
 ﻿@page "/"
 @inject HttpClient Http
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JavaScript
 
 <PageTitle>TomaNota</PageTitle>
 
@@ -112,6 +113,7 @@
 	{
 		SpanishTitles = await Http.GetFromJsonAsync<String[]?>("https://europe-west1-tomanota-374115.cloudfunctions.net/get-spanish-titles");
 		@* Console.WriteLine(SpanishTitles); *@
+		@* JavaScript.InvokeVoidAsync("testLog", "Parameter"); *@
 	}
 	
 	private void NavigateToReview()

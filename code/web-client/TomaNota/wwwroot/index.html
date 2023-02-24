@@ -9,6 +9,8 @@
     <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" />
     <link href="css/app.css" rel="stylesheet" />
     <link href="TomaNota.styles.css" rel="stylesheet" />
+    <!--<script src="https://www.gstatic.com/firebasejs/ui/6.0.2/firebase-ui-auth.js"></script>
+    <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/6.0.2/firebase-ui-auth.css" />-->
 </head>
 
 <body>
@@ -19,6 +21,50 @@
         <a href="" class="reload">Reload</a>
         <a class="dismiss">🗙</a>
     </div>
+    <script type="module">
+
+        // Import the functions you need from the SDKs you need
+
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
+
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-analytics.js";
+
+        // TODO: Add SDKs for Firebase products that you want to use
+
+        // https://firebase.google.com/docs/web/setup#available-libraries
+
+
+        // Your web app's Firebase configuration
+
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+
+        const firebaseConfig = {
+
+            apiKey: "AIzaSyCLIUAHHeGxM5Pe_AdC8o4jGMIFwr3ZlH0",
+
+            authDomain: "tn-fb-ff018.firebaseapp.com",
+
+            projectId: "tn-fb-ff018",
+
+            storageBucket: "tn-fb-ff018.appspot.com",
+
+            messagingSenderId: "1076683372439",
+
+            appId: "1:1076683372439:web:5dedd6ae34fec4f0d376d2",
+
+            measurementId: "G-KGC1SVEGQL"
+
+        };
+
+
+        // Initialize Firebase
+
+        const app = initializeApp(firebaseConfig);
+
+        const analytics = getAnalytics(app);
+
+    </script>
+    <script src="JavaScript/FirebaseAuthFuncs.js"></script>
     <script src="_framework/blazor.webassembly.js"></script>
 </body>
 
