@@ -1,7 +1,7 @@
 ﻿@page "/"
 @inject HttpClient Http
 @inject NavigationManager NavigationManager
-@inject IJSRuntime JavaScript
+@inject IFirebaseAuthService FirebaseAuthService
 
 <PageTitle>TomaNota</PageTitle>
 
@@ -75,19 +75,19 @@
 			</div>
 		</div>
 	</div>
-
-	<div class="card bg-dark mt-5">
-		<div class="card-header">
-			<h5>Your Notes</h5>
-		</div>
-		<div class="card-body">
-			<p>Sign in to view notes.</p>
-			<div class="d-flex justify-content-center">
-				<button class="btn btn-light" @onclick="NavigateToCreate">Create New</button>
+	@if (FirebaseAuthService.FirebaseAuthClient.User != null)
+	{
+		<div class="card bg-dark mt-5">
+			<div class="card-header">
+				<h5>Your Notes</h5>
+			</div>
+			<div class="card-body">
+				<div class="d-flex justify-content-center">
+					<button class="btn btn-light" @onclick="NavigateToCreate" disabled>Create New</button>
+				</div>
 			</div>
 		</div>
-
-	</div>
+	}
 </div>
 
 <div class="rounded-top bg-dark mt-3 mx-1 fixed-bottom bottom-section shadow">
@@ -112,8 +112,6 @@
 	protected override async Task OnInitializedAsync()
 	{
 		SpanishTitles = await Http.GetFromJsonAsync<String[]?>("https://europe-west1-tomanota-374115.cloudfunctions.net/get-spanish-titles");
-		@* Console.WriteLine(SpanishTitles); *@
-		@* JavaScript.InvokeVoidAsync("testLog", "Parameter"); *@
 	}
 	
 	private void NavigateToReview()

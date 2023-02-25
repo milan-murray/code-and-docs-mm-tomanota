@@ -1,4 +1,7 @@
 ﻿@inherits LayoutComponentBase
+@inject IFirebaseAuthService FirebaseAuthService
+@inject NavigationManager NavigationManager
+@using Firebase.Auth
 
 <style type="text/css">
 	html, main {
@@ -42,9 +45,16 @@
 				<div class="d-flex justify-content-between align-items-center flex-wrap">
 					<a href="#">TomaNota</a>
 					<div class="d-flex align-items-center">
-						<h5 class="mx-1 align-middle mt-2">Welcome!</h5>
-						<a href="#"><button class="btn btn-light mx-1" disabled>Log In</button></a>
-						<a href="/sign-up"><button class="btn btn-light mx-1">Sign Up</button></a>
+						@if (FirebaseAuthService.FirebaseAuthClient.User == null)
+						{
+							<h5 class="mx-2 align-middle mt-2">Welcome!</h5>
+							<button class="btn btn-light mx-1" @onclick="NavigateToLogin">Log In</button>
+							<button class="btn btn-light mx-1" @onclick="NavigateToSignUp">Sign Up</button>
+						} else
+						{
+							<h5 class="mx-2 align-middle mt-2">Logged in as: @FirebaseAuthService.FirebaseAuthClient.User.Info.DisplayName.ToString()</h5>
+							<button class="btn btn-light mx-1" @onclick="SignOut">Sign Out</button>
+						}
 					</div>
 				</div>
 			</div>
@@ -56,3 +66,27 @@
 
     </div>
 </main>
+
+@code {
+	protected override async Task OnInitializedAsync()
+	{
+		
+	}
+
+	async void SignOut()
+	{
+		FirebaseAuthService.FirebaseAuthClient.SignOut();
+		NavigationManager.NavigateTo("/");
+		await InvokeAsync(StateHasChanged);
+	}
+
+	void NavigateToLogin()
+	{
+		NavigationManager.NavigateTo("/log-in");
+	}
+
+	void NavigateToSignUp()
+	{
+		NavigationManager.NavigateTo("/sign-up");
+	}
+}

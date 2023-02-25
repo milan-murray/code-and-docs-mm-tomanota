@@ -1,19 +1,17 @@
-﻿@page "/sign-up"
+﻿@page "/log-in"
 @inject NavigationManager NavigationManager
 @inject IFirebaseAuthService FirebaseAuthService
 
 <div class="card bg-dark">
 	<div class="card-header">
-		<h3>Sign Up</h3>
+		<h3>Login</h3>
 	</div>
 	<div class="card-body">
-		<label for="username">Username:</label>
-		<input id="username" type="text" @bind="@Username" autocomplete="off" />
 		<label for="email">Email:</label>
 		<input id="email" type="email" @bind="@Email" autocomplete="off" />
 		<label for="password">Password:</label>
-		<input id="password" type="password" @bind="@Password"/>
-		<button @onclick="SignUpNewUser">Sign Up</button>
+		<input id="password" type="password" @bind="@Password" />
+		<button @onclick="LogInUser">Log In</button>
 		<h4 class="text-danger text-sm-start">@ErrorText</h4>
 	</div>
 </div>
@@ -21,27 +19,26 @@
 
 
 @code {
-	String Email= "";
+	String Email = "";
 	String Password = "";
-	String Username = "";
 	String ErrorText = "";
 
-	async Task SignUpNewUser()
+	async Task LogInUser()
 	{
 		try
 		{
-			var userCredential = await FirebaseAuthService.FirebaseAuthClient.CreateUserWithEmailAndPasswordAsync(Email, Password, Username);
-			Console.WriteLine(userCredential.User.ToString());
+			var userCredential = await FirebaseAuthService.FirebaseAuthClient.SignInWithEmailAndPasswordAsync(Email, Password);
+			//Console.WriteLine(userCredential.User.Info.DisplayName);
 			NavigationManager.NavigateTo("/");
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			Console.WriteLine(e.Message);
 			ErrorText = "Invalid email or password";
 
 		}
 
-		
+
 		// Console.WriteLine(Javascript.InvokeAsync<String>("firebaseCreateUser", Username, Password));
 	}
 }
