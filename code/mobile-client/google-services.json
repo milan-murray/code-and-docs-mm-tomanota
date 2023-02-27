@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1076683372439",
+    "project_id": "tn-fb-ff018",
+    "storage_bucket": "tn-fb-ff018.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1076683372439:android:8c8c3fe3a520272ed376d2",
+        "android_client_info": {
+          "package_name": "com.example.tomanota"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1076683372439-1tqa9umund921kfsu24gdq8cjt0p32b6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBRGP25JfgFVEOF_2nPtzhRDss51Af8reU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1076683372439-1tqa9umund921kfsu24gdq8cjt0p32b6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
