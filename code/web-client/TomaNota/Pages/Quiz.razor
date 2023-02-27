@@ -1,0 +1,188 @@
+@page "/quiz"
+@page "/quiz/{title}"
+@using System.Text.Json
+@inject HttpClient Http
+
+<PageTitle>Note Learning Session</PageTitle>
+
+<style>
+	.quiz-element {
+		height: 50vh;
+		align-content: center;
+		text-align:center;
+	}
+
+	.quiz-input {
+		width: 100%;
+		padding: 0.5em;
+		border:none;
+		border-radius: 0.3em;
+	}
+
+	.btn-block {
+		width: 100%;
+	}
+</style>
+
+<div class="card bg-dark text-light shadow">
+	<div class="card-header">
+		<h3>@Title</h3>
+	</div>
+
+	<div class="quiz-element @responsiveBg">
+		<div class="container mt-5">
+			@if (CurrentHeading == string.Empty)
+			{
+				<div class="spinner-border" role="status">
+					<span class="sr-only"></span>
+				</div>
+			}
+			else
+			{
+				<h3>@CurrentHeading</h3>
+			}
+
+			<div class="">
+				<input type="text" class="quiz-input shadow-lg mt-3" @bind="@Response" />
+				<div class="mt-5">
+					<div class="text-center">
+						@if (promptComplete)
+						{
+							@if (correctDisplay)
+							{
+								<h3 class="text-center">Correct</h3>
+							}
+							else
+							{
+								<h3 class="tet-center">@Feedback</h3>
+							}
+						}
+						else
+						{
+							<p></p>
+						}
+					</div>
+				</div>
+				<button class="btn btn-light btn-lg btn-block" style="display: @QuizComplete" @onclick="AdvanceQuiz">
+					@BtnText
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+@code
+{
+	public String? urlGetPrompts = "";
+
+	[Parameter]
+	public string Title { get; set; } = string.Empty;
+
+	private DocPrompts returnedPrompts = new DocPrompts();
+
+	// Quiz Logic
+	String responsiveBg = "card-body text-center bg-dark text-light";
+	bool promptComplete = false;
+	bool correctDisplay = false;
+	string Response { get; set; } = string.Empty;
+	Outcome RoundResult { get; set; } = new Outcome();
+	string Ans { get; set; } = string.Empty;
+	string Feedback { get; set; } = string.Empty;
+	string QuizComplete { get; set; } = string.Empty;
+	string BtnText { get; set; } = "Check Answer";
+
+
+	int score;
+	string CurrentHeading { get; set; } = "";
+	int quizIndex = 0;
+
+	public class Outcome
+	{
+		public bool areEqual { get; set; }
+		public string userResponse { get; set; }
+		public string correctAnswer { get; set; }
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		var jsonString = await Http.GetStringAsync("https://europe-west1-tomanota-374115.cloudfunctions.net/get-prompts?q=" +
+		Title.ToString());
+		returnedPrompts.Prompts = JsonSerializer.Deserialize<List<List<object>>>(jsonString);
+		returnedPrompts.numOfPrompts = returnedPrompts.Prompts.Count();
+		Console.WriteLine(returnedPrompts.Prompts[0][1].ToString());
+		CurrentHeading = returnedPrompts.Prompts[0][0].ToString();
+	}
+
+	public class DocPrompts
+	{
+		public List<List<object>>? Prompts { get; set; } = new List<List<object>>();
+		public int numOfPrompts { get; set; }
+
+	}
+
+	public async Task GetResponseAsync()
+	{
+		RoundResult = await
+		Http.GetFromJsonAsync<Outcome>($"https://europe-west1-tomanota-374115.cloudfunctions.net/check-prompts?q={Response.ToString()}&a={Ans}");
+	}
+
+	public void DisplayAns()
+	{
+		if (RoundResult.areEqual)
+		{
+			Feedback = "Correct";
+			responsiveBg = "card-body text-center bg-success text-light";
+			correctDisplay = true;
+			Console.WriteLine(Feedback);
+		}
+		else
+		{
+			Feedback = $"Expected answer: {RoundResult.correctAnswer}";
+			responsiveBg = "card-body text-center bg-danger text-light";
+			Console.WriteLine(Feedback);
+		}
+		promptComplete = true;
+	}
+
+	public async void AdvanceQuiz()
+	{
+		@* To check answer *@
+		if (!promptComplete)
+		{
+			BtnText = "Continue";
+			Console.WriteLine("Quiz index: " + quizIndex);
+
+			//if (!String.IsNullOrEmpty(returnedPrompts.Prompts[quizIndex][1].ToString())) {
+				Ans = returnedPrompts.Prompts[quizIndex][1].ToString();
+				await GetResponseAsync();
+				
+				DisplayAns();
+				await InvokeAsync(StateHasChanged);
+			//}
+
+
+
+		}
+		else
+		{
+			BtnText = "Check Answer";
+			promptComplete = false;
+			Feedback = "";
+			correctDisplay = false;
+			Response = "";
+			responsiveBg = "card-body text-center bg-dark text-light";
+
+			if (quizIndex < returnedPrompts.numOfPrompts - 1)
+			{
+				quizIndex++;
+				CurrentHeading = returnedPrompts.Prompts[quizIndex][0].ToString();
+			}
+			else
+			{
+				QuizComplete = "None";
+			}
+			Console.WriteLine("Quiz index: " + quizIndex);
+
+		}
+	}
+}

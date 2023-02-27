@@ -1,0 +1,145 @@
+﻿@page "/"
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@inject IFirebaseAuthService FirebaseAuthService
+
+<PageTitle>TomaNota</PageTitle>
+
+<style>
+	.top-section
+	{
+		min-height: 50vh;
+		margin-bottom: 10em;
+	}
+
+	.bottom-section
+	{
+		max-height: 10em;
+	}
+
+	.btn-block
+	{
+		width: 100%;
+	}
+</style>
+
+<div class="top-section">
+	<div class="card bg-dark text-light shadow mb-3">
+		<div class="card-header">
+			<h3>Premade Documents</h3>
+		</div>
+		<div class="card-body">
+			<div class="card bg-light text-dark mb-3">
+				<div class="card-header">
+					<h5>Spanish</h5>
+				</div>
+				<div class="card-body">
+					<div class="d-flex justify-content-evenly flex-wrap">
+						@if (SpanishTitles == null)
+						{
+							<div class="spinner-border" role="status">
+								<span class="sr-only"></span>
+							</div>
+						}
+						else
+						{
+							@foreach (var title in SpanishTitles)
+							{
+								<button class="btn btn-dark m-1" @onclick="@(e => SelectNote(title))">@title</button>
+							}
+						}
+					</div>
+				</div>
+			</div>
+			<div class="card bg-light text-dark">
+				<div class="card-header">
+					<h5>German</h5>
+				</div>
+				<div class="card-body">
+					<div class="d-flex justify-content-evenly flex-wrap">
+						@if (GermanTitles == null)
+						{
+							<div class="spinner-border" role="status">
+								<span class="sr-only"></span>
+							</div>
+						}
+						else
+						{
+							@foreach (var title in GermanTitles)
+							{
+								<button class="btn btn-light">@title</button>
+							}
+						}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	@if (FirebaseAuthService.FirebaseAuthClient.User != null)
+	{
+		<div class="card bg-dark mt-5">
+			<div class="card-header">
+				<h5>Your Notes</h5>
+			</div>
+			<div class="card-body">
+				<div class="d-flex justify-content-center">
+					<button class="btn btn-light" @onclick="NavigateToCreate" disabled>Create New</button>
+				</div>
+			</div>
+		</div>
+	}
+</div>
+
+<div class="rounded-top bg-dark mt-3 mx-1 fixed-bottom bottom-section shadow">
+	<div class="card-body">
+		<div>
+			<button class="btn btn-light btn-lg btn-block my-1" disabled="@TitleIsReady" @onclick="NavigateToReview">Review
+				Notes</button>
+		</div>
+		<div>
+			<button class="btn btn-light btn-lg btn-block my-1" disabled="@TitleIsReady" @onclick="NavigateToQuiz">Attempt Notes</button>
+		</div>
+	</div>
+</div>
+
+@code
+{
+	String? SelectedTitle { get; set; }
+	Boolean TitleIsReady { get; set; } = true;
+	String[]? SpanishTitles { get; set; }
+	String[]? GermanTitles { get; set; }
+
+	protected override async Task OnInitializedAsync()
+	{
+		SpanishTitles = await Http.GetFromJsonAsync<String[]?>("https://europe-west1-tomanota-374115.cloudfunctions.net/get-spanish-titles");
+	}
+	
+	private void NavigateToReview()
+	{
+		if (SelectedTitle != null)
+		{
+			NavigationManager.NavigateTo("view-document/" + SelectedTitle);
+		}
+	}
+	
+	private void NavigateToQuiz()
+	{
+		if (SelectedTitle != null)
+		{
+			NavigationManager.NavigateTo("quiz/" + SelectedTitle);
+		}
+	}
+	
+	
+	private void NavigateToCreate()
+	{
+		NavigationManager.NavigateTo("prompt-creation/");
+	}
+	
+	private void SelectNote(String TitleIn)
+	{
+		SelectedTitle = TitleIn;
+		TitleIsReady = false;
+	}
+
+}

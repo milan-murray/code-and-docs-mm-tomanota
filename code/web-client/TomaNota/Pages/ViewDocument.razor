@@ -1,0 +1,59 @@
+﻿@page "/view-document"
+@page "/view-document/{title}"
+@using System.Text.Json
+@inject HttpClient Http
+
+<PageTitle>View Document</PageTitle>
+
+
+<div class="card bg-dark text-light my-3 shadow">
+	@if (returnedPrompts == null)
+	{
+		<p><em>Loading...</em></p>
+	}
+	else
+	{
+		<div class="card-header text-center">
+			<h1>@Title</h1>
+		</div>
+		<div class="card-body">
+			<table class="table text-light">
+				<thead>
+					<tr>
+						<th>Prompt Heading</th>
+						<th>Prompt Body</th>
+						<th>Current Score</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (var prompt in returnedPrompts.Prompts)
+					{
+						<tr>
+							<td>@prompt[0]</td>
+							<td>@prompt[1]</td>
+							<td>@prompt[2]</td>
+						</tr>
+					}
+
+				</tbody>
+			</table>
+		</div>
+	}
+</div>
+
+@code {
+	[Parameter]
+	public String? Title { get; set; }
+	private DocPrompts? returnedPrompts = new DocPrompts();
+
+	public class DocPrompts
+	{
+		public List<List<object>> Prompts { get; set; } = new List<List<object>>();
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		var jsonString = await Http.GetStringAsync("https://europe-west1-tomanota-374115.cloudfunctions.net/get-prompts?q=" + Title.ToString());
+		returnedPrompts.Prompts = JsonSerializer.Deserialize<List<List<object>>>(jsonString);
+	}
+}

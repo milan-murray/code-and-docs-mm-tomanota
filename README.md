@@ -1,12 +1,15 @@
 # TomaNota ~ Milan Murray X00162027
 
-## Setup steps
+## Setup Steps
 
-cd code/client
+### Web Client (Local)
 
-npm install
+	cd code/web-client/TomaNota/
+	dotnet run
 
-npm run dev
+### Web Client (Deployed)
+
+	URL: Currently Unavailable
 
 ## About
 
