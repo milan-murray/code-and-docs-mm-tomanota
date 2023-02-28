@@ -23,58 +23,7 @@
 	}
 </style>
 
-<div class="top-section">
-	<div class="card bg-dark text-light shadow mb-3">
-		<div class="card-header">
-			<h3>Premade Documents</h3>
-		</div>
-		<div class="card-body">
-			<div class="card bg-light text-dark mb-3">
-				<div class="card-header">
-					<h5>Spanish</h5>
-				</div>
-				<div class="card-body">
-					<div class="d-flex justify-content-evenly flex-wrap">
-						@if (SpanishTitles == null)
-						{
-							<div class="spinner-border" role="status">
-								<span class="sr-only"></span>
-							</div>
-						}
-						else
-						{
-							@foreach (var title in SpanishTitles)
-							{
-								<button class="btn btn-dark m-1" @onclick="@(e => SelectNote(title))">@title</button>
-							}
-						}
-					</div>
-				</div>
-			</div>
-			<div class="card bg-light text-dark">
-				<div class="card-header">
-					<h5>German</h5>
-				</div>
-				<div class="card-body">
-					<div class="d-flex justify-content-evenly flex-wrap">
-						@if (GermanTitles == null)
-						{
-							<div class="spinner-border" role="status">
-								<span class="sr-only"></span>
-							</div>
-						}
-						else
-						{
-							@foreach (var title in GermanTitles)
-							{
-								<button class="btn btn-light">@title</button>
-							}
-						}
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+<div class="top-section container">
 	@if (FirebaseAuthService.FirebaseAuthClient.User != null)
 	{
 		<div class="card bg-dark mt-5">
@@ -88,9 +37,168 @@
 			</div>
 		</div>
 	}
+
+	@* English *@
+	<div class="card bg-light text-dark shadow mb-3">
+		<div class="card-header">
+			<h3>Premade Notes ~ English Speakers</h3>
+		</div>
+		<div class="card-body">
+			<div class="card bg-light text-dark mb-3">
+				<div class="card-header">
+					<h5>Spanish</h5>
+				</div>
+				<div class="card-body">
+					<div class="d-flex justify-content-evenly flex-wrap">
+						@if (SpanishTitlesEN == null)
+						{
+							<div class="spinner-border" role="status">
+								<span class="sr-only"></span>
+							</div>
+						}
+						else
+						{
+							@foreach (var title in SpanishTitlesEN)
+							{
+								<button class="btn btn-primary m-1" @onclick="@(e => SelectNote(title))">@title</button>
+							}
+						}
+					</div>
+				</div>
+			</div>
+			<div class="card bg-light text-dark">
+				<div class="card-header">
+					<h5>German</h5>
+				</div>
+				<div class="card-body">
+					<div class="d-flex justify-content-evenly flex-wrap">
+						@if (GermanTitlesEN == null)
+						{
+							<div class="spinner-border" role="status">
+								<span class="sr-only"></span>
+							</div>
+						}
+						else
+						{
+							@foreach (var title in GermanTitlesEN)
+							{
+								<button class="btn btn-light">@title</button>
+							}
+						}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	@* Spanish *@
+	<div class="card bg-light text-dark shadow mb-3">
+		<div class="card-header">
+			<h3>Notas Prehechas ~ Hispanohablantes</h3>
+		</div>
+		<div class="card-body">
+			<div class="card bg-light text-dark mb-3">
+				<div class="card-header">
+					<h5>Inglés</h5>
+				</div>
+				<div class="card-body">
+					<div class="d-flex justify-content-evenly flex-wrap">
+						@if (EnglishTitlesES == null)
+						{
+							<div class="spinner-border" role="status">
+								<span class="sr-only"></span>
+							</div>
+						}
+						else
+						{
+							@foreach (var title in EnglishTitlesES)
+							{
+								<button class="btn btn-primary m-1" @onclick="@(e => SelectNote(title))">@title</button>
+							}
+						}
+					</div>
+				</div>
+			</div>
+			<div class="card bg-light text-dark">
+				<div class="card-header">
+					<h5>Alemán</h5>
+				</div>
+				<div class="card-body">
+					<div class="d-flex justify-content-evenly flex-wrap">
+						@if (GermanTitlesES == null)
+						{
+							<div class="spinner-border" role="status">
+								<span class="sr-only"></span>
+							</div>
+						}
+						else
+						{
+							@foreach (var title in GermanTitlesES)
+							{
+								<button class="btn btn-light">@title</button>
+							}
+						}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	@* German *@
+	<div class="card bg-light text-dark shadow mb-3">
+		<div class="card-header">
+			<h3>vorgefertigte Notizen ~ Deutschsprachige</h3>
+		</div>
+		<div class="card-body">
+			<div class="card bg-light text-dark mb-3">
+				<div class="card-header">
+					<h5>Englisch</h5>
+				</div>
+				<div class="card-body">
+					<div class="d-flex justify-content-evenly flex-wrap">
+						@if (EnglishTitlesDE == null)
+						{
+							<div class="spinner-border" role="status">
+								<span class="sr-only"></span>
+							</div>
+						}
+						else
+						{
+							@foreach (var title in EnglishTitlesDE)
+							{
+								<button class="btn btn-primary m-1" @onclick="@(e => SelectNote(title))">@title</button>
+							}
+						}
+					</div>
+				</div>
+			</div>
+			<div class="card bg-light text-dark">
+				<div class="card-header">
+					<h5>Spanisch</h5>
+				</div>
+				<div class="card-body">
+					<div class="d-flex justify-content-evenly flex-wrap">
+						@if (SpanishTitlesDE == null)
+						{
+							<div class="spinner-border" role="status">
+								<span class="sr-only"></span>
+							</div>
+						}
+						else
+						{
+							@foreach (var title in SpanishTitlesDE)
+							{
+								<button class="btn btn-light">@title</button>
+							}
+						}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 
-<div class="rounded-top bg-dark mt-3 mx-1 fixed-bottom bottom-section shadow">
+<div class="rounded-top bg-dark mt-3 mx-3 fixed-bottom bottom-section shadow">
 	<div class="card-body">
 		<div>
 			<button class="btn btn-light btn-lg btn-block my-1" disabled="@TitleIsReady" @onclick="NavigateToReview">Review
@@ -106,12 +214,16 @@
 {
 	String? SelectedTitle { get; set; }
 	Boolean TitleIsReady { get; set; } = true;
-	String[]? SpanishTitles { get; set; }
-	String[]? GermanTitles { get; set; }
+	String[]? EnglishTitlesES { get; set; }
+	String[]? GermanTitlesES { get; set; }
+	String[]? SpanishTitlesEN { get; set; }
+	String[]? GermanTitlesEN { get; set; }
+	String[]? SpanishTitlesDE { get; set; }
+	String[]? EnglishTitlesDE { get; set; }
 
 	protected override async Task OnInitializedAsync()
 	{
-		SpanishTitles = await Http.GetFromJsonAsync<String[]?>("https://europe-west1-tomanota-374115.cloudfunctions.net/get-spanish-titles");
+		SpanishTitlesEN = await Http.GetFromJsonAsync<String[]?>("https://europe-west1-tomanota-374115.cloudfunctions.net/get-spanish-titles");
 	}
 	
 	private void NavigateToReview()

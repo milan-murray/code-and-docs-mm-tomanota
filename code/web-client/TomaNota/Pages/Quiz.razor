@@ -9,13 +9,13 @@
 	.quiz-element {
 		height: 50vh;
 		align-content: center;
-		text-align:center;
+		text-align: center;
 	}
 
 	.quiz-input {
 		width: 100%;
 		padding: 0.5em;
-		border:none;
+		border: none;
 		border-radius: 0.3em;
 	}
 
@@ -24,53 +24,75 @@
 	}
 </style>
 
-<div class="card bg-dark text-light shadow">
-	<div class="card-header">
-		<h3>@Title</h3>
-	</div>
+<div class="container">
+	<div class="card bg-dark text-light shadow">
+		<div class="card-header">
+			<h3>@Title</h3>
+		</div>
 
-	<div class="quiz-element @responsiveBg">
-		<div class="container mt-5">
-			@if (CurrentHeading == string.Empty)
-			{
-				<div class="spinner-border" role="status">
-					<span class="sr-only"></span>
-				</div>
-			}
-			else
-			{
-				<h3>@CurrentHeading</h3>
-			}
+		<div class="quiz-element @responsiveBg">
+			<div class="container mt-5">
+				@if (!QuizComplete)
+				{
+					@if (CurrentHeading == string.Empty)
+					{
+						<div class="spinner-border" role="status">
+							<span class="sr-only"></span>
+						</div>
+					}
+					else
+					{
+						<h3>@CurrentHeading</h3>
+					}
 
-			<div class="">
-				<input type="text" class="quiz-input shadow-lg mt-3" @bind="@Response" />
-				<div class="mt-5">
-					<div class="text-center">
-						@if (promptComplete)
-						{
-							@if (correctDisplay)
-							{
-								<h3 class="text-center">Correct</h3>
-							}
-							else
-							{
-								<h3 class="tet-center">@Feedback</h3>
-							}
-						}
-						else
-						{
-							<p></p>
-						}
+					<div class="">
+						<input type="text" class="quiz-input shadow-lg mt-3" @bind="@Response" />
+						<div class="mt-5">
+							<div class="text-center">
+								@if (promptComplete)
+								{
+									@if (correctDisplay)
+									{
+										<h3 class="text-center">Correct</h3>
+									}
+									else
+									{
+										<h3 class="tet-center">@Feedback</h3>
+									}
+								}
+								else
+								{
+									@* Ensure new line *@
+									<p></p>
+								}
+							</div>
+						</div>
+						<button class="btn btn-light btn-lg btn-block" @onclick="AdvanceQuiz">
+							@BtnText
+						</button>
 					</div>
-				</div>
-				<button class="btn btn-light btn-lg btn-block" style="display: @QuizComplete" @onclick="AdvanceQuiz">
-					@BtnText
-				</button>
+				} else {
+					@if (PerfectResult)
+					{
+						<div class="text-center">
+							<p>Perfect Result!</p>
+							<button class="btn btn-success">Return to home</button>
+						</div>
+
+					} else {
+						<div class="text-center">
+							<p>Would you like to review the incorrect prompts?</p>
+							<button class="btn btn-success">Review Notes</button>
+							<button class="btn btn-light">Return to home</button>
+						</div>
+					}
+				}
+
+
 			</div>
 		</div>
 	</div>
 </div>
-
 @code
 {
 	public String? urlGetPrompts = "";
@@ -79,16 +101,18 @@
 	public string Title { get; set; } = string.Empty;
 
 	private DocPrompts returnedPrompts = new DocPrompts();
+	private List<int> errorIndexes = new List<int>();
 
 	// Quiz Logic
 	String responsiveBg = "card-body text-center bg-dark text-light";
 	bool promptComplete = false;
+	bool PerfectResult { get; set; } = true;
 	bool correctDisplay = false;
 	string Response { get; set; } = string.Empty;
 	Outcome RoundResult { get; set; } = new Outcome();
 	string Ans { get; set; } = string.Empty;
 	string Feedback { get; set; } = string.Empty;
-	string QuizComplete { get; set; } = string.Empty;
+	bool QuizComplete { get; set; } = false;
 	string BtnText { get; set; } = "Check Answer";
 
 
@@ -137,6 +161,8 @@
 		}
 		else
 		{
+			PerfectResult = false;
+			errorIndexes.Add(quizIndex);
 			Feedback = $"Expected answer: {RoundResult.correctAnswer}";
 			responsiveBg = "card-body text-center bg-danger text-light";
 			Console.WriteLine(Feedback);
@@ -153,15 +179,11 @@
 			Console.WriteLine("Quiz index: " + quizIndex);
 
 			//if (!String.IsNullOrEmpty(returnedPrompts.Prompts[quizIndex][1].ToString())) {
-				Ans = returnedPrompts.Prompts[quizIndex][1].ToString();
-				await GetResponseAsync();
-				
-				DisplayAns();
-				await InvokeAsync(StateHasChanged);
-			//}
+			Ans = returnedPrompts.Prompts[quizIndex][1].ToString();
+			await GetResponseAsync();
 
-
-
+			DisplayAns();
+			await InvokeAsync(StateHasChanged);
 		}
 		else
 		{
@@ -179,7 +201,7 @@
 			}
 			else
 			{
-				QuizComplete = "None";
+				QuizComplete = true;
 			}
 			Console.WriteLine("Quiz index: " + quizIndex);
 
