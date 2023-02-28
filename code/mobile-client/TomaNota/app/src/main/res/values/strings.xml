@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">TomaNota</string>
+    <string name="Welcome">Welcome</string>
+    <string name="reviewBtn">Review Notes</string>
+    <string name="testBtn">Attempt Notes</string>
+    <string name="spanishBtn">Spanish Notes</string>
+    <string name="germanBtn">German Notes</string>
+    <string name="signInPrompt">Sign in to create notes and view progress!</string>
+</resources>
