@@ -70,14 +70,13 @@
 @code {
 	protected override async Task OnInitializedAsync()
 	{
-		
+
 	}
 
 	async void SignOut()
 	{
 		FirebaseAuthService.FirebaseAuthClient.SignOut();
-		NavigationManager.NavigateTo("/");
-		await InvokeAsync(StateHasChanged);
+		NavigationManager.NavigateTo("/", true);
 	}
 
 	void NavigateToLogin()

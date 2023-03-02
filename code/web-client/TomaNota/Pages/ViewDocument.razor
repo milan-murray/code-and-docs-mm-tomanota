@@ -1,9 +1,15 @@
 ﻿@page "/view-document"
 @page "/view-document/{title}"
 @using System.Text.Json
+@inject NavigationManager NavigationManager
 @inject HttpClient Http
-
 <PageTitle>View Document</PageTitle>
+
+<style>
+	.btn-block {
+		width: 100%;
+	}
+</style>
 
 <div class="container">
 	<div class="card bg-dark text-light my-3 shadow">
@@ -42,6 +48,7 @@
 						}
 					</tbody>
 				</table>
+				<button class="btn btn-light btn-block" @onclick="NavigateToQuiz">Attempt Notes</button>
 			</div>
 		}
 	</div>
@@ -63,5 +70,13 @@
 		var jsonString = await Http.GetStringAsync("https://europe-west1-tomanota-374115.cloudfunctions.net/get-prompts?q=" + Title.ToString());
 		returnedPrompts.Prompts = JsonSerializer.Deserialize<List<List<object>>>(jsonString);
 		ContainsScore = returnedPrompts.Prompts[0].Count < 2 ;
+	}
+
+	private void NavigateToQuiz()
+	{
+		if (Title != null)
+		{
+			NavigationManager.NavigateTo("quiz/" + Title);
+		}
 	}
 }

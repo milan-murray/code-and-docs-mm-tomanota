@@ -163,11 +163,11 @@
 
 	public async Task GetResponseAsync()
 	{
-		try
+		if (Response != "")
 		{
 			RoundResult = await Http.GetFromJsonAsync<Outcome>($"https://europe-west1-tomanota-374115.cloudfunctions.net/check-prompts?q={Response.ToString()}&a={Ans}");
 		}
-		catch
+		else
 		{
 			RoundResult = new Outcome() { AreEqual = false, CorrectAnswer = returnedPrompts.Prompts[quizIndex][1].ToString(), Index = -1, UserAttempt = "" };
 		}

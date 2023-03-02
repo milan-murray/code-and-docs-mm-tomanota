@@ -2,19 +2,41 @@
 @inject NavigationManager NavigationManager
 @inject IFirebaseAuthService FirebaseAuthService
 
-<div class="card bg-dark">
-	<div class="card-header">
-		<h3>Sign Up</h3>
-	</div>
-	<div class="card-body">
-		<label for="username">Username:</label>
-		<input id="username" type="text" @bind="@Username" autocomplete="off" />
-		<label for="email">Email:</label>
-		<input id="email" type="email" @bind="@Email" autocomplete="off" />
-		<label for="password">Password:</label>
-		<input id="password" type="password" @bind="@Password"/>
-		<button @onclick="SignUpNewUser">Sign Up</button>
-		<h4 class="text-danger text-sm-start">@ErrorText</h4>
+<style>
+	.form-group {
+		display: flex;
+		flex: 0 0 auto;
+		flex-flow: row wrap;
+		align-items: center;
+		margin-bottom: 1em;
+	}
+</style>
+
+<div class="container">
+	<div class="card bg-dark">
+		<div class="card-header">
+			<h3>Sign Up</h3>
+		</div>
+		<div class="card-body">
+			<div class="container">
+				<form>
+					<div class="form-group">
+						<label for="username">Username:</label>
+						<input class="form-control" id="username" type="text" @bind="@Username" autocomplete="off" />
+					</div>
+					<div class="form-group">
+						<label for="email">Email:</label>
+						<input class="form-control" id="email" type="email" @bind="@Email" autocomplete="off" />
+					</div>
+					<div class="form-group">
+						<label for="password">Password:</label>
+						<input class="form-control" id="password" type="password" @bind="@Password" />
+					</div>
+				</form>
+				<button class="btn btn-light ms-auto" @onclick="SignUpNewUser">Sign Up</button>
+				<h4 class="text-danger text-sm-start">@ErrorText</h4>
+			</div>
+		</div>
 	</div>
 </div>
 
