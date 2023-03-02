@@ -1,15 +1,19 @@
-@page "/quiz"
+﻿@page "/quiz"
 @page "/quiz/{title}"
 @using System.Text.Json
 @inject HttpClient Http
+@inject NavigationManager NavigationManager
 
 <PageTitle>Note Learning Session</PageTitle>
 
 <style>
 	.quiz-element {
-		height: 50vh;
+		min-height: 55vh;
 		align-content: center;
-		text-align: center;
+	}
+
+	.height-fix {
+		height: 4.6em;
 	}
 
 	.quiz-input {
@@ -45,45 +49,51 @@
 						<h3>@CurrentHeading</h3>
 					}
 
-					<div class="">
-						<input type="text" class="quiz-input shadow-lg mt-3" @bind="@Response" />
-						<div class="mt-5">
+
+					<div>
+						<form @onsubmit="AdvanceQuiz">
+							<input type="text" class="quiz-input shadow-lg mt-5" @bind="@Response"/>
+						</form>
+						<div class="">
 							<div class="text-center">
-								@if (promptComplete)
+								@if (PromptComplete)
 								{
-									@if (CorrectDisplay)
+									@if (!CorrectDisplay)
 									{
-										<h3>Correct</h3>
+										@*<h3>@Feedback</h3>*@
+										// Expected Answer
+										<h3 class="mt-5">Your repsonse: <span class="text-success">@UserAttemptGreen</span><span class="text-danger">@UserAttemptRed</span></h3>
 									}
 									else
 									{
-										<h3>@Feedback</h3> // Expected Answer
-										<h3>Your repsonse: <span class="text-success">@UserAttemptGreen</span><span class="text-danger">@UserAttemptRed</span></h3>
+										@* Ensure new line *@
+										<p class="height-fix"></p>
 									}
 								}
 								else
 								{
 									@* Ensure new line *@
-									<p></p>
+									<p class="height-fix"></p>
 								}
 							</div>
 						</div>
-						<button class="btn btn-light btn-lg btn-block" @onclick="AdvanceQuiz">
+						<button class="@ResponsiveButton" @onclick="AdvanceQuiz">
 							@BtnText
 						</button>
+						
 					</div>
 				} else {
 					@if (PerfectResult)
 					{
 						<div class="text-center">
 							<p>Perfect Result!</p>
-							<button class="btn btn-success">Return to home</button>
+							<button class="btn btn-success" @onclick="NavigateToHome">Return to home</button>
 						</div>
 					} else {
 						<div class="text-center">
 							<p>Would you like to review the incorrect prompts?</p>
 							<button class="btn btn-success">Review Notes</button>
-							<button class="btn btn-light">Return to home</button>
+							<button class="btn btn-light" @onclick="NavigateToHome">Return to home</button>
 						</div>
 					}
 				}
@@ -102,15 +112,14 @@
 	private List<int> errorIndexes = new List<int>();
 
 	// Quiz Logic
-	String responsiveBg = "card-body text-center bg-dark text-light";
-	bool promptComplete = false;
+	String ResponsiveButton = "btn btn-light btn-lg btn-block mt-5";
+	bool PromptComplete { get; set; } = false;
 	bool PerfectResult { get; set; } = true;
 	bool CorrectDisplay { get; set; } = false;
-	// bool ErrorSplit { get; set; } = false;
 	string Response { get; set; } = string.Empty;
 	Outcome RoundResult { get; set; } = new Outcome();
 	string Ans { get; set; } = string.Empty;
-	string Feedback { get; set; } = string.Empty;
+	// string Feedback { get; set; } = string.Empty;
 	string UserAttemptRed { get; set; } = string.Empty;
 	string UserAttemptGreen { get; set; } = string.Empty;
 	bool QuizComplete { get; set; } = false;
@@ -154,24 +163,31 @@
 
 	public async Task GetResponseAsync()
 	{
-		RoundResult = await
-		Http.GetFromJsonAsync<Outcome>($"https://europe-west1-tomanota-374115.cloudfunctions.net/check-prompts?q={Response.ToString()}&a={Ans}");
+		try
+		{
+			RoundResult = await Http.GetFromJsonAsync<Outcome>($"https://europe-west1-tomanota-374115.cloudfunctions.net/check-prompts?q={Response.ToString()}&a={Ans}");
+		}
+		catch
+		{
+			RoundResult = new Outcome() { AreEqual = false, CorrectAnswer = returnedPrompts.Prompts[quizIndex][1].ToString(), Index = -1, UserAttempt = "" };
+		}
 	}
 
 	public void DisplayAns()
 	{
 		if (RoundResult.AreEqual)
 		{
-			Feedback = "Correct";
-			responsiveBg = "card-body text-center bg-success text-light";
+			BtnText = "Correct";
+			ResponsiveButton = "btn btn-success btn-lg btn-block mt-5";
 			CorrectDisplay = true;
-			// Console.WriteLine(Feedback);
 		}
 		else
 		{
+			BtnText = "Continue";
 			PerfectResult = false;
 			errorIndexes.Add(quizIndex);
-			Feedback = $"Expected answer: {RoundResult.CorrectAnswer}";
+			CurrentHeading = $"{returnedPrompts.Prompts[quizIndex][0].ToString()} 🠮 {RoundResult.CorrectAnswer}";
+			// Feedback = $"Expected answer: {RoundResult.CorrectAnswer}";
 			if (RoundResult.Index == 0)
 			{
 				UserAttemptRed = RoundResult.UserAttempt.ToString();
@@ -193,37 +209,45 @@
 				//UserAttemptGreen = RoundResult.UserAttempt.ToString().Substring(0, RoundResult.Index).ToString();
 				//UserAttemptRed = RoundResult.UserAttempt.ToString().Substring(RoundResult.Index, RoundResult.UserAttempt.ToString().Count() - 1).ToString();
 			}
-			responsiveBg = "card-body text-center bg-danger text-light";
-			// Console.WriteLine(Feedback);
+			ResponsiveButton = "btn btn-danger btn-lg btn-block mt-5";
 		}
-		promptComplete = true;
+		PromptComplete = true;
 	}
 
 	public async void AdvanceQuiz()
 	{
 		@* To check answer *@
-		if (!promptComplete)
+		if (!PromptComplete)
 		{
-			BtnText = "Continue";
-			// Console.WriteLine("Quiz index: " + quizIndex);
+			// Checking Ans
 
-			//if (!String.IsNullOrEmpty(returnedPrompts.Prompts[quizIndex][1].ToString())) {
-			Ans = returnedPrompts.Prompts[quizIndex][1].ToString();
-			await GetResponseAsync();
+			if (Response == string.Empty)
+			{
+				Console.WriteLine("No Attempt!");
+			}
+			else
+			{
+				//if (!String.IsNullOrEmpty(returnedPrompts.Prompts[quizIndex][1].ToString())) {
+				Ans = returnedPrompts.Prompts[quizIndex][1].ToString();
+				await GetResponseAsync();
 
-			DisplayAns();
-			await InvokeAsync(StateHasChanged);
+				DisplayAns();
+				await InvokeAsync(StateHasChanged);
+			}
+
 		}
 		else
 		{
+			// Waiting for response
+
 			BtnText = "Check Answer";
-			promptComplete = false;
-			Feedback = "Expected Answer: ";
+			PromptComplete = false;
+			// Feedback = "Expected Answer: ";
 			CorrectDisplay = false;
 			Response = "";
 			UserAttemptGreen = "";
 			UserAttemptRed = "";
-			responsiveBg = "card-body text-center bg-dark text-light";
+			ResponsiveButton = "btn btn-light btn-lg btn-block mt-5";
 
 			if (quizIndex < returnedPrompts.numOfPrompts - 1)
 			{
@@ -237,5 +261,10 @@
 			// Console.WriteLine("Quiz index: " + quizIndex);
 
 		}
+	}
+
+	private void NavigateToHome()
+	{
+		NavigationManager.NavigateTo("/");
 	}
 }
