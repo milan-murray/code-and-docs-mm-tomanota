@@ -150,10 +150,6 @@
 	{
 		RoundResult = await
 		Http.GetFromJsonAsync<Outcome>($"https://europe-west1-tomanota-374115.cloudfunctions.net/check-prompts?q={Response.ToString()}&a={Ans}");
-		Console.WriteLine("The user's" + RoundResult.UserAttempt);
-		Console.WriteLine("The correct answer" + RoundResult.CorrectAnswer);
-		Console.WriteLine("The differ index" + RoundResult.Index);
-		Console.WriteLine(RoundResult.AreEqual);
 	}
 
 	public void DisplayAns()
@@ -173,7 +169,6 @@
 			if (RoundResult.Index == 0)
 			{
 				UserAttemptRed = RoundResult.UserAttempt.ToString();
-				Console.WriteLine("Red carpet");
 			} else
 			{
 				for (int i = 0; i < RoundResult.UserAttempt.Count(); i++)
@@ -191,7 +186,6 @@
 
 				//UserAttemptGreen = RoundResult.UserAttempt.ToString().Substring(0, RoundResult.Index).ToString();
 				//UserAttemptRed = RoundResult.UserAttempt.ToString().Substring(RoundResult.Index, RoundResult.UserAttempt.ToString().Count() - 1).ToString();
-				Console.WriteLine("Partial red");
 			}
 			responsiveBg = "card-body text-center bg-danger text-light";
 			// Console.WriteLine(Feedback);
