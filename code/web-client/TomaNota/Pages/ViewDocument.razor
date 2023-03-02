@@ -5,46 +5,53 @@
 
 <PageTitle>View Document</PageTitle>
 
-
-<div class="card bg-dark text-light my-3 shadow">
-	@if (returnedPrompts == null)
-	{
-		<p><em>Loading...</em></p>
-	}
-	else
-	{
-		<div class="card-header text-center">
-			<h1>@Title</h1>
-		</div>
-		<div class="card-body">
-			<table class="table text-light">
-				<thead>
-					<tr>
-						<th>Prompt Heading</th>
-						<th>Prompt Body</th>
-						<th>Current Score</th>
-					</tr>
-				</thead>
-				<tbody>
-					@foreach (var prompt in returnedPrompts.Prompts)
-					{
+<div class="container">
+	<div class="card bg-dark text-light my-3 shadow">
+		@if (returnedPrompts == null)
+		{
+			<p><em>Loading...</em></p>
+		}
+		else
+		{
+			<div class="card-header text-center">
+				<h1>@Title</h1>
+			</div>
+			<div class="card-body">
+				<table class="table table-dark table-hover">
+					<thead>
 						<tr>
-							<td>@prompt[0]</td>
-							<td>@prompt[1]</td>
-							<td>@prompt[2]</td>
+							<th>Given heading</th>
+							<th>Answer body</th>
+							@if (ContainsScore)
+							{
+								<th>Current Score</th>
+							}
 						</tr>
-					}
-
-				</tbody>
-			</table>
-		</div>
-	}
+					</thead>
+					<tbody>
+						@foreach (var prompt in returnedPrompts.Prompts)
+						{
+							<tr>
+								<td>@prompt[0]</td>
+								<td>@prompt[1]</td>
+								@if (ContainsScore)
+								{
+									<td>@prompt[2]</td>
+								}
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+		}
+	</div>
 </div>
 
 @code {
 	[Parameter]
 	public String? Title { get; set; }
 	private DocPrompts? returnedPrompts = new DocPrompts();
+	bool ContainsScore { get; set; }
 
 	public class DocPrompts
 	{
@@ -55,5 +62,6 @@
 	{
 		var jsonString = await Http.GetStringAsync("https://europe-west1-tomanota-374115.cloudfunctions.net/get-prompts?q=" + Title.ToString());
 		returnedPrompts.Prompts = JsonSerializer.Deserialize<List<List<object>>>(jsonString);
+		ContainsScore = returnedPrompts.Prompts[0].Count < 2 ;
 	}
 }

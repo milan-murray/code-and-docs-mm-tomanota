@@ -14,7 +14,7 @@
 
 	.bottom-section
 	{
-		max-height: 10em;
+		max-height: 15em;
 	}
 
 	.btn-block
@@ -26,13 +26,13 @@
 <div class="top-section container">
 	@if (FirebaseAuthService.FirebaseAuthClient.User != null)
 	{
-		<div class="card bg-dark mt-5">
+		<div class="card bg-light text-dark mb-5">
 			<div class="card-header">
 				<h5>Your Notes</h5>
 			</div>
 			<div class="card-body">
 				<div class="d-flex justify-content-center">
-					<button class="btn btn-light" @onclick="NavigateToCreate" disabled>Create New</button>
+					<button class="btn btn-primary" @onclick="NavigateToCreate" disabled>Create New</button>
 				</div>
 			</div>
 		</div>
@@ -66,7 +66,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="card bg-light text-dark">
+			<div class="card bg-light text-dark mb-3">
 				<div class="card-header">
 					<h5>German</h5>
 				</div>
@@ -83,6 +83,28 @@
 							@foreach (var title in GermanTitlesEN)
 							{
 								<button class="btn btn-light">@title</button>
+							}
+						}
+					</div>
+				</div>
+			</div>
+			<div class="card bg-light text-dark">
+				<div class="card-header">
+					<h5>Irish</h5>
+				</div>
+				<div class="card-body">
+					<div class="d-flex justify-content-evenly flex-wrap">
+						@if (IrishTitlesEN == null)
+						{
+							<div class="spinner-border" role="status">
+								<span class="sr-only"></span>
+							</div>
+						}
+						else
+						{
+							@foreach (var title in IrishTitlesEN)
+							{
+								<button class="btn btn-primary m-1" @onclick="@(e => SelectNote(title))">@title</button>
 							}
 						}
 					</div>
@@ -200,6 +222,9 @@
 
 <div class="rounded-top bg-dark mt-3 mx-3 fixed-bottom bottom-section shadow">
 	<div class="card-body">
+		<div class="text-center">
+			<p>@SelectedTitle</p>
+		</div>
 		<div>
 			<button class="btn btn-light btn-lg btn-block my-1" disabled="@TitleIsReady" @onclick="NavigateToReview">Review
 				Notes</button>
@@ -218,12 +243,25 @@
 	String[]? GermanTitlesES { get; set; }
 	String[]? SpanishTitlesEN { get; set; }
 	String[]? GermanTitlesEN { get; set; }
+	String[]? IrishTitlesEN { get; set; }
 	String[]? SpanishTitlesDE { get; set; }
 	String[]? EnglishTitlesDE { get; set; }
 
 	protected override async Task OnInitializedAsync()
 	{
-		SpanishTitlesEN = await Http.GetFromJsonAsync<String[]?>("https://europe-west1-tomanota-374115.cloudfunctions.net/get-spanish-titles");
+		try
+		{
+			string url_EN_titles_ES = "https://europe-west1-tomanota-374115.cloudfunctions.net/get-EN-titles-ES";
+			//string url_EN_titles_DE = "https://europe-west1-tomanota-374115.cloudfunctions.net/";
+			//string url_EN_titles_IE = "https://europe-west1-tomanota-374115.cloudfunctions.net/";
+			SpanishTitlesEN = await Http.GetFromJsonAsync<String[]?>(url_EN_titles_ES);
+			//GermanTitlesEN = await Http.GetFromJsonAsync<String[]?>(url_EN_titles_DE);
+			//IrishTitlesEN = await Http.GetFromJsonAsync<String[]?>(url_EN_titles_IE);
+		} catch
+		{
+			throw new HttpRequestException();
+		}
+
 	}
 	
 	private void NavigateToReview()

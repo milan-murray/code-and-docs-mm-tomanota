@@ -15,24 +15,3 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 
 await builder.Build().RunAsync();
 
-/*
-// Configure...
-var config = new FirebaseAuthConfig
-{
-	ApiKey = "AIzaSyCLIUAHHeGxM5Pe_AdC8o4jGMIFwr3ZlH0",
-	AuthDomain = "tn-fb-ff018.firebaseapp.com",
-	Providers = new FirebaseAuthProvider[]
-	{
-        // Add and configure individual providers
-        new GoogleProvider().AddScopes("email"),
-		new EmailProvider()
-        // ...
-    },
-	// WPF:
-	UserRepository = new FileUserRepository("FirebaseSample") // persist data into %AppData%\FirebaseSample
-	// UWP:
-	// UserRepository = new StorageRepository() // persist data into ApplicationDataContainer
-};
-
-var client = new FirebaseAuthClient(config);
-*/
