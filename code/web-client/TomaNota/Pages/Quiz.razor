@@ -1,7 +1,7 @@
 ﻿@page "/quiz"
 @page "/quiz/{title}"
 @using System.Text.Json
-@using Newtonsoft.Json
+@using NJson = Newtonsoft.Json 
 @inject HttpClient Http
 @inject NavigationManager NavigationManager
 
@@ -143,6 +143,13 @@
 									</select>*@
 
 									<button class="btn btn-light ms-3" @onclick="genSynonyms">Find Synonyms</button>
+									@if (finalSynonyms != null)
+									{
+										@foreach (var word in finalSynonyms)
+										{
+											<h3 class="m-3">@word</h3>
+										}
+									}
 								</div>
 
 
@@ -172,6 +179,7 @@
 		</div>
 	</div>
 	@*<button class="btn btn-light" @onclick="testTranslate">Log a test translate</button>*@
+	@*<button class="btn btn-light" @onclick="testCallSyn">Log a test synonym</button>*@
 </div>
 
 @code
@@ -211,7 +219,12 @@
 	}
 
 	// Additional APIs
-	List<string> ResponseTranslations { get; set; }
+	// List<string> synonyms { get; set; }
+	// List<string> synonymsTranslated { get; set; }
+
+	// List<string> ResponseTranslations { get; set; }
+	List<string> finalSynonyms = new();
+
 	public enum Locales
 	{
 		en,
@@ -224,17 +237,17 @@
 	Locales FromLocal { get; set; }
 	// Locales ToLocal { get; set; }
 
-	string URLDictionaryAPI { get; set; } = "";
-
-	void genSynonyms()
+	async Task genSynonyms()
 	{
+		string translation;
+		List<string> synonyns = new List<string>();
 		///Console.WriteLine(FromLocal);
 		// Console.WriteLine(ToLocal);
 
 		if (FromLocal == Locales.en)
 		{
 			// Direcetly get synonyms
-			Console.WriteLine(Locales.en.ToString());
+			finalSynonyms = await callSynonyms(Response);
 		}
 		else
 		{
@@ -243,12 +256,21 @@
 			// Translate back to original lang
 			try
 			{
-				Translate(Response, FromLocal, Locales.en);
-
+				translation = await Translate(Response, FromLocal, Locales.en);
+				synonyns = await callSynonyms(translation);
+				foreach (var synonym in synonyns)
+				{
+					finalSynonyms.Add(await Translate(synonym, Locales.en, FromLocal));
+				}
 			}
-			catch
+			catch(HttpRequestException e)
 			{
 				WarnAPIUsage = "Too many requests. Please try again later.";
+				Console.WriteLine(e.Message);
+			}
+			catch(Exception e)
+			{
+				Console.WriteLine(e.Message);
 			}
 		}
 
@@ -259,8 +281,9 @@
 		Translate("Hello", Locales.en, Locales.es);
 	}*/
 
-	public async void Translate(string textIn, Locales localFrom, Locales localTo)
+	async Task<string> Translate(string textIn, Locales localFrom, Locales localTo)
 	{
+		List<string> responseTranslations = new List<string>();
 		var client = new HttpClient();
 		var request = new HttpRequestMessage {
 			Method = HttpMethod.Post,
@@ -283,13 +306,60 @@
 			response.EnsureSuccessStatusCode();
 			var body = await response.Content.ReadAsStringAsync();
 			// Console.WriteLine(body);
-			var tempObject = JsonConvert.DeserializeObject<dynamic>(body);
+			var tempObject = NJson.JsonConvert.DeserializeObject<dynamic>(body);
 
+			/*
 			foreach (var translation in tempObject.data.translations)
 			{
-				ResponseTranslations.Add(translation);
+				responseTranslations.Add(translation);
+			}
+			*/
+			return tempObject.data.translations[0].ToString();
+		}
+	}
+
+	//void testCallSyn()
+	//{
+	//	callSynonyms("Notes");
+	//}
+
+	async Task<List<string>> callSynonyms(string wordIn)
+	{
+
+		string URIDictionaryAPI = "https://api.dictionaryapi.dev/api/v2/entries/en/";
+
+		var synonyms = new List<string>();
+		var client = new HttpClient();
+		var response = await client.GetStringAsync(URIDictionaryAPI + wordIn);
+
+		// Console.WriteLine(response);
+		var tempObject = JsonSerializer.Deserialize<JsonElement>(response);
+
+		int synonymsAdded = 0;
+		foreach (var meaning in tempObject[0].GetProperty("meanings").EnumerateArray())
+		{
+			foreach (var definition in meaning.GetProperty("definitions").EnumerateArray())
+			{
+				foreach (var synonym in definition.GetProperty("synonyms").EnumerateArray())
+				{
+					// Get only the first three words
+					// Must limit number of words as API translation API is limited
+					if (synonymsAdded >= 2)
+					{
+						break;
+					}
+					synonymsAdded++;
+
+					synonyms.Add(synonym.GetString());
+				}
+			}
+			if (synonymsAdded >= 2)
+			{
+				break;
 			}
 		}
+
+		return synonyms;
 	}
 
 	public class Outcome
