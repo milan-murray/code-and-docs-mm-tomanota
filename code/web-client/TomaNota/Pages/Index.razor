@@ -6,19 +6,16 @@
 <PageTitle>TomaNota</PageTitle>
 
 <style>
-	.top-section
-	{
+	.top-section {
 		min-height: 50vh;
 		margin-bottom: 10em;
 	}
 
-	.bottom-section
-	{
+	.bottom-section {
 		max-height: 15em;
 	}
 
-	.btn-block
-	{
+	.btn-block {
 		width: 100%;
 	}
 </style>
@@ -26,7 +23,7 @@
 <div class="top-section container">
 	@if (FirebaseAuthService.FirebaseAuthClient.User != null)
 	{
-		<div class="card bg-light text-dark mb-5">
+		<div class="card bg-light text-dark shadow mb-5">
 			<div class="card-header">
 				<h5>Your Notes</h5>
 			</div>
@@ -165,7 +162,7 @@
 			</div>
 		</div>
 	</div>
-	
+
 	@* German *@
 	<div class="card bg-light text-dark shadow mb-3">
 		<div class="card-header">
@@ -226,8 +223,10 @@
 			<p>@SelectedTitle</p>
 		</div>
 		<div>
-			<button class="btn btn-light btn-lg btn-block my-1" disabled="@TitleIsReady" @onclick="NavigateToReview">Review
-				Notes</button>
+			<button class="btn btn-light btn-lg btn-block my-1" disabled="@TitleIsReady" @onclick="NavigateToReview">
+				Review
+				Notes
+			</button>
 		</div>
 		<div>
 			<button class="btn btn-light btn-lg btn-block my-1" disabled="@TitleIsReady" @onclick="NavigateToQuiz">Attempt Notes</button>
@@ -257,12 +256,13 @@
 			SpanishTitlesEN = await Http.GetFromJsonAsync<String[]?>(url_EN_titles_ES);
 			//GermanTitlesEN = await Http.GetFromJsonAsync<String[]?>(url_EN_titles_DE);
 			IrishTitlesEN = await Http.GetFromJsonAsync<String[]?>(url_EN_titles_IE);
-		} catch
+		}
+		catch
 		{
 			throw new HttpRequestException();
 		}
 	}
-	
+
 	private void NavigateToReview()
 	{
 		if (SelectedTitle != null)
@@ -270,7 +270,7 @@
 			NavigationManager.NavigateTo("view-document/" + SelectedTitle);
 		}
 	}
-	
+
 	private void NavigateToQuiz()
 	{
 		if (SelectedTitle != null)
@@ -278,13 +278,13 @@
 			NavigationManager.NavigateTo("quiz/" + SelectedTitle);
 		}
 	}
-	
-	
+
+
 	private void NavigateToCreate()
 	{
 		NavigationManager.NavigateTo("prompt-creation/");
 	}
-	
+
 	private void SelectNote(String TitleIn)
 	{
 		SelectedTitle = TitleIn;

@@ -43,7 +43,7 @@
 
 
 @code {
-	String Email= "";
+	String Email = "";
 	String Password = "";
 	String Username = "";
 	String ErrorText = "";
@@ -56,14 +56,14 @@
 			Console.WriteLine(userCredential.User.ToString());
 			NavigationManager.NavigateTo("/");
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			Console.WriteLine(e.Message);
 			ErrorText = "Invalid email or password";
 
 		}
 
-		
+
 		// Console.WriteLine(Javascript.InvokeAsync<String>("firebaseCreateUser", Username, Password));
 	}
 }

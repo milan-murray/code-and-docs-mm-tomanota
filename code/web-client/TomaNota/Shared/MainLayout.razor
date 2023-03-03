@@ -9,8 +9,8 @@
 	}
 
 	.secondary-bg {
-		background-image: linear-gradient(to top left, #8665f4, #b692eb, #2e9eef);
-		@*background-color: #1D1C1C;*@
+	@*background-image: linear-gradient(to top left, #8665f4, #b692eb, #2e9eef);*@ 
+	background-color: #EECACA;
 	}
 
 	main {
@@ -22,24 +22,24 @@
 		text-decoration: none;
 	}
 
-	a:hover {
-		color: #eebbfe;
-	}
+		a:hover {
+			color: #eebbfe;
+		}
 
-	a.disabled {
-		pointer-events: none;
-		cursor: default;
-	}
+		a.disabled {
+			pointer-events: none;
+			cursor: default;
+		}
 
 	.nav-text {
-		text-align: center;	
+		text-align: center;
 		font-size: 120%;
 	}
 
 </style>
 
 <main class="text-light secondary-bg">
-    <div class="container-fluid">
+	<div class="container-fluid">
 		<div class="bg-dark rounded-bottom px-2 shadow">
 			<div class="bg-dark p-2 nav-text">
 				<div class="d-flex justify-content-between align-items-center flex-wrap">
@@ -50,7 +50,8 @@
 							<h5 class="mx-2 align-middle mt-2">Welcome!</h5>
 							<button class="btn btn-light mx-1" @onclick="NavigateToLogin">Log In</button>
 							<button class="btn btn-light mx-1" @onclick="NavigateToSignUp">Sign Up</button>
-						} else
+						}
+						else
 						{
 							<h5 class="mx-2 align-middle mt-2">Logged in as: @FirebaseAuthService.FirebaseAuthClient.User.Info.DisplayName.ToString()</h5>
 							<button class="btn btn-light mx-1" @onclick="SignOut">Sign Out</button>
@@ -64,7 +65,7 @@
 			@Body
 		</div>
 
-    </div>
+	</div>
 </main>
 
 @code {
