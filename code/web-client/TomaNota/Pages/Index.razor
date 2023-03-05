@@ -79,7 +79,7 @@
 						{
 							@foreach (var title in GermanTitlesEN)
 							{
-								<button class="btn btn-light">@title</button>
+								<button class="btn btn-primary m-1" @onclick="@(e => SelectNote(title))">@title</button>
 							}
 						}
 					</div>
@@ -154,7 +154,7 @@
 						{
 							@foreach (var title in GermanTitlesES)
 							{
-								<button class="btn btn-light">@title</button>
+								<button class="btn btn-primary m-1" @onclick="@(e => SelectNote(title))">@title</button>
 							}
 						}
 					</div>
@@ -251,10 +251,10 @@
 		try
 		{
 			string url_EN_titles_ES = "https://europe-west1-tomanota-374115.cloudfunctions.net/get-EN-titles-ES";
-			//string url_EN_titles_DE = "https://europe-west1-tomanota-374115.cloudfunctions.net/";
+			string url_EN_titles_DE = "https://europe-west1-tomanota-374115.cloudfunctions.net/get-EN-titles-DE";
 			string url_EN_titles_IE = "https://europe-west1-tomanota-374115.cloudfunctions.net/get-EN-titles-IE";
 			SpanishTitlesEN = await Http.GetFromJsonAsync<String[]?>(url_EN_titles_ES);
-			//GermanTitlesEN = await Http.GetFromJsonAsync<String[]?>(url_EN_titles_DE);
+			GermanTitlesEN = await Http.GetFromJsonAsync<String[]?>(url_EN_titles_DE);
 			IrishTitlesEN = await Http.GetFromJsonAsync<String[]?>(url_EN_titles_IE);
 		}
 		catch

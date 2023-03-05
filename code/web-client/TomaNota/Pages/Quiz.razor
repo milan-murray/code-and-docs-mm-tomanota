@@ -143,15 +143,16 @@
 												<input id="synonymInput" type="text" class="review-input shadow-lg my-2" @bind="@Response" />
 											</form>
 											<div class="my-2">
-												<label class="mt-1" for="fromLocales">Text language:</label>
+												@* <label class="mt-1" for="fromLocales">Text language:</label>
 												<select class="mt-1" id="fromLocales" @bind="FromLocal">
 													<option value="@Locales.en">English</option>
 													<option value="@Locales.es">Spanish</option>
 													<option value="@Locales.ie">Irish</option>
 													<option value="@Locales.de">German</option>
 													<option value="@Locales.fr">French</option>
-												</select>
+												</select> *@
 
+												<p>Only supported for English</p>
 												<button class="btn btn-light mt-1 ms-3" @onclick="genSynonyms">Find Synonyms</button>
 												@if (finalSynonyms.Count() > 0)
 												{
@@ -296,8 +297,8 @@
 	List<string> finalSynonyms = new List<string>();
 	List<string> finalTranslations = new List<string>();
 
-	Locales FromLocal { get; set; }
-	Locales ToLocal { get; set; }
+	Locales FromLocal { get; set; } = Locales.en;
+	Locales ToLocal { get; set; } = Locales.es;
 
 	async Task genSynonyms()
 	{
