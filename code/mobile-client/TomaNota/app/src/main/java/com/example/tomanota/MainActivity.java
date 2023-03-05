@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.ScrollView;
+import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -34,13 +35,15 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private String selectedTitle;
+    private String selectedTitle = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        final TextView textViewSelected = (TextView) findViewById(R.id.selectedTextID);
+        textViewSelected.setText(selectedTitle);
 
         final Button btnReview = (Button) findViewById(R.id.btnReview);
         btnReview.setEnabled(false);
@@ -48,7 +51,11 @@ public class MainActivity extends AppCompatActivity {
         btnReview.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this, ReviewActivity.class));
+                Intent intent = new Intent(MainActivity.this, ReviewActivity.class);
+                Bundle b = new Bundle();
+                b.putString("Title", selectedTitle);
+                intent.putExtras(b);
+                startActivity(intent);
             }
         });
 
@@ -79,9 +86,9 @@ public class MainActivity extends AppCompatActivity {
                 ScrollView popupScrollView = popupView.findViewById(R.id.popupScrollView);
                 LinearLayout popupLayout = popupScrollView.findViewById(R.id.linearLayoutTitles);
 
-                String URL = "https://europe-west1-tomanota-374115.cloudfunctions.net/get-spanish-titles";
+                String URL = "https://europe-west1-tomanota-374115.cloudfunctions.net/get-EN-titles-ES";
                 List<String> titles = new ArrayList<>();
-                Gson gson = new Gson();
+                // Gson gson = new Gson();
 
                 RequestQueue requestQueue = Volley.newRequestQueue(MainActivity.this);
 
@@ -119,6 +126,8 @@ public class MainActivity extends AppCompatActivity {
                                     public void onClick(View view) {
                                         selectedTitle = button.getText().toString();
                                         popupWindow.dismiss();
+                                        textViewSelected.setText(selectedTitle);
+                                        btnReview.setEnabled(true);
                                     }
                                 });
                             }
