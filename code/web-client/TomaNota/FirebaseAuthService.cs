@@ -16,8 +16,8 @@ namespace TomaNota
 		{
 			var config = new FirebaseAuthConfig
 			{
-				ApiKey = "AIzaSyCLIUAHHeGxM5Pe_AdC8o4jGMIFwr3ZlH0",
-				AuthDomain = "tn-fb-ff018.firebaseapp.com",
+				ApiKey = "AIzaSyD4HLe21dgPPD9WynUk-95o24GlQ1soXDk",
+				AuthDomain = "tn-userspace.firebaseapp.com",
 				Providers = new FirebaseAuthProvider[]
 				{
 					// Add and configure individual providers
