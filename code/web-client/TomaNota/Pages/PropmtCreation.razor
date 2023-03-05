@@ -11,12 +11,7 @@
 	FirestoreDb database;
 	protected override async Task OnInitializedAsync()
 	{
-		string path = AppDomain.CurrentDomain.BaseDirectory + @"tn-userspace-firebase.json";
-		Console.WriteLine(path);
 		
-		Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", path);
-
-		database = await FirestoreDb.CreateAsync("tn-userspace");
 	}
 
 		//if (FirebaseAuthService.FirebaseAuthClient.User == null)

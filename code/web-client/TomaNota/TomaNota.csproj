@@ -15,4 +15,10 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.10" PrivateAssets="all" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="tn-userspace-firebase-adminsdk-xxwmh-8f5c8e4316.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>
