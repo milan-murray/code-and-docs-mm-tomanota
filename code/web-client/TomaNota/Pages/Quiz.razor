@@ -63,7 +63,10 @@
 					}
 					else
 					{
-						<h3>@CurrentHeading</h3>
+						<div>
+							<h3>@CurrentHeading</h3>
+							<button class="btn btn-dark" @onclick="PlayAudioHint">Hear solution<i class="fa fa-volume-up" aria-hidden="true"></i></button>
+						</div>
 					}
 
 
@@ -313,6 +316,34 @@
 		catch (Exception e)
 		{
 			Console.WriteLine(e.Message);
+		}
+	}
+
+	public async Task PlayAudioHint()
+	{
+		string lang = "en";
+		string src = returnedPrompts.Prompts[QuizIndex][1].ToString();
+		if (ToLocal == Locales.es)
+		{
+			lang = "es-es";
+		}
+
+		var client = new HttpClient();
+		var request = new HttpRequestMessage
+		{
+			Method = HttpMethod.Get,
+			RequestUri = new Uri($"https://voicerss-text-to-speech.p.rapidapi.com/?hl={lang}&src=Quiero%20mi%20dinero&key=046c4303fdd44b69b2126b0035ed8bc1&f=8khz_8bit_mono&c=mp3&r=0"),
+			Headers =
+			{
+				{ "X-RapidAPI-Key", "3dd5c1afa7msha944fd8168e4e91p1e3b4ajsn41765a294a16" },
+				{ "X-RapidAPI-Host", "voicerss-text-to-speech.p.rapidapi.com" },
+			},
+		};
+		using (var response = await client.SendAsync(request))
+		{
+			response.EnsureSuccessStatusCode();
+			var body = await response.Content.ReadAsStringAsync();
+			Console.WriteLine(body);
 		}
 	}
 
