@@ -1,6 +1,7 @@
 ﻿@page "/quiz"
 @page "/quiz/{title}"
 @using System.Text.Json
+@using System.Text.RegularExpressions
 @using NJson = Newtonsoft.Json
 @inject HttpClient Http
 @inject NavigationManager NavigationManager
@@ -82,7 +83,7 @@
 									{
 										@*<h3>@Feedback</h3>*@
 						// Expected Answer
-										<h3 class="mt-5">Your repsonse: <span class="text-success">@UserAttemptGreen</span><span class="text-danger">@UserAttemptRed</span></h3>
+										<h3 class="mt-5">Your repsonse: <span class="text-success">@UserAttemptGreen</span><span class="text-danger">@UserAttemptRed</span><span class="text-warning">@UserAttemptYellow</span></h3>
 									}
 									else
 									{
@@ -266,6 +267,7 @@
 	Outcome RoundResult { get; set; } = new Outcome();
 	string Ans { get; set; } = string.Empty;
 	string UserAttemptRed { get; set; } = string.Empty;
+	string UserAttemptYellow { get; set; } = string.Empty;
 	string UserAttemptGreen { get; set; } = string.Empty;
 	bool QuizComplete { get; set; } = false;
 	string BtnText { get; set; } = "Check Answer";
@@ -403,16 +405,16 @@
 				Method = HttpMethod.Post,
 				RequestUri = new Uri("https://google-translate1.p.rapidapi.com/language/translate/v2"),
 				Headers =
-		{
-		{ "X-RapidAPI-Key", "3dd5c1afa7msha944fd8168e4e91p1e3b4ajsn41765a294a16" },
-		{ "X-RapidAPI-Host", "google-translate1.p.rapidapi.com" },
-		},
-				Content = new FormUrlEncodedContent(new Dictionary<string, string>
-		{
-		{ "source", localFrom.ToString() },
-		{ "target", localTo.ToString() },
-		{ "q", textIn },
-		}),
+				{
+				{ "X-RapidAPI-Key", "3dd5c1afa7msha944fd8168e4e91p1e3b4ajsn41765a294a16" },
+				{ "X-RapidAPI-Host", "google-translate1.p.rapidapi.com" },
+				},
+						Content = new FormUrlEncodedContent(new Dictionary<string, string>
+				{
+				{ "source", localFrom.ToString() },
+				{ "target", localTo.ToString() },
+				{ "q", textIn },
+				}),
 			};
 
 		using (var response = await client.SendAsync(request))
@@ -488,33 +490,69 @@
 		}
 		else
 		{
-			BtnText = "Continue";
-			PerfectResult = false;
-			errorIndexes.Add(QuizIndex);
-			CurrentHeading = $"{returnedPrompts.Prompts[QuizIndex][0].ToString()} 🠮 {RoundResult.CorrectAnswer}";
-			// Feedback = $"Expected answer: {RoundResult.CorrectAnswer}";
-			if (RoundResult.Index == 0)
+			if (returnedPrompts.Prompts[QuizIndex].Count() >= 3)
 			{
-				UserAttemptRed = RoundResult.UserAttempt.ToString();
-			}
-			else
-			{
-				for (int i = 0; i < RoundResult.UserAttempt.Count(); i++)
+				@* Console.WriteLine(returnedPrompts.Prompts[QuizIndex][2].ToString()); *@
+				if (Regex.IsMatch(Response, returnedPrompts.Prompts[QuizIndex][2].ToString(), RegexOptions.IgnoreCase))
 				{
-					if (i < RoundResult.Index)
+					Console.WriteLine("Partial");
+					UserAttemptYellow = RoundResult.UserAttempt.ToString();
+					ResponsiveButton = "btn btn-warning btn-lg btn-block mt-5";
+				}
+				else
+				{
+					PerfectResult = false;
+					errorIndexes.Add(QuizIndex);
+					if (RoundResult.Index == 0)
 					{
-						UserAttemptGreen += RoundResult.UserAttempt[i].ToString();
+						UserAttemptRed = RoundResult.UserAttempt.ToString();
 					}
 					else
 					{
-						UserAttemptRed += RoundResult.UserAttempt[i].ToString();
+						for (int i = 0; i < RoundResult.UserAttempt.Count(); i++)
+						{
+							if (i < RoundResult.Index)
+							{
+								UserAttemptGreen += RoundResult.UserAttempt[i].ToString();
+							}
+							else
+							{
+								UserAttemptRed += RoundResult.UserAttempt[i].ToString();
+							}
+						}
+					}
+					ResponsiveButton = "btn btn-danger btn-lg btn-block mt-5";
+				}
+				BtnText = "Continue";
+				CurrentHeading = $"{returnedPrompts.Prompts[QuizIndex][0].ToString()} 🠮 {RoundResult.CorrectAnswer}";
+			}
+			else
+			{
+				BtnText = "Continue";
+				PerfectResult = false;
+				errorIndexes.Add(QuizIndex);
+				CurrentHeading = $"{returnedPrompts.Prompts[QuizIndex][0].ToString()} 🠮 {RoundResult.CorrectAnswer}";
+				// Feedback = $"Expected answer: {RoundResult.CorrectAnswer}";
+				if (RoundResult.Index == 0)
+				{
+					UserAttemptRed = RoundResult.UserAttempt.ToString();
+				}
+				else
+				{
+					for (int i = 0; i < RoundResult.UserAttempt.Count(); i++)
+					{
+						if (i < RoundResult.Index)
+						{
+							UserAttemptGreen += RoundResult.UserAttempt[i].ToString();
+						}
+						else
+						{
+							UserAttemptRed += RoundResult.UserAttempt[i].ToString();
+						}
 					}
 				}
-
-				//UserAttemptGreen = RoundResult.UserAttempt.ToString().Substring(0, RoundResult.Index).ToString();
-				//UserAttemptRed = RoundResult.UserAttempt.ToString().Substring(RoundResult.Index, RoundResult.UserAttempt.ToString().Count() - 1).ToString();
+				ResponsiveButton = "btn btn-danger btn-lg btn-block mt-5";
 			}
-			ResponsiveButton = "btn btn-danger btn-lg btn-block mt-5";
 		}
 		PromptComplete = true;
 	}
@@ -543,8 +581,6 @@
 		}
 		else
 		{
-			// Waiting for response
-
 			BtnText = "Check Answer";
 			PromptComplete = false;
 			// Feedback = "Expected Answer: ";
@@ -552,6 +588,7 @@
 			Response = "";
 			UserAttemptGreen = "";
 			UserAttemptRed = "";
+			UserAttemptYellow = "";
 			ResponsiveButton = "btn btn-light btn-lg btn-block mt-5";
 
 			if (QuizIndex < returnedPrompts.numOfPrompts - 1)
@@ -571,3 +608,4 @@
 		NavigationManager.NavigateTo("/");
 	}
 		}
+((byte)
