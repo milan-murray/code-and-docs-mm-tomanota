@@ -2,34 +2,58 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace user_web_API.Controllers;
 
+[Produces("application/json")]
 [ApiController]
 [Route("[controller]")]
-// [Produces("Application:JSON")]
 public class userNotesController : ControllerBase
 {
-	// List<List<object>> testNote = new ()
-	// {
-	// 	new List<object>() { "String1", "String2" },
-	// 	new List<object>() { "String3", "String4" }
-	// };
+	private String APIKEY = "X00162027-l*8£!dcILkp";
 
-	private static readonly List<userNotes> noteStorage = new()
-	{
-		new userNotes { User = "Tester", Title = "Personal-Notes", Score = 0  }
-	};
+	private static readonly List<userNotes> noteStorage = new();
 
-	[HttpGet]
-	public IEnumerable<userNotes> getAll()
+	[HttpGet("key/{keyIn}")]
+	[ProducesResponseType(StatusCodes.Status204NoContent)]
+	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+	public IActionResult getAll([FromRoute] string keyIn)
 	{
-		return noteStorage;
+		if (keyIn == APIKEY)
+		{
+			if (noteStorage.Count == 0)
+			{
+				return NoContent();
+			}
+			return Ok(noteStorage.OrderBy(n => n.Title));
+		}
+		return Unauthorized();
 	}
 
-	[HttpPut("newNote/{userIn}/{titleIn}/{scoreIn}")]
+	[HttpGet("key/{keyIn}/user/{userIn}/title/{titleIn}")]
 	[ProducesResponseType(StatusCodes.Status204NoContent)]
-	public IActionResult putNote([FromRoute] string userIn, [FromRoute] string titleIn, [FromBody] List<List<object>> PromptsIn, [FromRoute] int scoreIn)
+	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+	public IActionResult getNotes([FromRoute] string keyIn, [FromRoute] string userIn, [FromRoute] string titleIn)
 	{
-		noteStorage.Add(new userNotes { User = userIn, Title = titleIn, Prompts = PromptsIn, Score = scoreIn });
-		return NoContent();
+		if (keyIn == APIKEY)
+		{
+			if (noteStorage.Where(n => n.Title == titleIn).Where(u => u.User == userIn).Select(p => p.Prompts).Count() == 0)
+			{
+				return NoContent();
+			}
+			return Ok(noteStorage.Where(n => n.Title == titleIn).Where(u => u.User == userIn).Select(p => p.Prompts));
+		}
+		return Unauthorized();
+	}
+
+	[HttpPut("newNote/key/{keyIn}/{userIn}/{titleIn}/{scoreIn}")]
+	[ProducesResponseType(StatusCodes.Status204NoContent)]
+	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+	public IActionResult putNote([FromRoute] string keyIn, [FromRoute] string userIn, [FromRoute] string titleIn, [FromBody] List<List<object>> PromptsIn, [FromRoute] int scoreIn)
+	{
+		if (keyIn == APIKEY)
+		{
+			noteStorage.Add(new userNotes { User = userIn, Title = titleIn, Prompts = PromptsIn, Score = scoreIn });
+			return NoContent();
+		}
+		return Unauthorized();
 	}
 
 }
