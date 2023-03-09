@@ -7,16 +7,101 @@
 
 <PageTitle>TomaNota - Prompt Creation</PageTitle>
 
+<style>
+	.form-group {
+		display: flex;
+		flex: 0 0 auto;
+		flex-flow: row wrap;
+		align-items: center;
+		margin-bottom: 1em;
+	}
+</style>
+
+<div class="container">
+	<div class="card bg-dark">
+		<div class="card-header">
+			<h3>Create Notes</h3>
+		</div>
+		<div class="card-body">
+			<div class="container">
+				<div class="mb-3">
+					<label for="title">Title</label>
+					<input class="form-control" type="text" id="title" @bind-value="noteTitle"/>
+				</div>
+
+				@*@foreach (List<string> note in newNotes)
+				{
+					<form>
+						<div class="form-group">
+							<label for="heading_input_@inputs">Given heading @inputs</label>
+							<input class="form-control" type="text" id="heading_input_@inputs" @bind="note" />
+							<label for="answer_input_@inputs">Answer @inputs</label>
+							<input class="form-control" type="text" id="anser_input_@inputs" />
+						</div>
+					</form>
+				}*@
+				@for (int i = 1; i <= inputs; i++)
+				{
+					<form>
+						<div class="form-group">
+							<label for="heading_input_@i">Given heading @i</label>
+							<input class="form-control" type="text" id="heading_input_@i" />
+							<label for="answer_input_@i">Answer @i</label>
+							<input class="form-control" type="text" id="anser_input_@i" />
+						</div>
+					</form>
+				}
+				@if (inputs > 9)
+				{
+					<h4 class="text-danger">Documents that are too large can be very difficult</h4>
+				}
+				<div class="d-flex justify-content-between">
+					<div>
+						<button class="btn btn-light m-1" @onclick="ExtendInput">Add Entry</button>
+						<button class="btn btn-secondary m-1" @onclick="RemoveInput">Remove Entry</button>
+					</div>
+					<div>
+						<button class="btn btn-success ms-auto" @onclick="CreateNotes">Save Notes</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
 @code {
-	FirestoreDb database;
+	List<List<string>> newNotes { get; set; }
+	int inputs = 1;
+	string noteTitle = "";
+
+
 	protected override async Task OnInitializedAsync()
 	{
-		
+		if (FirebaseAuthService.FirebaseAuthClient.User == null)
+		{
+			// Navigate to home page if user has not signed in
+			NavigationManager.NavigateTo("/");
+		}
 	}
 
-		//if (FirebaseAuthService.FirebaseAuthClient.User == null)
-		//{
-			// Navigate to home page if user has not signed in
-		//	NavigationManager.NavigateTo("/");
-		//}
+	public void ExtendInput()
+	{
+		inputs = inputs + 1;	
+	}
+	public void RemoveInput()
+	{
+		if (inputs > 1)
+		{
+			inputs = inputs - 1;	
+		}
+	}
+
+	public async Task CreateNotes()
+	{
+		if (noteTitle != string.Empty)
+		{
+			
+		}
+
+	}
 }
