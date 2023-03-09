@@ -1,6 +1,7 @@
 ﻿@page "/view-document"
-@page "/view-document/{title}"
+@page "/view-document/{title}/{premade:bool}"
 @using System.Text.Json
+@inject IFirebaseAuthService FirebaseAuthService
 @inject NavigationManager NavigationManager
 @inject HttpClient Http
 <PageTitle>View Document</PageTitle>
@@ -57,6 +58,8 @@
 @code {
 	[Parameter]
 	public String? Title { get; set; }
+	[Parameter]
+	public bool Premade { get; set; }
 	private DocPrompts? returnedPrompts = new DocPrompts();
 	bool ContainsScore { get; set; }
 
@@ -67,16 +70,34 @@
 
 	protected override async Task OnInitializedAsync()
 	{
-		var jsonString = await Http.GetStringAsync("https://europe-west1-tomanota-374115.cloudfunctions.net/get-prompts?q=" + Title.ToString());
-		returnedPrompts.Prompts = JsonSerializer.Deserialize<List<List<object>>>(jsonString);
-		ContainsScore = returnedPrompts.Prompts[0].Count < 2 ;
+		if (Premade)
+		{
+			var jsonString = await Http.GetStringAsync("https://europe-west1-tomanota-374115.cloudfunctions.net/get-prompts?q=" + Title.ToString());
+			returnedPrompts.Prompts = JsonSerializer.Deserialize<List<List<object>>>(jsonString);
+			ContainsScore = returnedPrompts.Prompts[0].Count < 2 ;
+		}
+		else
+		{
+			if (FirebaseAuthService.FirebaseAuthClient.User != null)
+			{
+				string key = "X00162027-l*8£!dcILkp";
+				string user = FirebaseAuthService.FirebaseAuthClient.User.Info.DisplayName.ToString();
+				var jsonString = await Http.GetStringAsync($"https://localhost:7080/userNotes/key/{key}/user/{user}/title/{Title.ToString()}");
+				returnedPrompts.Prompts = JsonSerializer.Deserialize<List<List<object>>>(jsonString);
+				ContainsScore = returnedPrompts.Prompts[0].Count < 2;
+			}
+			else
+			{
+				NavigationManager.NavigateTo("/");
+			}
+		}
 	}
 
 	private void NavigateToQuiz()
 	{
 		if (Title != null)
 		{
-			NavigationManager.NavigateTo("quiz/" + Title);
+			NavigationManager.NavigateTo("quiz/" + Title + "/" + Premade);
 		}
 	}
 }
