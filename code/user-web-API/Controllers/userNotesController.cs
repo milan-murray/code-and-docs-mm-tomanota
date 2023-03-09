@@ -76,4 +76,22 @@ public class userNotesController : ControllerBase
 		return Unauthorized();
 	}
 
+	[HttpDelete("delete/key/{keyIn}/user/{userIn}/title/{titleIn}")]
+	[ProducesResponseType(StatusCodes.Status404NotFound)]
+	[ProducesResponseType(StatusCodes.Status200OK)]
+	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+	public IActionResult deleteNote([FromRoute] string keyIn, [FromRoute] string userIn, [FromRoute] string titleIn)
+	{
+		if (keyIn == APIKEY)
+		{
+			userNotes noteToDelete = noteStorage.Where(u => u.User == userIn).Where(t => t.Title == titleIn).FirstOrDefault();
+
+			if (noteToDelete != null)
+			{
+				return Ok(noteStorage.Remove(noteToDelete));
+			}
+			return NotFound();
+		}
+		return Unauthorized();
+	}
 }
