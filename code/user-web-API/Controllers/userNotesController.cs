@@ -8,7 +8,7 @@ namespace user_web_API.Controllers;
 [Route("[controller]")]
 public class userNotesController : ControllerBase
 {
-	private String APIKEY = "X00162027-l*8£!dcILkp";
+	private String APIKEY = "X00162027";
 
 	private static readonly List<userNotes> noteStorage = new();
 
@@ -62,7 +62,7 @@ public class userNotesController : ControllerBase
 		return Unauthorized();
 	}
 
-	[HttpPut("newNote/key/{keyIn}/{userIn}/{titleIn}/{scoreIn}")]
+	[HttpPost("newNote/key/{keyIn}/userIn/{userIn}/titleIn/{titleIn}/scoreIn/{scoreIn}")]
 	[ProducesResponseType(StatusCodes.Status204NoContent)]
 	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
 	[ProducesResponseType(StatusCodes.Status200OK)]
@@ -71,7 +71,7 @@ public class userNotesController : ControllerBase
 		if (keyIn == APIKEY)
 		{
 			noteStorage.Add(new userNotes { User = userIn, Title = titleIn, Prompts = PromptsIn, Score = scoreIn });
-			return NoContent();
+			return Ok();
 		}
 		return Unauthorized();
 	}

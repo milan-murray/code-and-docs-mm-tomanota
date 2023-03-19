@@ -80,7 +80,7 @@
 		{
 			if (FirebaseAuthService.FirebaseAuthClient.User != null)
 			{
-				string key = "X00162027-l*8£!dcILkp";
+				string key = "X00162027";
 				string user = FirebaseAuthService.FirebaseAuthClient.User.Info.DisplayName.ToString();
 				var jsonString = await Http.GetStringAsync($"https://localhost:7080/userNotes/key/{key}/user/{user}/title/{Title.ToString()}");
 				returnedPrompts.Prompts = JsonSerializer.Deserialize<List<List<object>>>(jsonString);

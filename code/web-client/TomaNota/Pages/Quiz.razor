@@ -406,7 +406,7 @@
 		var client = new HttpClient();
 		var request = new HttpRequestMessage
 			{
-				Method = HttpMethod.Post,
+				Method = HttpMethod.Put,
 				RequestUri = new Uri("https://google-translate1.p.rapidapi.com/language/translate/v2"),
 				Headers =
 				{
@@ -472,7 +472,7 @@
 			{
 				if (FirebaseAuthService.FirebaseAuthClient.User != null)
 				{
-					string key = "X00162027-l*8£!dcILkp";
+					string key = "X00162027";
 					string user = FirebaseAuthService.FirebaseAuthClient.User.Info.DisplayName.ToString();
 					var jsonString = await Http.GetStringAsync($"https://localhost:7080/userNotes/key/{key}/user/{user}/title/{Title.ToString()}");
 					returnedPrompts.Prompts = JsonSerializer.Deserialize<List<List<object>>>(jsonString);
@@ -639,5 +639,4 @@
 	{
 		NavigationManager.NavigateTo("/");
 	}
-		}
-((byte)
+}

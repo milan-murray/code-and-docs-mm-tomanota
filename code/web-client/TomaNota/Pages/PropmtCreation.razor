@@ -1,7 +1,9 @@
 ﻿@page "/prompt-creation"
 @using System.Text.Json
-@using System.Text.Json.Serialization
+@using System.Text
+@using System.Net.Http.Json
 @using Google.Cloud.Firestore
+@inject HttpClient Http
 @inject NavigationManager NavigationManager
 @inject IFirebaseAuthService FirebaseAuthService
 
@@ -26,7 +28,7 @@
 			<div class="container">
 				<div class="mb-3">
 					<label for="title">Title</label>
-					<input class="form-control" type="text" id="title" @bind-value="noteTitle"/>
+					<input class="form-control" type="text" id="title" @bind="noteTitle"/>
 				</div>
 
 				@*@foreach (List<string> note in newNotes)
@@ -45,13 +47,13 @@
 					<form>
 						<div class="form-group">
 							<label for="heading_input_@i">Given heading @i</label>
-							<input class="form-control" type="text" id="heading_input_@i" />
+							<input class="form-control" type="text" id="heading_input_@i" @bind="heading1" />
 							<label for="answer_input_@i">Answer @i</label>
-							<input class="form-control" type="text" id="anser_input_@i" />
+							<input class="form-control" type="text" id="anser_input_@i" @bind="body1" />
 						</div>
 					</form>
 				}
-				@if (inputs > 9)
+				@if (inputs > 10)
 				{
 					<h4 class="text-danger">Documents that are too large can be very difficult</h4>
 				}
@@ -73,6 +75,9 @@
 	List<List<string>> newNotes { get; set; }
 	int inputs = 1;
 	string noteTitle = "";
+	string heading1 { get; set; }
+	string body1 { get; set; }
+	private static readonly HttpClient client = new HttpClient();
 
 
 	protected override async Task OnInitializedAsync()
@@ -98,9 +103,30 @@
 
 	public async Task CreateNotes()
 	{
+		Console.WriteLine("In function");
 		if (noteTitle != string.Empty)
 		{
-			
+			Console.WriteLine("After IF");
+			string key = "X00162027";
+			string user = FirebaseAuthService.FirebaseAuthClient.User.Info.DisplayName.ToString();
+
+			// [FromRoute] string keyIn, [FromRoute] string userIn, [FromRoute] string titleIn, [FromBody] List<List<object>> PromptsIn, [FromRoute] int scoreIn
+			// "newNote/key/{keyIn}/{userIn}/{titleIn}/{scoreIn}"
+			var content = "[";
+			for (int i = 0; i < inputs - 1; i++)
+			{
+				content += $"[\"{heading1}\", \"{body1}\"],";
+			}
+			content += $"[\"{heading1}\", \"{body1}\"]]";
+			// var json = JsonSerializer.Serialize(content);
+			var Content = new StringContent(content, Encoding.UTF8, "application/json");
+			// var Content = new StringContent(content);
+			//var Content = new (json);
+			var uri = $"https://localhost:7080/userNotes/newNote/key/{key}/userIn/{user}/titleIn/{noteTitle}/scoreIn/0";
+			// Console.WriteLine("URI: " + uri + content);
+
+
+			await client.PostAsync(uri, Content);
 		}
 
 	}

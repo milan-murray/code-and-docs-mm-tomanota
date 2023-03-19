@@ -276,8 +276,9 @@
 		{
 			if (FirebaseAuthService.FirebaseAuthClient.User != null)
 			{
-				string key = "X00162027-l*8£!dcILkp";
-				string url_user_titles = "https://localhost:7080/userNotes/key/" + key + "/user/" + FirebaseAuthService.FirebaseAuthClient.User.Info.DisplayName.ToString();
+				string key = "X00162027";
+				string user = FirebaseAuthService.FirebaseAuthClient.User.Info.DisplayName.ToString();
+				string url_user_titles = $"https://localhost:7080/userNotes/key/{key}/user/{user}";
 				try
 				{
 					// Console.WriteLine(url_user_titles);
@@ -305,7 +306,7 @@
 	{
 		if (FirebaseAuthService.FirebaseAuthClient.User != null && !TitleIsPremade)
 		{
-			string key = "X00162027-l*8£!dcILkp";
+			string key = "X00162027";
 			string user = FirebaseAuthService.FirebaseAuthClient.User.Info.DisplayName.ToString();
 			string url = $"https://localhost:7080/userNotes/delete/key/{key}/user/{user}/title/{SelectedTitle}";
 			await Http.DeleteAsync(url);
