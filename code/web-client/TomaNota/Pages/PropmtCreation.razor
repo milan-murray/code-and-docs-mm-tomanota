@@ -42,14 +42,15 @@
 						</div>
 					</form>
 				}*@
-				@for (int i = 1; i <= inputs; i++)
+
+				@foreach (List<String> noteGroup in newNotes)
 				{
 					<form>
 						<div class="form-group">
-							<label for="heading_input_@i">Given heading @i</label>
-							<input class="form-control" type="text" id="heading_input_@i" @bind="heading1" />
-							<label for="answer_input_@i">Answer @i</label>
-							<input class="form-control" type="text" id="anser_input_@i" @bind="body1" />
+						<label>Given heading</label>
+						<input class="form-control" type="text" @bind="noteGroup[0]" />
+						<label>Answer</label>
+						<input class="form-control" type="text" @bind="noteGroup[1]" />
 						</div>
 					</form>
 				}
@@ -72,11 +73,9 @@
 </div>
 
 @code {
-	List<List<string>> newNotes { get; set; }
-	int inputs = 1;
+	List<List<string>> newNotes { get; set; } = new();
 	string noteTitle = "";
-	string heading1 { get; set; }
-	string body1 { get; set; }
+	int inputs = 1;
 	private static readonly HttpClient client = new HttpClient();
 
 
@@ -87,26 +86,27 @@
 			// Navigate to home page if user has not signed in
 			NavigationManager.NavigateTo("/");
 		}
+		newNotes.Add(new List<string> {"", ""});
 	}
 
 	public void ExtendInput()
 	{
-		inputs = inputs + 1;	
+		inputs = inputs + 1;
+		newNotes.Add(new List<string> {"", ""});
 	}
 	public void RemoveInput()
 	{
 		if (inputs > 1)
 		{
-			inputs = inputs - 1;	
+			newNotes.RemoveAt(newNotes.Count() - 1);
+			inputs = inputs - 1;
 		}
 	}
 
 	public async Task CreateNotes()
 	{
-		Console.WriteLine("In function");
 		if (noteTitle != string.Empty)
 		{
-			Console.WriteLine("After IF");
 			string key = "X00162027";
 			string user = FirebaseAuthService.FirebaseAuthClient.User.Info.DisplayName.ToString();
 
@@ -115,18 +115,23 @@
 			var content = "[";
 			for (int i = 0; i < inputs - 1; i++)
 			{
-				content += $"[\"{heading1}\", \"{body1}\"],";
+				content += $"[\"{newNotes.ElementAt(i).ElementAt(0)}\", \"{newNotes.ElementAt(i).ElementAt(1)}\"],";
 			}
-			content += $"[\"{heading1}\", \"{body1}\"]]";
-			// var json = JsonSerializer.Serialize(content);
+			content += $"[\"{newNotes.ElementAt(inputs - 1).ElementAt(0)}\", \"{newNotes.ElementAt(inputs - 1).ElementAt(1)}\"]]";
+
+			Console.WriteLine(content);
 			var Content = new StringContent(content, Encoding.UTF8, "application/json");
-			// var Content = new StringContent(content);
-			//var Content = new (json);
+			
 			var uri = $"https://localhost:7080/userNotes/newNote/key/{key}/userIn/{user}/titleIn/{noteTitle}/scoreIn/0";
 			// Console.WriteLine("URI: " + uri + content);
 
+			try {
 
-			await client.PostAsync(uri, Content);
+				await client.PostAsync(uri, Content);
+			}
+			catch (Exception e) {
+				Console.WriteLine(e.Message);
+			}
 		}
 
 	}
