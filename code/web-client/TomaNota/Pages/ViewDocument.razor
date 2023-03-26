@@ -22,6 +22,10 @@
 		{
 			<div class="card-header text-center">
 				<h1>@Title</h1>
+				@if (ContainsScore)
+				{
+					<p>Score: @returnedPrompts.Score</p>
+				}
 			</div>
 			<div class="card-body">
 				<table class="table table-dark table-hover">
@@ -29,10 +33,6 @@
 						<tr>
 							<th>Given heading</th>
 							<th>Answer</th>
-							@if (ContainsScore)
-							{
-								<th>Current Score</th>
-							}
 						</tr>
 					</thead>
 					<tbody>
@@ -41,10 +41,6 @@
 							<tr>
 								<td>@prompt[0]</td>
 								<td>@prompt[1]</td>
-								@if (ContainsScore)
-								{
-									<td>@prompt[2]</td>
-								}
 							</tr>
 						}
 					</tbody>
@@ -61,11 +57,12 @@
 	[Parameter]
 	public bool Premade { get; set; }
 	private DocPrompts? returnedPrompts = new DocPrompts();
-	bool ContainsScore { get; set; }
+	bool ContainsScore { get; set; } = false;
 
 	public class DocPrompts
 	{
 		public List<List<object>> Prompts { get; set; } = new List<List<object>>();
+		public int Score { get; set; }
 	}
 
 	protected override async Task OnInitializedAsync()
@@ -83,8 +80,9 @@
 				string key = "X00162027";
 				string user = FirebaseAuthService.FirebaseAuthClient.User.Info.DisplayName.ToString();
 				var jsonString = await Http.GetStringAsync($"https://localhost:7080/userNotes/key/{key}/user/{user}/title/{Title.ToString()}");
+				returnedPrompts.Score = Int32.Parse(await Http.GetStringAsync($"https://localhost:7080/userNotes/score/key/{key}/user/{user}/title/{Title.ToString()}"));
 				returnedPrompts.Prompts = JsonSerializer.Deserialize<List<List<object>>>(jsonString);
-				ContainsScore = returnedPrompts.Prompts[0].Count < 2;
+				ContainsScore = true;
 			}
 			else
 			{

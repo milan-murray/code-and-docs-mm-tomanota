@@ -121,13 +121,14 @@
 
 			Console.WriteLine(content);
 			var Content = new StringContent(content, Encoding.UTF8, "application/json");
-			
+
 			var uri = $"https://localhost:7080/userNotes/newNote/key/{key}/userIn/{user}/titleIn/{noteTitle}/scoreIn/0";
 			// Console.WriteLine("URI: " + uri + content);
 
 			try {
 
 				await client.PostAsync(uri, Content);
+				NavigationManager.NavigateTo("/");
 			}
 			catch (Exception e) {
 				Console.WriteLine(e.Message);

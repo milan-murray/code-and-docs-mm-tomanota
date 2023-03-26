@@ -455,11 +455,8 @@
 			try
 			{
 				var jsonString = await Http.GetStringAsync("https://europe-west1-tomanota-374115.cloudfunctions.net/get-prompts?q=" + Title.ToString());
-				Console.WriteLine(jsonString);
 				returnedPrompts.Prompts = JsonSerializer.Deserialize<List<List<object>>>(jsonString);
-				@* returnedPrompts.CurrentScore = JsonSerializer.Deserialize<int>(jsonString); *@
 				returnedPrompts.numOfPrompts = returnedPrompts.Prompts.Count();
-				//Console.WriteLine(returnedPrompts.Prompts[0][1].ToString());
 				CurrentHeading = returnedPrompts.Prompts[0][0].ToString();
 			}
 			catch
@@ -476,6 +473,7 @@
 					string key = "X00162027";
 					string user = FirebaseAuthService.FirebaseAuthClient.User.Info.DisplayName.ToString();
 					var jsonString = await Http.GetStringAsync($"https://localhost:7080/userNotes/key/{key}/user/{user}/title/{Title.ToString()}");
+					returnedPrompts.CurrentScore = Int32.Parse(await Http.GetStringAsync($"https://localhost:7080/userNotes/score/key/{key}/user/{user}/title/{Title.ToString()}"));
 					returnedPrompts.Prompts = JsonSerializer.Deserialize<List<List<object>>>(jsonString);
 					returnedPrompts.numOfPrompts = returnedPrompts.Prompts.Count();
 					//Console.WriteLine(returnedPrompts.Prompts[0][1].ToString());
@@ -591,7 +589,7 @@
 		PromptComplete = true;
 	}
 
-	public async void AdvanceQuiz()
+	public async Task AdvanceQuiz()
 	{
 		@* To check answer *@
 		if (!PromptComplete)
@@ -635,7 +633,24 @@
 				QuizComplete = true;
 				if (!Premade)
 				{
-					@* if (returnedPrompts.S) *@
+					string key = "X00162027";
+					string user = FirebaseAuthService.FirebaseAuthClient.User.Info.DisplayName.ToString();
+					if (errorIndexes.Count() < (returnedPrompts.numOfPrompts - (returnedPrompts.numOfPrompts / 3)))
+					{
+						if (returnedPrompts.CurrentScore < 10)
+						{
+							string uri = $"https://localhost:7080/userNotes/incScore/key/{key}/userIn/{user}/titleIn/{Title}";
+							await Http.PutAsync(uri, null);
+						}
+					}
+					else
+					{
+						if (returnedPrompts.CurrentScore > 0)
+						{
+							string uri = $"https://localhost:7080/userNotes/decScore/key/{key}/userIn/{user}/titleIn/{Title}";
+							await Http.PutAsync(uri, null);
+						}
+					}
 				}
 			}
 		}

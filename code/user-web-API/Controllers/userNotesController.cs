@@ -45,6 +45,23 @@ public class userNotesController : ControllerBase
 		return Unauthorized();
 	}
 
+	[HttpGet("score/key/{keyIn}/user/{userIn}/title/{titleIn}")]
+	[ProducesResponseType(StatusCodes.Status204NoContent)]
+	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+	[ProducesResponseType(StatusCodes.Status200OK)]
+	public ActionResult<int> getScore([FromRoute] string keyIn, [FromRoute] string userIn, [FromRoute] string titleIn)
+	{
+		if (keyIn == APIKEY)
+		{
+			if (noteStorage.Where(n => n.Title == titleIn).Where(u => u.User == userIn).Select(p => p.Prompts).Count() == 0)
+			{
+				return NoContent();
+			}
+			return Ok(noteStorage.Where(n => n.Title == titleIn).Where(u => u.User == userIn).Select(p => p.Score).FirstOrDefault());
+		}
+		return Unauthorized();
+	}
+
 	[HttpGet("key/{keyIn}/user/{userIn}")]
 	[ProducesResponseType(StatusCodes.Status204NoContent)]
 	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
