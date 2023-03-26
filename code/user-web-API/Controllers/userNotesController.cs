@@ -65,13 +65,66 @@ public class userNotesController : ControllerBase
 	[HttpPost("newNote/key/{keyIn}/userIn/{userIn}/titleIn/{titleIn}/scoreIn/{scoreIn}")]
 	[ProducesResponseType(StatusCodes.Status204NoContent)]
 	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+	[ProducesResponseType(StatusCodes.Status400BadRequest)]
 	[ProducesResponseType(StatusCodes.Status200OK)]
-	public IActionResult putNote([FromRoute] string keyIn, [FromRoute] string userIn, [FromRoute] string titleIn, [FromBody] List<List<object>> PromptsIn, [FromRoute] int scoreIn)
+	public IActionResult newNote([FromRoute] string keyIn, [FromRoute] string userIn, [FromRoute] string titleIn, [FromBody] List<List<object>> PromptsIn, [FromRoute] int scoreIn)
 	{
 		if (keyIn == APIKEY)
 		{
+			if (noteStorage.FirstOrDefault(n => n.User == userIn && n.Title == titleIn) != null)
+			{
+				return BadRequest();
+			}
 			noteStorage.Add(new userNotes { User = userIn, Title = titleIn, Prompts = PromptsIn, Score = scoreIn });
 			return Ok();
+		}
+		return Unauthorized();
+	}
+
+	[HttpPut("incScore/key/{keyIn}/userIn/{userIn}/titleIn/{titleIn}")]
+	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+	[ProducesResponseType(StatusCodes.Status200OK)]
+	[ProducesResponseType(StatusCodes.Status204NoContent)]
+	[ProducesResponseType(StatusCodes.Status404NotFound)]
+	public IActionResult incScore([FromRoute] string keyIn, [FromRoute] string userIn, [FromRoute] string titleIn)
+	{
+		if (keyIn == APIKEY)
+		{
+			userNotes note = noteStorage.FirstOrDefault(n => n.User == userIn && n.Title == titleIn);
+			if (note == null)
+			{
+				return NotFound();
+			}
+			if (note.Score < 10)
+			{
+				note.Score = note.Score + 1;
+				return Ok();
+			}
+			return NoContent();
+		}
+		return Unauthorized();
+	}
+
+	[HttpPut("decScore/key/{keyIn}/userIn/{userIn}/titleIn/{titleIn}")]
+	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+	[ProducesResponseType(StatusCodes.Status200OK)]
+	[ProducesResponseType(StatusCodes.Status204NoContent)]
+	[ProducesResponseType(StatusCodes.Status404NotFound)]
+	public IActionResult decScore([FromRoute] string keyIn, [FromRoute] string userIn, [FromRoute] string titleIn)
+	{
+		if (keyIn == APIKEY)
+		{
+			userNotes note = noteStorage.FirstOrDefault(n => n.User == userIn && n.Title == titleIn);
+			if (note == null)
+			{
+				return NotFound();
+			}
+			if (note.Score > 0)
+			{
+				note.Score = note.Score - 1;
+				return Ok();
+			}
+			return NoContent();
 		}
 		return Unauthorized();
 	}

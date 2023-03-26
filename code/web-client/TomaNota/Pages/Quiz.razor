@@ -282,7 +282,6 @@
 	bool StartReview { get; set; } = false;
 	string WarnAPIUsage { get; set; } = string.Empty;
 
-	int score;
 	string CurrentHeading { get; set; } = "";
 	int QuizIndex { get; set; } = 0;
 	int ReviewIndex { get; set; } = 0;
@@ -456,7 +455,9 @@
 			try
 			{
 				var jsonString = await Http.GetStringAsync("https://europe-west1-tomanota-374115.cloudfunctions.net/get-prompts?q=" + Title.ToString());
+				Console.WriteLine(jsonString);
 				returnedPrompts.Prompts = JsonSerializer.Deserialize<List<List<object>>>(jsonString);
+				@* returnedPrompts.CurrentScore = JsonSerializer.Deserialize<int>(jsonString); *@
 				returnedPrompts.numOfPrompts = returnedPrompts.Prompts.Count();
 				//Console.WriteLine(returnedPrompts.Prompts[0][1].ToString());
 				CurrentHeading = returnedPrompts.Prompts[0][0].ToString();
@@ -496,6 +497,7 @@
 	public class DocPrompts
 	{
 		public List<List<object>>? Prompts { get; set; } = new List<List<object>>();
+		public int CurrentScore { get; set; }
 		public int numOfPrompts { get; set; }
 
 	}
@@ -631,6 +633,10 @@
 			else
 			{
 				QuizComplete = true;
+				if (!Premade)
+				{
+					@* if (returnedPrompts.S) *@
+				}
 			}
 		}
 	}
