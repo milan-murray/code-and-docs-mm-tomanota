@@ -67,7 +67,7 @@
 					{
 						<div>
 							<h3>@CurrentHeading</h3>
-							<button class="btn btn-dark" @onclick="PlayAudioHint">Hear solution<i class="fa fa-volume-up" aria-hidden="true"></i></button>
+							@*<button class="btn btn-dark" @onclick="PlayAudioHint">Hear solution<i class="fa fa-volume-up" aria-hidden="true"></i></button>*@
 						</div>
 					}
 
@@ -203,7 +203,6 @@
 
 												<button class="btn btn-light mt-1 ms-3" @onclick="callTranslate">Translate</button>
 
-
 												@if (finalTranslations.Count() > 0)
 												{
 													<div class="card bg-light text-dark my-3">
@@ -251,7 +250,7 @@
 
 @code
 {
-	public String? urlGetPrompts = "";
+	String baseURI = "https://user-web-api-tn.azurewebsites.net";
 
 	[Parameter]
 	public string Title { get; set; } = string.Empty;
@@ -472,8 +471,8 @@
 				{
 					string key = "X00162027";
 					string user = FirebaseAuthService.FirebaseAuthClient.User.Info.DisplayName.ToString();
-					var jsonString = await Http.GetStringAsync($"https://localhost:7080/userNotes/key/{key}/user/{user}/title/{Title.ToString()}");
-					returnedPrompts.CurrentScore = Int32.Parse(await Http.GetStringAsync($"https://localhost:7080/userNotes/score/key/{key}/user/{user}/title/{Title.ToString()}"));
+					var jsonString = await Http.GetStringAsync($"{baseURI}/userNotes/key/{key}/user/{user}/title/{Title.ToString()}");
+					returnedPrompts.CurrentScore = Int32.Parse(await Http.GetStringAsync($"{baseURI}/userNotes/score/key/{key}/user/{user}/title/{Title.ToString()}"));
 					returnedPrompts.Prompts = JsonSerializer.Deserialize<List<List<object>>>(jsonString);
 					returnedPrompts.numOfPrompts = returnedPrompts.Prompts.Count();
 					//Console.WriteLine(returnedPrompts.Prompts[0][1].ToString());
@@ -595,7 +594,6 @@
 		if (!PromptComplete)
 		{
 			// Checking Ans
-
 			if (Response == string.Empty)
 			{
 				Console.WriteLine("No Attempt!");
@@ -639,7 +637,7 @@
 					{
 						if (returnedPrompts.CurrentScore < 10)
 						{
-							string uri = $"https://localhost:7080/userNotes/incScore/key/{key}/userIn/{user}/titleIn/{Title}";
+							string uri = $"{baseURI}/userNotes/incScore/key/{key}/userIn/{user}/titleIn/{Title}";
 							await Http.PutAsync(uri, null);
 						}
 					}
@@ -647,7 +645,7 @@
 					{
 						if (returnedPrompts.CurrentScore > 0)
 						{
-							string uri = $"https://localhost:7080/userNotes/decScore/key/{key}/userIn/{user}/titleIn/{Title}";
+							string uri = $"{baseURI}/userNotes/decScore/key/{key}/userIn/{user}/titleIn/{Title}";
 							await Http.PutAsync(uri, null);
 						}
 					}

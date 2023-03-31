@@ -31,18 +31,6 @@
 					<input class="form-control" type="text" id="title" @bind="noteTitle"/>
 				</div>
 
-				@*@foreach (List<string> note in newNotes)
-				{
-					<form>
-						<div class="form-group">
-							<label for="heading_input_@inputs">Given heading @inputs</label>
-							<input class="form-control" type="text" id="heading_input_@inputs" @bind="note" />
-							<label for="answer_input_@inputs">Answer @inputs</label>
-							<input class="form-control" type="text" id="anser_input_@inputs" />
-						</div>
-					</form>
-				}*@
-
 				@foreach (List<String> noteGroup in newNotes)
 				{
 					<form>
@@ -77,7 +65,7 @@
 	string noteTitle = "";
 	int inputs = 1;
 	private static readonly HttpClient client = new HttpClient();
-
+	String baseURI = "https://user-web-api-tn.azurewebsites.net";
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -107,31 +95,41 @@
 	{
 		if (noteTitle != string.Empty)
 		{
-			string key = "X00162027";
-			string user = FirebaseAuthService.FirebaseAuthClient.User.Info.DisplayName.ToString();
+			bool valid = true;
 
-			// [FromRoute] string keyIn, [FromRoute] string userIn, [FromRoute] string titleIn, [FromBody] List<List<object>> PromptsIn, [FromRoute] int scoreIn
-			// "newNote/key/{keyIn}/{userIn}/{titleIn}/{scoreIn}"
 			var content = "[";
 			for (int i = 0; i < inputs - 1; i++)
 			{
+				if (newNotes.ElementAt(i).ElementAt(0).ToString() == String.Empty || newNotes.ElementAt(i).ElementAt(1).ToString() == String.Empty)
+				{
+					valid = false;
+					break;
+				}
 				content += $"[\"{newNotes.ElementAt(i).ElementAt(0)}\", \"{newNotes.ElementAt(i).ElementAt(1)}\"],";
+			}
+			if (newNotes.ElementAt(inputs - 1).ElementAt(0).ToString() == String.Empty || newNotes.ElementAt(inputs - 1).ElementAt(1).ToString() == String.Empty)
+			{
+				valid = false;
 			}
 			content += $"[\"{newNotes.ElementAt(inputs - 1).ElementAt(0)}\", \"{newNotes.ElementAt(inputs - 1).ElementAt(1)}\"]]";
 
-			Console.WriteLine(content);
-			var Content = new StringContent(content, Encoding.UTF8, "application/json");
+			if (valid)
+			{
+				string key = "X00162027";
+				string user = FirebaseAuthService.FirebaseAuthClient.User.Info.DisplayName.ToString();
+				var Content = new StringContent(content, Encoding.UTF8, "application/json");
 
-			var uri = $"https://localhost:7080/userNotes/newNote/key/{key}/userIn/{user}/titleIn/{noteTitle}/scoreIn/0";
-			// Console.WriteLine("URI: " + uri + content);
+				var uri = $"{baseURI}/userNotes/newNote/key/{key}/userIn/{user}/titleIn/{noteTitle}/scoreIn/0";
 
-			try {
-
-				await client.PostAsync(uri, Content);
-				NavigationManager.NavigateTo("/");
-			}
-			catch (Exception e) {
-				Console.WriteLine(e.Message);
+				try
+				{
+					await client.PostAsync(uri, Content);
+					NavigationManager.NavigateTo("/");
+				}
+				catch (Exception e)
+				{
+					Console.WriteLine(e.Message);
+				}
 			}
 		}
 
