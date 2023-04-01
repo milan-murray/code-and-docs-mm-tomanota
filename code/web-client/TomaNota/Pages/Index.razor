@@ -81,7 +81,7 @@
 								}
 							} catch(Exception e)
 							{
-								Console.WriteLine(e.Message);
+								// Console.WriteLine(e.Message);
 							}
 						}
 					</div>
@@ -290,7 +290,7 @@
 				}
 				catch(Exception e)
 				{
-					Console.WriteLine(e.Message);
+					// Console.WriteLine(e.Message);
 				}
 				awaitingTitles = false;
 			}
@@ -301,9 +301,9 @@
 			GermanTitlesEN = await Http.GetFromJsonAsync<String[]?>(url_EN_titles_DE);
 			IrishTitlesEN = await Http.GetFromJsonAsync<String[]?>(url_EN_titles_IE);
 		}
-		catch
+		catch(HttpRequestException e)
 		{
-			throw new HttpRequestException();
+			Console.WriteLine(e.Message);
 		}
 	}
 

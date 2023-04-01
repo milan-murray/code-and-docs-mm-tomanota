@@ -95,7 +95,25 @@
 	{
 		if (noteTitle != string.Empty)
 		{
+
+			List<String> existingTitles = new List<String>();
+			string key = "X00162027";
+			string user = FirebaseAuthService.FirebaseAuthClient.User.Info.DisplayName.ToString();
+			string url_user_titles = $"{baseURI}/userNotes/key/{key}/user/{user}";
+			try
+			{
+				existingTitles = await Http.GetFromJsonAsync<List<String>?>(url_user_titles);
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e.Message);
+			}
+
 			bool valid = true;
+			if (existingTitles.Contains(noteTitle))
+			{
+				valid = false;	
+			}
 
 			var content = "[";
 			for (int i = 0; i < inputs - 1; i++)
@@ -115,8 +133,6 @@
 
 			if (valid)
 			{
-				string key = "X00162027";
-				string user = FirebaseAuthService.FirebaseAuthClient.User.Info.DisplayName.ToString();
 				var Content = new StringContent(content, Encoding.UTF8, "application/json");
 
 				var uri = $"{baseURI}/userNotes/newNote/key/{key}/userIn/{user}/titleIn/{noteTitle}/scoreIn/0";
@@ -132,6 +148,5 @@
 				}
 			}
 		}
-
 	}
 }
