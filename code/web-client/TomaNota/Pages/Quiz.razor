@@ -150,21 +150,21 @@
 
 											<h3>Synonyms</h3>
 											<form>
-												<label for="synonymInput">Having trouble? Find a synonym!</label>
+												<label for="synonymInput">Want to change a word? Find a synonym!</label>
 												<br />
 												<input id="synonymInput" type="text" class="review-input shadow-lg my-2" @bind="@Response" />
 											</form>
 											<div class="my-2">
-												@* <label class="mt-1" for="fromLocales">Text language:</label>
+												<label class="mt-1 text-info" for="fromLocales">Text language:</label>
 												<select class="mt-1" id="fromLocales" @bind="FromLocal">
 													<option value="@Locales.en">English</option>
 													<option value="@Locales.es">Spanish</option>
-													<option value="@Locales.ie">Irish</option>
-													<option value="@Locales.de">German</option>
-													<option value="@Locales.fr">French</option>
-												</select> *@
+													<!-- TODO: Add the following languages to the cloud function -->
+													@*<option value="@Locales.ie">Irish</option>*@
+													@*<option value="@Locales.de">German</option>*@
+													@*<option value="@Locales.fr">French</option>*@
+												</select>
 
-												<p>Only supported for English</p>
 												<button class="btn btn-light mt-1 ms-3" @onclick="genSynonyms">Find Synonyms</button>
 												@if (finalSynonyms.Count() > 0)
 												{
@@ -184,9 +184,11 @@
 											<h3>Translation</h3>
 
 											<form>
-												<label for="translationInput">Translate text to english to find synonyms</label>
+												<label for="translationInput">Translation provided by Google translate</label>
 												<br />
 												<input id="translationInput" type="text" class="review-input shadow-lg my-2" @bind="@TranslationText" />
+												<br />
+												<small class="text-info">We recommend checking translations with a fluent speaker</small>
 											</form>
 
 											<div class="my-2">
@@ -397,33 +399,42 @@
 
 	async Task<List<string>> callSynonyms(string wordIn)
 	{
-		string URIDictionaryAPI = "https://api.dictionaryapi.dev/api/v2/entries/en/";
-
-		var synonyms = new List<string>();
-		var client = new HttpClient();
-		var response = await client.GetStringAsync(URIDictionaryAPI + wordIn);
-
-		var tempObject = JsonSerializer.Deserialize<JsonElement>(response);
-
-		int synonymsAdded = 0;
-		foreach (var meaning in tempObject[0].GetProperty("meanings").EnumerateArray())
+		var returnSynonyms = new List<string>();
+		if (wordIn != String.Empty)
 		{
-			foreach (var synonym in meaning.GetProperty("synonyms").EnumerateArray())
+			var client = new HttpClient();
+			string lang = "eng";
+			if (FromLocal == Locales.es)
 			{
-				if (synonymsAdded >= 5)
+				lang = "spa";
+			} else if (FromLocal == Locales.de)
+			{
+				lang = "deu";
+			}
+			// TODO: Add more languages here
+
+			string URIWordnetFuntion = $"https://europe-west1-tomanota-374115.cloudfunctions.net/synonymsWordnet?word={wordIn}&language={lang}";
+			var response = await client.GetStringAsync(URIWordnetFuntion);
+
+			var tempObject = JsonSerializer.Deserialize<JsonElement>(response);
+
+			var synonyms = tempObject.GetProperty("synonyms").EnumerateArray();
+
+			foreach (var synonym in synonyms)
+			{
+				if (returnSynonyms.Count >= 6)
 				{
 					break;
 				}
-				synonymsAdded++;
 
-				synonyms.Add(synonym.GetString());
-			}
-			if (synonymsAdded >= 5)
-			{
-				break;
+				var word = synonym.ToString();
+				if (!returnSynonyms.Contains(word) && word.ToLower() != wordIn.ToLower())
+				{
+					returnSynonyms.Add(word);
+				}
 			}
 		}
-		return synonyms;
+		return returnSynonyms;
 	}
 
 	async Task callTranslate()
