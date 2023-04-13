@@ -688,6 +688,7 @@
 				{
 					string key = "X00162027";
 					string user = FirebaseAuthService.FirebaseAuthClient.User.Info.DisplayName.ToString();
+					await Http.PutAsync($"{baseURI}/userNotes/setTime/key/{key}/userIn/{user}/titleIn/{Title}", null);
 					if (errorIndexes.Count() < (returnedPrompts.numOfPrompts - (returnedPrompts.numOfPrompts / 3)))
 					{
 						if (returnedPrompts.CurrentScore < 10)

@@ -1,5 +1,8 @@
 ﻿@page "/"
 @using Microsoft.JSInterop
+@using System
+@using System.Text.Json
+@using System.Text.Json.Serialization
 @inject IJSRuntime IJSRuntime
 @inject HttpClient Http
 @inject NavigationManager NavigationManager
@@ -20,6 +23,10 @@
 	.btn-block {
 		width: 100%;
 	}
+
+	.min-btn {
+		min-width: 15vh;
+	}
 </style>
 
 <div class="top-section container">
@@ -37,17 +44,24 @@
 							<span class="sr-only"></span>
 						</div>
 					}
-					else if (UserTitles != null)
+					else if (GroupedUserTitles != null)
 					{
-						@foreach (var title in UserTitles)
+						@foreach (var groupedTitle in GroupedUserTitles)
 						{
-							<button class="btn btn-primary m-1" @onclick="@(e => SelectNote(title, false))">@title</button>
+							@if (groupedTitle.LastProgressed == null)
+							{
+								<button class="btn btn-primary m-1 min-btn" @onclick="@(e => SelectNote(groupedTitle.Title, false))"><div>@groupedTitle.Title<br /><span class="text-info">New!</span></div></button>
+							}
+							else if (groupedTitle.LastProgressed < TimeSpan.FromHours(4))
+							{
+								<button class="btn btn-secondary m-1 min-btn" @onclick="@(e => SelectNote(groupedTitle.Title, false))"><div class="clearfix">@groupedTitle.Title<br /><div class="float-start">@groupedTitle.Score</div><div class="float-end rounded bg-warning px-1">@string.Format("{0:%h}", groupedTitle.LastProgressed)</div></div></button>
+							}
 						}
 					}
 				</div>
-				<div class="d-flex justify-content-center">
-					<button class="btn btn-success m-1" @onclick="NavigateToCreate">Create New</button>
-					<button class="btn btn-danger m-1" @onclick="DeleteUserNote" disabled="@TitleIsNotReady">Delete Note</button>
+				<div class="d-flex justify-content-center mt-2">
+					<button class="btn btn-success m-1 btn-block" @onclick="NavigateToCreate">Create New</button>
+					<button class="btn btn-danger m-1 btn-block" @onclick="DeleteUserNote" disabled="@TitleIsNotReady">Delete Note</button>
 				</div>
 			</div>
 		</div>
@@ -264,7 +278,7 @@
 	Boolean TitleIsNotReady { get; set; } = true;
 	Boolean TitleIsPremade { get; set; }
 	Boolean awaitingTitles = true;
-	List<String>? UserTitles { get; set; }
+	List<TitleGroup>? GroupedUserTitles { get; set; }
 	String[]? EnglishTitlesES { get; set; }
 	String[]? GermanTitlesES { get; set; }
 	String[]? SpanishTitlesEN { get; set; }
@@ -273,6 +287,16 @@
 	String[]? SpanishTitlesDE { get; set; }
 	String[]? EnglishTitlesDE { get; set; }
 	String baseURI = "https://user-web-api-tn.azurewebsites.net";
+
+	public class TitleGroup
+	{
+		[JsonPropertyName("title")]
+		public String Title { get; set; }
+		[JsonPropertyName("score")]
+		public int Score { get; set; }
+		[JsonPropertyName("lastProgressed")]
+		public TimeSpan? LastProgressed { get; set; }
+	}
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -285,13 +309,36 @@
 				string url_user_titles = $"{baseURI}/userNotes/key/{key}/user/{user}";
 				try
 				{
-					// Console.WriteLine(url_user_titles);
-					UserTitles = await Http.GetFromJsonAsync<List<String>?>(url_user_titles);
+					var Response = await Http.GetAsync(url_user_titles);
+
+					var JSONResponse = await Response.Content.ReadAsStringAsync();
+					// Console.WriteLine(JSONResponse.ToString());
+					GroupedUserTitles = JsonSerializer.Deserialize<List<TitleGroup>>(JSONResponse);
 				}
 				catch(Exception e)
 				{
 					// Console.WriteLine(e.Message);
 				}
+
+				// Parallel lists of scores and dates for each of the user's notes
+				/*
+				if (GroupedUserTitles != null)
+						{
+						try
+						{
+						string url_user_p_scores = $"{baseURI}/score/key/{key}/user/{user}/title/";
+						foreach (var title in GroupedUserTitles)
+							{
+							var noteScore = await Http.GetFromJsonAsync<int>(url_user_p_scores);
+							parallelScores.Add(noteScore);
+					}
+					}
+					catch (Exception e)
+						{
+						Console.WriteLine(e.Message);
+				}
+				}
+				*/
 				awaitingTitles = false;
 			}
 			string url_EN_titles_ES = "https://europe-west1-tomanota-374115.cloudfunctions.net/get-EN-titles-ES";
@@ -318,7 +365,14 @@
 				string user = FirebaseAuthService.FirebaseAuthClient.User.Info.DisplayName.ToString();
 				string url = $"{baseURI}/userNotes/delete/key/{key}/user/{user}/title/{SelectedTitle}";
 				await Http.DeleteAsync(url);
-				UserTitles.Remove(SelectedTitle);
+				foreach (var groupTitle in GroupedUserTitles)
+				{
+					if (groupTitle.Title == SelectedTitle)
+					{
+						GroupedUserTitles.Remove(groupTitle);
+						break;
+					}
+				}
 				SelectedTitle = String.Empty;
 				TitleIsNotReady = true;
 			}

@@ -62,6 +62,62 @@ public class userNotesController : ControllerBase
 		return Unauthorized();
 	}
 
+	[HttpGet("time/key/{keyIn}/user/{userIn}/title/{titleIn}")]
+	[ProducesResponseType(StatusCodes.Status204NoContent)]
+	[ProducesResponseType(StatusCodes.Status404NotFound)]
+	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+	[ProducesResponseType(StatusCodes.Status200OK)]
+	public ActionResult<DateTime> getTime([FromRoute] string keyIn, [FromRoute] string userIn, [FromRoute] string titleIn)
+	{
+		if (keyIn == APIKEY)
+		{
+			userNotes note = noteStorage.FirstOrDefault(n => n.User == userIn && n.Title == titleIn);
+			if (note == null)
+			{
+				return NotFound();
+			}
+			var noteTime = noteStorage.Where(n => n.Title == titleIn).Where(u => u.User == userIn).Select(p => p.LastProgressed).FirstOrDefault();
+			if (noteTime == null)
+			{
+				return NoContent();
+			}
+			return Ok(noteTime);
+		}
+		return Unauthorized();
+	}
+
+	[HttpGet("timeDelta/key/{keyIn}/user/{userIn}/title/{titleIn}")]
+	[ProducesResponseType(StatusCodes.Status204NoContent)]
+	[ProducesResponseType(StatusCodes.Status404NotFound)]
+	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+	[ProducesResponseType(StatusCodes.Status200OK)]
+	public ActionResult<DateTime> getTimeDelta([FromRoute] string keyIn, [FromRoute] string userIn, [FromRoute] string titleIn)
+	{
+		if (keyIn == APIKEY)
+		{
+			userNotes note = noteStorage.FirstOrDefault(n => n.User == userIn && n.Title == titleIn);
+			if (note == null)
+			{
+				return NotFound();
+			}
+			var noteTime = noteStorage.Where(n => n.Title == titleIn).Where(u => u.User == userIn).Select(p => p.LastProgressed).FirstOrDefault();
+			if (noteTime == null)
+			{
+				return NoContent();
+			}
+			return Ok(DateTime.Now - noteTime);
+		}
+		return Unauthorized();
+	}
+
+	// Class for title return type below
+	public class TitleGroup
+	{
+		public String Title { get; set; }
+		public int Score { get; set; }
+		public TimeSpan? LastProgressed { get; set; }
+	}
+
 	[HttpGet("key/{keyIn}/user/{userIn}")]
 	[ProducesResponseType(StatusCodes.Status204NoContent)]
 	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -74,7 +130,12 @@ public class userNotesController : ControllerBase
 			{
 				return NoContent();
 			}
-			return Ok(noteStorage.Where(u => u.User == userIn).Select(t => t.Title));
+			return Ok(noteStorage.Where(u => u.User == userIn).Select(t => new TitleGroup
+			{
+				Title = t.Title,
+				Score = t.Score,
+				LastProgressed = DateTime.Now - t.LastProgressed
+			}));
 		}
 		return Unauthorized();
 	}
@@ -92,7 +153,7 @@ public class userNotesController : ControllerBase
 			{
 				return BadRequest();
 			}
-			noteStorage.Add(new userNotes { User = userIn, Title = titleIn, Prompts = PromptsIn, Score = scoreIn });
+			noteStorage.Add(new userNotes { User = userIn, Title = titleIn, Prompts = PromptsIn, Score = scoreIn, LastProgressed = null });
 			return Ok();
 		}
 		return Unauthorized();
@@ -142,6 +203,36 @@ public class userNotesController : ControllerBase
 				return Ok();
 			}
 			return NoContent();
+		}
+		return Unauthorized();
+	}
+
+	[HttpPut("setTime/key/{keyIn}/userIn/{userIn}/titleIn/{titleIn}")]
+	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+	[ProducesResponseType(StatusCodes.Status200OK)]
+	[ProducesResponseType(StatusCodes.Status400BadRequest)]
+	[ProducesResponseType(StatusCodes.Status404NotFound)]
+	public IActionResult setTime([FromRoute] string keyIn, [FromRoute] string userIn, [FromRoute] string titleIn)
+	{
+		if (keyIn == APIKEY)
+		{
+			userNotes note = noteStorage.FirstOrDefault(n => n.User == userIn && n.Title == titleIn);
+			if (note == null)
+			{
+				return NotFound();
+			}
+			if (note.LastProgressed == null)
+			{
+				note.LastProgressed = DateTime.Now;
+				return Ok();
+			}
+			DateTime now = DateTime.Now;
+			if (!(note.LastProgressed > now.AddHours(-4) && note.LastProgressed <= now))
+			{
+				note.LastProgressed = DateTime.Now;
+				return Ok();
+			}
+			return BadRequest();
 		}
 		return Unauthorized();
 	}
