@@ -111,7 +111,7 @@
 			List<TitleGroup> existingTitleGroups = new List<TitleGroup>();
 			List<String> existingTitles = new List<String>();
 			string key = "X00162027";
-			string user = FirebaseAuthService.FirebaseAuthClient.User.Info.DisplayName.ToString();
+			string user = FirebaseAuthService.FirebaseAuthClient.User.Info.Email.ToString();
 			string url_user_titles = $"{baseURI}/userNotes/key/{key}/user/{user}";
 			try
 			{
@@ -137,6 +137,8 @@
 				valid = false;	
 			}
 
+			// TODO: Prevent special characters from being entered
+			// TODO: Prevent titles from containing special characters and from being too long
 			var content = "[";
 			for (int i = 0; i < inputs - 1; i++)
 			{

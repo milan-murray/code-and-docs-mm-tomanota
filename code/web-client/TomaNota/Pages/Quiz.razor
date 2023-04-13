@@ -533,7 +533,7 @@
 				if (FirebaseAuthService.FirebaseAuthClient.User != null)
 				{
 					string key = "X00162027";
-					string user = FirebaseAuthService.FirebaseAuthClient.User.Info.DisplayName.ToString();
+					string user = FirebaseAuthService.FirebaseAuthClient.User.Info.Email.ToString();
 					var jsonString = await Http.GetStringAsync($"{baseURI}/userNotes/key/{key}/user/{user}/title/{Title.ToString()}");
 					returnedPrompts.CurrentScore = Int32.Parse(await Http.GetStringAsync($"{baseURI}/userNotes/score/key/{key}/user/{user}/title/{Title.ToString()}"));
 					returnedPrompts.Prompts = JsonSerializer.Deserialize<List<List<String>>>(jsonString);
@@ -695,7 +695,7 @@
 				if (!Premade)
 				{
 					string key = "X00162027";
-					string user = FirebaseAuthService.FirebaseAuthClient.User.Info.DisplayName.ToString();
+					string user = FirebaseAuthService.FirebaseAuthClient.User.Info.Email.ToString();
 					bool started = await Http.GetFromJsonAsync<bool>($"{baseURI}/userNotes/started/key/{key}/user/{user}/title/{Title}");
 					if (started)
 					{
@@ -780,8 +780,8 @@
 	private async Task SaveNotes()
 	{
 		string key = "X00162027";
-		string user = FirebaseAuthService.FirebaseAuthClient.User.Info.DisplayName.ToString();
-		if (FirebaseAuthService.FirebaseAuthClient.User.Info.DisplayName != null)
+		string user = FirebaseAuthService.FirebaseAuthClient.User.Info.Email.ToString();
+		if (FirebaseAuthService.FirebaseAuthClient.User.Info.Email != null)
 		{
 			if (NewTitle != String.Empty)
 			{

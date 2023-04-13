@@ -10,6 +10,10 @@
 		align-items: center;
 		margin-bottom: 1em;
 	}
+
+	.btn-block {
+		width: 100%;
+	}
 </style>
 
 <div class="container">
@@ -28,9 +32,18 @@
 						<label for="password">Password:</label>
 						<input class="form-control" id="password" type="password" @bind="@Password" />
 					</div>
-					<h4 class="text-danger text-sm-start">@ErrorText</h4>
+					<small class="text-danger text-sm-start">@ErrorText</small>
 				</form>
-				<button class="btn btn-light mt-3" @onclick="LogInUser">Log In</button>
+
+				<div class="d-flex justify-content-center mt-2">
+					<button class="btn btn-primary m-1 btn-block" @onclick="LogInUser">Log In</button>
+				</div>
+				<div class="d-flex justify-content-center text-center">
+					<small class="mt-5">Don't have an account?</small>
+				</div>
+				<div class="d-flex justify-content-center mt-2">
+					<button class="btn btn-light m-1 btn-block" @onclick="NavigateToSignUp">Create an account</button>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -56,5 +69,10 @@
 			Console.WriteLine(e.Message);
 			ErrorText = "Invalid email or password";
 		}
+	}
+
+	public void NavigateToSignUp()
+	{
+		NavigationManager.NavigateTo("sign-up");
 	}
 }

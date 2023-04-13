@@ -79,7 +79,7 @@
 			if (FirebaseAuthService.FirebaseAuthClient.User != null)
 			{
 				string key = "X00162027";
-				string user = FirebaseAuthService.FirebaseAuthClient.User.Info.DisplayName.ToString();
+				string user = FirebaseAuthService.FirebaseAuthClient.User.Info.Email.ToString();
 				var jsonString = await Http.GetStringAsync($"{baseURI}/userNotes/key/{key}/user/{user}/title/{Title.ToString()}");
 				returnedPrompts.Score = Int32.Parse(await Http.GetStringAsync($"{baseURI}/userNotes/score/key/{key}/user/{user}/title/{Title.ToString()}"));
 				returnedPrompts.Prompts = JsonSerializer.Deserialize<List<List<object>>>(jsonString);

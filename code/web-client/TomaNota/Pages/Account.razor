@@ -1,0 +1,100 @@
+﻿@page "/account"
+@using Microsoft.JSInterop
+@using System
+@using System.Text.Json
+@using System.Text.Json.Serialization
+@inject IJSRuntime IJSRuntime
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@inject IFirebaseAuthService FirebaseAuthService
+
+<div class="container">
+	<div class="card text-light bg-dark">
+		<div class="card-header">
+			<h3>Account settings</h3>
+		</div>
+		<div class="card-body">
+			@if (FirebaseAuthService.FirebaseAuthClient.User != null)
+			{
+				<h4>Account settings for @FirebaseAuthService.FirebaseAuthClient.User.Info.DisplayName</h4>
+				<div class="my-3">
+					<p>Email: @FirebaseAuthService.FirebaseAuthClient.User.Info.Email</p>
+					<label>New password</label>
+					<br />
+					<input class="@errorInput" type="text" @bind="UserPass1"/>
+					<br />
+					<label>Repeat password</label>
+					<br />
+					<input class="@errorInput" type="text" @bind="UserPass2" />
+					<br />
+					<button class="btn btn-light my-3" @onclick="ChangePass">Change password</button>
+
+				</div>
+
+				<button class="btn btn-danger" @onclick="DeleteAccount">Delete Account</button>
+			}
+		</div>
+	</div>
+</div>
+
+
+@code {
+
+	protected String UserPass1 { get; set; } = String.Empty;
+	protected String UserPass2 { get; set; } = String.Empty;
+	String errorInput { get; set; } = "rounded";
+
+	protected override Task OnInitializedAsync()
+	{
+		if (FirebaseAuthService.FirebaseAuthClient.User == null)
+		{
+			NavigationManager.NavigateTo("/log-in");
+		}
+		return base.OnInitializedAsync();
+	}
+
+	public async Task ChangePass()
+	{
+		if (FirebaseAuthService.FirebaseAuthClient.User != null)
+		{
+			if (UserPass1 == String.Empty || UserPass2 == String.Empty)
+			{
+				errorInput = "border border-danger rounded";
+			}
+			if (UserPass1 == UserPass2 && UserPass1.Count() > 6)
+			{
+				try
+				{
+					await FirebaseAuthService.FirebaseAuthClient.User.ChangePasswordAsync(UserPass1);
+					errorInput = "border border-success rounded";
+				}
+				catch(Exception e)
+				{
+					Console.WriteLine(e.Message);
+				}
+			}
+		}
+	}
+
+	public async Task DeleteAccount()
+	{
+		if (FirebaseAuthService.FirebaseAuthClient.User != null)
+		{
+			bool result = await IJSRuntime.InvokeAsync<bool>("confirm", "Delete account? This action cannot be undone.");
+			if (result)
+			{
+				try
+				{
+					await FirebaseAuthService.FirebaseAuthClient.User.DeleteAsync();
+					NavigationManager.NavigateTo("/");
+				}
+				catch(Exception e)
+				{
+					Console.WriteLine(e.Message);
+				}
+
+				// TODO: Delete all user's notes
+			}
+		}
+	}
+}
