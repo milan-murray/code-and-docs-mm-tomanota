@@ -1,7 +1,11 @@
 ﻿@page "/quiz"
 @page "/quiz/{title}/{premade:bool}"
+@using Microsoft.JSInterop
+@inject IJSRuntime IJSRuntime
+@using System
 @using System.Text
 @using System.Text.Json
+@using System.Text.Json.Serialization
 @using System.Text.RegularExpressions
 @using NJson = Newtonsoft.Json
 @inject IFirebaseAuthService FirebaseAuthService
@@ -229,7 +233,8 @@
 									@if (FirebaseAuthService.FirebaseAuthClient.User != null)
 									{
 										<div class="mt-3">
-											<label>If you wish to save a new answer you may enter it here</label>
+											<label><small>If you wish to save a new answer, please enter it here</small></label>
+											<br />
 											<input type="text" class="review-input shadow-lg my-2" @bind="NewNotes[errorIndexes[ReviewIndex]][1]" />
 										</div>
 									}
@@ -260,15 +265,16 @@
 
 								@if (FirebaseAuthService.FirebaseAuthClient.User != null)
 								{
-									<p>Save these notes and track progress?</p>
+									<p class="mt-5">Save these notes and track progress?</p>
 									<div>
 										<label>Title of new notes</label>
 										<div>
 											<input type="text" class="review-input shadow-lg my-2" @bind="NewTitle" />
 										</div>
-										<div>
-											<small class="text-secondary">New titles must be unique</small>
-										</div>
+										<br />
+										@*<div>
+											<label><small class="text-secondary">New titles must be unique</small></label>
+										</div>*@
 									</div>
 								}
 								else
@@ -276,7 +282,7 @@
 									<p>Log in modify notes and save progress</p>
 								}
 							</div>
-							<div class="mt-3">
+							<div class="mt-1">
 								<button class="btn btn-success" @onclick="SaveNotes">Save notes</button>
 							</div>
 						}
@@ -456,22 +462,24 @@
 	async Task<List<string>> Translate(string textIn, Locales localFrom, Locales localTo)
 	{
 		List<string> responseTranslations = new List<string>();
+		Console.WriteLine("From: " + localFrom.ToString());
+		Console.WriteLine("To: " + localTo.ToString());
 		var client = new HttpClient();
 		var request = new HttpRequestMessage
 			{
-				Method = HttpMethod.Put,
+				Method = HttpMethod.Post,
 				RequestUri = new Uri("https://google-translate1.p.rapidapi.com/language/translate/v2"),
 				Headers =
-				{
+			{
 				{ "X-RapidAPI-Key", "3dd5c1afa7msha944fd8168e4e91p1e3b4ajsn41765a294a16" },
 				{ "X-RapidAPI-Host", "google-translate1.p.rapidapi.com" },
-				},
+			},
 						Content = new FormUrlEncodedContent(new Dictionary<string, string>
-				{
+			{
 				{ "source", localFrom.ToString() },
 				{ "target", localTo.ToString() },
 				{ "q", textIn },
-				}),
+			}),
 			};
 
 		using (var response = await client.SendAsync(request))
@@ -688,21 +696,65 @@
 				{
 					string key = "X00162027";
 					string user = FirebaseAuthService.FirebaseAuthClient.User.Info.DisplayName.ToString();
-					await Http.PutAsync($"{baseURI}/userNotes/setTime/key/{key}/userIn/{user}/titleIn/{Title}", null);
-					if (errorIndexes.Count() < (returnedPrompts.numOfPrompts - (returnedPrompts.numOfPrompts / 3)))
+					bool started = await Http.GetFromJsonAsync<bool>($"{baseURI}/userNotes/started/key/{key}/user/{user}/title/{Title}");
+					if (started)
 					{
-						if (returnedPrompts.CurrentScore < 10)
+						TimeSpan lastModified = await Http.GetFromJsonAsync<TimeSpan>($"{baseURI}/userNotes/timeDelta/key/{key}/user/{user}/title/{Title}");
+						if (lastModified > TimeSpan.FromHours(4))
 						{
-							string uri = $"{baseURI}/userNotes/incScore/key/{key}/userIn/{user}/titleIn/{Title}";
-							await Http.PutAsync(uri, null);
+							await Http.PutAsync($"{baseURI}/userNotes/setTime/key/{key}/userIn/{user}/titleIn/{Title}", null);
+							if (errorIndexes.Count() < (returnedPrompts.numOfPrompts - (returnedPrompts.numOfPrompts / 3)))
+							{
+								if (PerfectResult && returnedPrompts.CurrentScore <= 8)
+								{
+									string uri = $"{baseURI}/userNotes/incScore/key/{key}/userIn/{user}/titleIn/{Title}";
+									await Http.PutAsync(uri, null);
+									await Http.PutAsync(uri, null);
+								}
+								else if (returnedPrompts.CurrentScore < 10)
+								{
+									string uri = $"{baseURI}/userNotes/incScore/key/{key}/userIn/{user}/titleIn/{Title}";
+									await Http.PutAsync(uri, null);
+								}
+							}
+							else
+							{
+								if (returnedPrompts.CurrentScore > 0)
+								{
+									string uri = $"{baseURI}/userNotes/decScore/key/{key}/userIn/{user}/titleIn/{Title}";
+									await Http.PutAsync(uri, null);
+								}
+							}
 						}
+						else
+						{
+							Console.WriteLine("Too soon to increment score");
+						}	
 					}
 					else
 					{
-						if (returnedPrompts.CurrentScore > 0)
+						await Http.PutAsync($"{baseURI}/userNotes/setTime/key/{key}/userIn/{user}/titleIn/{Title}", null);
+						if (errorIndexes.Count() < (returnedPrompts.numOfPrompts - (returnedPrompts.numOfPrompts / 3)))
 						{
-							string uri = $"{baseURI}/userNotes/decScore/key/{key}/userIn/{user}/titleIn/{Title}";
-							await Http.PutAsync(uri, null);
+							if (PerfectResult && returnedPrompts.CurrentScore <= 8)
+							{
+								string uri = $"{baseURI}/userNotes/incScore/key/{key}/userIn/{user}/titleIn/{Title}";
+								await Http.PutAsync(uri, null);
+								await Http.PutAsync(uri, null);
+							}
+							else if (returnedPrompts.CurrentScore < 10)
+							{
+								string uri = $"{baseURI}/userNotes/incScore/key/{key}/userIn/{user}/titleIn/{Title}";
+								await Http.PutAsync(uri, null);
+							}
+						}
+						else
+						{
+							if (returnedPrompts.CurrentScore > 0)
+							{
+								string uri = $"{baseURI}/userNotes/decScore/key/{key}/userIn/{user}/titleIn/{Title}";
+								await Http.PutAsync(uri, null);
+							}
 						}
 					}
 				}
@@ -715,6 +767,16 @@
 		NavigationManager.NavigateTo("/");
 	}
 
+	public class TitleGroup
+	{
+		[JsonPropertyName("title")]
+		public String Title { get; set; }
+		[JsonPropertyName("score")]
+		public int Score { get; set; }
+		[JsonPropertyName("lastProgressed")]
+		public TimeSpan? LastProgressed { get; set; }
+	}
+
 	private async Task SaveNotes()
 	{
 		string key = "X00162027";
@@ -723,21 +785,32 @@
 		{
 			if (NewTitle != String.Empty)
 			{
+				List<TitleGroup> existingTitleGroups = new List<TitleGroup>();
 				List<String> existingTitles = new List<String>();
 				string url_user_titles = $"{baseURI}/userNotes/key/{key}/user/{user}";
 				try
 				{
-					existingTitles = await Http.GetFromJsonAsync<List<String>?>(url_user_titles);
+					var Response = await Http.GetAsync(url_user_titles);
+
+					var JSONResponse = await Response.Content.ReadAsStringAsync();
+					// Console.WriteLine(JSONResponse.ToString());
+					existingTitleGroups = JsonSerializer.Deserialize<List<TitleGroup>>(JSONResponse);
+
+					foreach (var titleGroup in existingTitleGroups)
+					{
+						existingTitles.Add(titleGroup.Title);
+					}
 				}
 				catch (Exception e)
 				{
 					Console.WriteLine(e.Message);
 				}
 
+				bool notExisting = true;
 				bool valid = true;
 				if (existingTitles.Contains(NewTitle))
 				{
-					valid = false;
+					notExisting = false;
 				}
 
 				var content = "[";
@@ -752,33 +825,60 @@
 				}
 				if (NewNotes.ElementAt(NewNotes.Count() - 1).ElementAt(0).ToString() == String.Empty || NewNotes.ElementAt(NewNotes.Count() - 1).ElementAt(1).ToString() == String.Empty)
 				{
-					valid = false;
+					notExisting = false;
 				}
 				content += $"[\"{NewNotes.ElementAt(NewNotes.Count() - 1).ElementAt(0)}\", \"{NewNotes.ElementAt(NewNotes.Count() - 1).ElementAt(1)}\"]]";
 
 				if (valid)
 				{
-					var Content = new StringContent(content, Encoding.UTF8, "application/json");
-
-					var uri = $"{baseURI}/userNotes/newNote/key/{key}/userIn/{user}/titleIn/{NewTitle}/scoreIn/0";
-
-					try
+					Console.WriteLine("Is valid");
+					if (notExisting)
 					{
-						// Console.WriteLine("Looks good");
-						// Console.WriteLine(content);
-						await client.PostAsync(uri, Content);
-						NavigationManager.NavigateTo("/");
+						Console.WriteLine("Making new");
+						var Content = new StringContent(content, Encoding.UTF8, "application/json");
+
+						var uri = $"{baseURI}/userNotes/newNote/key/{key}/userIn/{user}/titleIn/{NewTitle}/scoreIn/0";
+
+						try
+						{
+							// Console.WriteLine("Looks good");
+							// Console.WriteLine(content);
+							await client.PostAsync(uri, Content);
+							NavigationManager.NavigateTo("/");
+						}
+						catch (Exception e)
+						{
+							Console.WriteLine(e.Message);
+						}
 					}
-					catch (Exception e)
+					else
 					{
-						Console.WriteLine(e.Message);
+						Console.WriteLine("Replacing title");
+
+						bool result = await IJSRuntime.InvokeAsync<bool>("confirm", "Title already in use. Overwrite notes? This action cannot be undone.");
+						if (result)
+						{
+							try
+							{
+							string url = $"{baseURI}/userNotes/delete/key/{key}/user/{user}/title/{NewTitle}";
+							await Http.DeleteAsync(url);
+							var Content = new StringContent(content, Encoding.UTF8, "application/json");
+
+							var uri = $"{baseURI}/userNotes/newNote/key/{key}/userIn/{user}/titleIn/{NewTitle}/scoreIn/0";
+
+								// Console.WriteLine("Looks good");
+								// Console.WriteLine(content);
+								await client.PostAsync(uri, Content);
+								NavigationManager.NavigateTo("/");
+							}
+							catch (Exception e)
+							{
+								Console.WriteLine(e.Message);
+							}
+						}
 					}
 				}
 			}
-		}
-		else
-		{
-			// Tell user that they must be logged in
 		}
 	}
 }

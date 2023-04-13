@@ -86,12 +86,35 @@ public class userNotesController : ControllerBase
 		return Unauthorized();
 	}
 
+	[HttpGet("started/key/{keyIn}/user/{userIn}/title/{titleIn}")]
+	[ProducesResponseType(StatusCodes.Status404NotFound)]
+	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+	[ProducesResponseType(StatusCodes.Status200OK)]
+	public ActionResult<DateTime> getStarted([FromRoute] string keyIn, [FromRoute] string userIn, [FromRoute] string titleIn)
+	{
+		if (keyIn == APIKEY)
+		{
+			userNotes note = noteStorage.FirstOrDefault(n => n.User == userIn && n.Title == titleIn);
+			if (note == null)
+			{
+				return NotFound();
+			}
+			var noteTime = noteStorage.Where(n => n.Title == titleIn).Where(u => u.User == userIn).Select(p => p.LastProgressed).FirstOrDefault();
+			if (noteTime == null)
+			{
+				return Ok(false);
+			}
+			return Ok(true);
+		}
+		return Unauthorized();
+	}
+
 	[HttpGet("timeDelta/key/{keyIn}/user/{userIn}/title/{titleIn}")]
 	[ProducesResponseType(StatusCodes.Status204NoContent)]
 	[ProducesResponseType(StatusCodes.Status404NotFound)]
 	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
 	[ProducesResponseType(StatusCodes.Status200OK)]
-	public ActionResult<DateTime> getTimeDelta([FromRoute] string keyIn, [FromRoute] string userIn, [FromRoute] string titleIn)
+	public ActionResult<TimeSpan> getTimeDelta([FromRoute] string keyIn, [FromRoute] string userIn, [FromRoute] string titleIn)
 	{
 		if (keyIn == APIKEY)
 		{

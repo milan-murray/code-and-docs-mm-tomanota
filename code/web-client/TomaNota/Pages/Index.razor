@@ -25,7 +25,7 @@
 	}
 
 	.min-btn {
-		min-width: 15vh;
+		min-width: 30vh;
 	}
 </style>
 
@@ -48,14 +48,135 @@
 					{
 						@foreach (var groupedTitle in GroupedUserTitles)
 						{
-							@if (groupedTitle.LastProgressed == null)
+							@if (groupedTitle.Score == 10)
 							{
-								<button class="btn btn-primary m-1 min-btn" @onclick="@(e => SelectNote(groupedTitle.Title, false))"><div>@groupedTitle.Title<br /><span class="text-info">New!</span></div></button>
+								<button class="btn btn-light border border-success m-1 mb-3 min-btn shadow" @onclick="@(e => SelectNote(groupedTitle.Title, false))"><div>@groupedTitle.Title<br /><small class="text-success">Complete!</small></div></button>
 							}
-							else if (groupedTitle.LastProgressed < TimeSpan.FromHours(4))
+							else if (groupedTitle.LastProgressed == null)
 							{
-								<button class="btn btn-secondary m-1 min-btn" @onclick="@(e => SelectNote(groupedTitle.Title, false))"><div class="clearfix">@groupedTitle.Title<br /><div class="float-start">@groupedTitle.Score</div><div class="float-end rounded bg-warning px-1">@string.Format("{0:%h}", groupedTitle.LastProgressed)</div></div></button>
+								<button class="btn btn-primary m-1 mb-3 min-btn shadow" @onclick="@(e => SelectNote(groupedTitle.Title, false))"><div>@groupedTitle.Title<br /><small class="text-info">New!</small></div></button>
 							}
+							else if (groupedTitle.Score <= 2)
+							{
+								<button class="btn btn-light m-1 mb-3 min-btn border border-danger shadow" @onclick="@(e => SelectNote(groupedTitle.Title, false))">
+									<div class="clearfix">@groupedTitle.Title<br /><div class="float-start rounded bg-danger text-light border border-dark px-1"><small>@groupedTitle.Score</small></div>
+										@if (groupedTitle.LastProgressed < TimeSpan.FromHours(4))
+										{
+											<div class="float-end rounded bg-secondary text-light border border-dark px-1">
+												<small>
+													@string.Format("{0:%h}h ago", groupedTitle.LastProgressed)
+												</small>
+											</div>
+										}
+										else
+										{
+											<div class="float-end rounded bg-success text-light border border-dark px-1">
+												<small>
+													@string.Format("{0:%h}h ago", groupedTitle.LastProgressed)
+												</small>
+											</div>
+										}
+									</div>
+								</button>	
+							}
+							else if (groupedTitle.Score <= 5)
+							{
+								<button class="btn btn-light m-1 mb-3 min-btn border border-warning shadow" @onclick="@(e => SelectNote(groupedTitle.Title, false))">
+									<div class="clearfix">
+										@groupedTitle.Title<br /><div class="float-start rounded bg-warning text-light border border-dark px-1"><small>@groupedTitle.Score</small></div>
+										@if (groupedTitle.LastProgressed < TimeSpan.FromHours(4))
+										{
+											<div class="float-end rounded bg-secondary text-light border border-dark px-1">
+												<small>
+													@string.Format("{0:%h}h ago", groupedTitle.LastProgressed)
+												</small>
+											</div>
+										}
+										else
+										{
+											<div class="float-end rounded bg-success text-light border border-dark px-1">
+												<small>
+													@string.Format("{0:%h}h ago", groupedTitle.LastProgressed)
+												</small>
+											</div>
+										}
+									</div>
+								</button>
+							}
+							else if (groupedTitle.Score <= 7)
+							{
+								<button class="btn btn-light m-1 mb-3 min-btn border border-primary shadow" @onclick="@(e => SelectNote(groupedTitle.Title, false))">
+									<div class="clearfix">
+										@groupedTitle.Title<br /><div class="float-start rounded bg-primary text-light border border-dark px-1"><small>@groupedTitle.Score</small></div>
+										@if (groupedTitle.LastProgressed < TimeSpan.FromHours(4))
+										{
+											<div class="float-end rounded bg-secondary text-light border border-dark px-1">
+												<small>
+													@string.Format("{0:%h}h ago", groupedTitle.LastProgressed)
+												</small>
+											</div>
+										}
+										else
+										{
+											<div class="float-end rounded bg-success text-light border border-dark px-1">
+												<small>
+													@string.Format("{0:%h}h ago", groupedTitle.LastProgressed)
+												</small>
+											</div>
+										}
+									</div>
+								</button>
+							}
+							else
+							{
+								<button class="btn btn-light m-1 mb-3 min-btn border border-success shadow" @onclick="@(e => SelectNote(groupedTitle.Title, false))">
+									<div class="clearfix">
+										@groupedTitle.Title<br /><div class="float-start rounded bg-success text-light border border-dark px-1"><small>@groupedTitle.Score</small></div>
+										@if (groupedTitle.LastProgressed < TimeSpan.FromHours(4))
+										{
+											<div class="float-end rounded bg-secondary text-light border border-dark px-1">
+												<small>
+													@string.Format("{0:%h}h ago", groupedTitle.LastProgressed)
+												</small>
+											</div>
+										}
+										else
+										{
+											<div class="float-end rounded bg-success text-light border border-dark px-1">
+												<small>
+													@string.Format("{0:%h}h ago", groupedTitle.LastProgressed)
+												</small>
+											</div>
+										}
+									</div>
+								</button>
+							}
+							@*else if (groupedTitle.LastProgressed < TimeSpan.FromHours(4))
+							{
+								<button class="btn btn-secondary m-1 min-btn shadow" @onclick="@(e => SelectNote(groupedTitle.Title, false))"><div class="clearfix">@groupedTitle.Title<br /><div class="float-start">@groupedTitle.Score</div><div class="float-end rounded bg-warning px-1">@string.Format("{0:%h}h ago", groupedTitle.LastProgressed)</div></div></button>
+							}
+							else
+							{
+								if (groupedTitle.Score <= 2)
+								{
+									
+								}
+								else if (groupedTitle.Score <= 5)
+								{
+									<button class="btn btn-warning m-1 min-btn shadow" @onclick="@(e => SelectNote(groupedTitle.Title, false))"><div class="clearfix">@groupedTitle.Title<br /><div class="float-start">@groupedTitle.Score</div><div class="float-end rounded bg-success px-1">@string.Format("{0:%h}h ago", groupedTitle.LastProgressed)</div></div></button>
+
+								}
+								else if (groupedTitle.Score <= 8)
+								{
+									<button class="btn btn-primary m-1 min-btn shadow" @onclick="@(e => SelectNote(groupedTitle.Title, false))"><div class="clearfix">@groupedTitle.Title<br /><div class="float-start">@groupedTitle.Score</div><div class="float-end rounded bg-success px-1">@string.Format("{0:%h}h ago", groupedTitle.LastProgressed)</div></div></button>
+
+								}
+								else
+								{
+									<button class="btn btn-success m-1 min-btn shadow" @onclick="@(e => SelectNote(groupedTitle.Title, false))"><div class="clearfix">@groupedTitle.Title<br /><div class="float-start">@groupedTitle.Score</div><div class="float-end rounded bg-success px-1">@string.Format("{0:%h}", groupedTitle.LastProgressed)</div></div></button>
+
+								}
+							}*@
 						}
 					}
 				</div>
