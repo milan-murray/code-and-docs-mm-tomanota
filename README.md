@@ -9,7 +9,7 @@
 
 ### Web Client (Deployed)
 
-	URL: https://tomanota.azurewebsites.net/
+URL: https://tomanota.azurewebsites.net/
 
 ## About
 
