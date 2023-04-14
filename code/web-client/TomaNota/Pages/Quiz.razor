@@ -130,20 +130,26 @@
 								<p>Perfect Result!</p>
 								<button class="btn btn-success" @onclick="NavigateToHome">Return to home</button>
 							</div>
-							@if (FirebaseAuthService.FirebaseAuthClient.User != null)
+							@if (Premade)
 							{
-								<p class="mt-5">Save these notes and track progress?</p>
-								<div>
-									<label>Title of new notes</label>
+								@if (FirebaseAuthService.FirebaseAuthClient.User != null)
+								{
+									<p class="mt-5">Save these notes and track progress?</p>
 									<div>
-										<input type="text" class="review-input shadow-lg my-2" @bind="NewTitle" />
+										<label>Title of new notes</label>
+										<div>
+											<input type="text" class="review-input shadow-lg my-2" @bind="NewTitle" />
+										</div>
+										<br />
 									</div>
-									<br />
-								</div>
-							}
-							else
-							{
-								<p>Log in modify notes and save progress</p>
+									<div class="mt-1">
+										<button class="btn btn-success" @onclick="SaveNotes">Save notes</button>
+									</div>
+								}
+								else
+								{
+									<p>Log in modify notes and save progress</p>
+								}
 							}
 						}
 						else
