@@ -21,11 +21,14 @@
 					<p>Email: @FirebaseAuthService.FirebaseAuthClient.User.Info.Email</p>
 					<label>New password</label>
 					<br />
-					<input class="@errorInput" type="text" @bind="UserPass1"/>
+					<input class="@errorInput" type="password" @bind="UserPass1"/>
 					<br />
 					<label>Repeat password</label>
 					<br />
-					<input class="@errorInput" type="text" @bind="UserPass2" />
+					<input class="@errorInput" type="password" @bind="UserPass2" />
+					<br />
+					<small class="text-danger">@ErrorText</small>
+					<small class="text-success">@ChangedText</small>
 					<br />
 					<button class="btn btn-light my-3" @onclick="ChangePass">Change password</button>
 
@@ -43,6 +46,8 @@
 	protected String UserPass1 { get; set; } = String.Empty;
 	protected String UserPass2 { get; set; } = String.Empty;
 	String errorInput { get; set; } = "rounded";
+	String ErrorText { get; set; }
+	String ChangedText { get; set; }
 
 	protected override Task OnInitializedAsync()
 	{
@@ -61,12 +66,23 @@
 			{
 				errorInput = "border border-danger rounded";
 			}
-			if (UserPass1 == UserPass2 && UserPass1.Count() > 6)
+			else if (UserPass1 != UserPass2) 
+			{
+				errorInput = "rounded";
+				ErrorText = "Passwords do not match";
+			}
+			else if (UserPass1.Count() < 6)
+			{
+				ErrorText = "Passwords must have at least 6 characters";
+			}
+			else
 			{
 				try
 				{
 					await FirebaseAuthService.FirebaseAuthClient.User.ChangePasswordAsync(UserPass1);
 					errorInput = "border border-success rounded";
+					ErrorText = "";
+					ChangedText = "Password changed!";
 				}
 				catch(Exception e)
 				{

@@ -1,6 +1,7 @@
 ﻿@page "/view-document"
 @page "/view-document/{title}/{premade:bool}"
 @using System.Text.Json
+@using System.Web
 @inject IFirebaseAuthService FirebaseAuthService
 @inject NavigationManager NavigationManager
 @inject HttpClient Http
@@ -21,7 +22,7 @@
 		else
 		{
 			<div class="card-header text-center">
-				<h1>@Title</h1>
+				<h1>@HttpUtility.HtmlDecode(Title)</h1>
 				@if (ContainsScore)
 				{
 					<p>Score: @returnedPrompts.Score</p>
@@ -39,8 +40,8 @@
 						@foreach (var prompt in returnedPrompts.Prompts)
 						{
 							<tr>
-								<td>@prompt[0]</td>
-								<td>@prompt[1]</td>
+								<td>@HttpUtility.HtmlDecode(prompt[0].ToString())</td>
+								<td>@HttpUtility.HtmlDecode(prompt[1].ToString())</td>
 							</tr>
 						}
 					</tbody>
@@ -79,7 +80,7 @@
 			if (FirebaseAuthService.FirebaseAuthClient.User != null)
 			{
 				string key = "X00162027";
-				string user = FirebaseAuthService.FirebaseAuthClient.User.Info.Email.ToString();
+				string user = HttpUtility.HtmlEncode(FirebaseAuthService.FirebaseAuthClient.User.Info.Email.ToString());
 				var jsonString = await Http.GetStringAsync($"{baseURI}/userNotes/key/{key}/user/{user}/title/{Title.ToString()}");
 				returnedPrompts.Score = Int32.Parse(await Http.GetStringAsync($"{baseURI}/userNotes/score/key/{key}/user/{user}/title/{Title.ToString()}"));
 				returnedPrompts.Prompts = JsonSerializer.Deserialize<List<List<object>>>(jsonString);

@@ -3,6 +3,7 @@
 @using Microsoft.JSInterop
 @inject IJSRuntime IJSRuntime
 @using System
+@using System.Web
 @using System.Text
 @using System.Text.Json
 @using System.Text.Json.Serialization
@@ -79,7 +80,7 @@
 					else
 					{
 						<div>
-							<h3>@CurrentHeading</h3>
+							<h3>@HttpUtility.HtmlDecode(CurrentHeading)</h3>
 							@*<button class="btn btn-dark" @onclick="PlayAudioHint">Hear solution<i class="fa fa-volume-up" aria-hidden="true"></i></button>*@
 						</div>
 					}
@@ -587,7 +588,7 @@
 			if (returnedPrompts.Prompts[QuizIndex].Count() >= 3)
 			{
 				@* Console.WriteLine(returnedPrompts.Prompts[QuizIndex][2].ToString()); *@
-				if (Regex.IsMatch(Response, returnedPrompts.Prompts[QuizIndex][2].ToString(), RegexOptions.IgnoreCase))
+				if (Regex.IsMatch(HttpUtility.HtmlEncode(Response), returnedPrompts.Prompts[QuizIndex][2].ToString(), RegexOptions.IgnoreCase))
 				{
 					Console.WriteLine("Partial");
 					UserAttemptYellow = RoundResult.UserAttempt.ToString();
@@ -664,7 +665,7 @@
 			else
 			{
 				//if (!String.IsNullOrEmpty(returnedPrompts.Prompts[quizIndex][1].ToString())) {
-				Ans = returnedPrompts.Prompts[QuizIndex][1].ToString();
+				Ans = HttpUtility.HtmlDecode(returnedPrompts.Prompts[QuizIndex][1].ToString());
 				await GetResponseAsync();
 
 				DisplayAns();
@@ -780,7 +781,7 @@
 	private async Task SaveNotes()
 	{
 		string key = "X00162027";
-		string user = FirebaseAuthService.FirebaseAuthClient.User.Info.Email.ToString();
+		string user = HttpUtility.HtmlEncode(FirebaseAuthService.FirebaseAuthClient.User.Info.Email.ToString());
 		if (FirebaseAuthService.FirebaseAuthClient.User.Info.Email != null)
 		{
 			if (NewTitle != String.Empty)
@@ -798,7 +799,7 @@
 
 					foreach (var titleGroup in existingTitleGroups)
 					{
-						existingTitles.Add(titleGroup.Title);
+						existingTitles.Add(HttpUtility.HtmlDecode(titleGroup.Title));
 					}
 				}
 				catch (Exception e)
@@ -821,13 +822,13 @@
 						valid = false;
 						break;
 					}
-					content += $"[\"{NewNotes.ElementAt(i).ElementAt(0)}\", \"{NewNotes.ElementAt(i).ElementAt(1)}\"],";
+					content += $"[\"{HttpUtility.HtmlEncode(NewNotes.ElementAt(i).ElementAt(0))}\", \"{HttpUtility.HtmlEncode(NewNotes.ElementAt(i).ElementAt(1))}\"],";
 				}
 				if (NewNotes.ElementAt(NewNotes.Count() - 1).ElementAt(0).ToString() == String.Empty || NewNotes.ElementAt(NewNotes.Count() - 1).ElementAt(1).ToString() == String.Empty)
 				{
 					notExisting = false;
 				}
-				content += $"[\"{NewNotes.ElementAt(NewNotes.Count() - 1).ElementAt(0)}\", \"{NewNotes.ElementAt(NewNotes.Count() - 1).ElementAt(1)}\"]]";
+				content += $"[\"{HttpUtility.HtmlEncode(NewNotes.ElementAt(NewNotes.Count() - 1).ElementAt(0))}\", \"{HttpUtility.HtmlEncode(NewNotes.ElementAt(NewNotes.Count() - 1).ElementAt(1))}\"]]";
 
 				if (valid)
 				{
@@ -837,7 +838,7 @@
 						Console.WriteLine("Making new");
 						var Content = new StringContent(content, Encoding.UTF8, "application/json");
 
-						var uri = $"{baseURI}/userNotes/newNote/key/{key}/userIn/{user}/titleIn/{NewTitle}/scoreIn/0";
+						var uri = $"{baseURI}/userNotes/newNote/key/{key}/userIn/{user}/titleIn/{HttpUtility.HtmlEncode(NewTitle)}/scoreIn/0";
 
 						try
 						{
@@ -853,18 +854,17 @@
 					}
 					else
 					{
-						Console.WriteLine("Replacing title");
-
+						// Console.WriteLine("Replacing title");
 						bool result = await IJSRuntime.InvokeAsync<bool>("confirm", "Title already in use. Overwrite notes? This action cannot be undone.");
 						if (result)
 						{
 							try
 							{
-							string url = $"{baseURI}/userNotes/delete/key/{key}/user/{user}/title/{NewTitle}";
+							string url = $"{baseURI}/userNotes/delete/key/{key}/user/{user}/title/{HttpUtility.HtmlEncode(NewTitle)}";
 							await Http.DeleteAsync(url);
 							var Content = new StringContent(content, Encoding.UTF8, "application/json");
 
-							var uri = $"{baseURI}/userNotes/newNote/key/{key}/userIn/{user}/titleIn/{NewTitle}/scoreIn/0";
+							var uri = $"{baseURI}/userNotes/newNote/key/{key}/userIn/{user}/titleIn/{HttpUtility.HtmlEncode(NewTitle)}/scoreIn/0";
 
 								// Console.WriteLine("Looks good");
 								// Console.WriteLine(content);

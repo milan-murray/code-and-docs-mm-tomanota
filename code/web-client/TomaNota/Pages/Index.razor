@@ -1,6 +1,7 @@
 ﻿@page "/"
 @using Microsoft.JSInterop
 @using System
+@using System.Web
 @using System.Text.Json
 @using System.Text.Json.Serialization
 @inject IJSRuntime IJSRuntime
@@ -50,16 +51,16 @@
 						{
 							@if (groupedTitle.Score == 10)
 							{
-								<button class="btn btn-light border border-success m-1 mb-3 min-btn shadow" @onclick="@(e => SelectNote(groupedTitle.Title, false))"><div>@groupedTitle.Title<br /><small class="text-success"><strong>Notes complete!</strong></small></div></button>
+								<button class="btn btn-light border border-success m-1 mb-3 min-btn shadow" @onclick="@(e => SelectNote(HttpUtility.HtmlDecode(groupedTitle.Title), false))"><div>@HttpUtility.HtmlDecode(groupedTitle.Title)<br /><small class="text-success"><strong>Notes complete!</strong></small></div></button>
 							}
 							else if (groupedTitle.LastProgressed == null)
 							{
-								<button class="btn btn-primary m-1 mb-3 min-btn shadow" @onclick="@(e => SelectNote(groupedTitle.Title, false))"><div>@groupedTitle.Title<br /><small class="text-info">New!</small></div></button>
+								<button class="btn btn-primary m-1 mb-3 min-btn shadow" @onclick="@(e => SelectNote(HttpUtility.HtmlDecode(groupedTitle.Title), false))"><div>@HttpUtility.HtmlDecode(groupedTitle.Title)<br /><small class="text-info">New!</small></div></button>
 							}
 							else if (groupedTitle.Score <= 2)
 							{
-								<button class="btn btn-light m-1 mb-3 min-btn border border-danger shadow" @onclick="@(e => SelectNote(groupedTitle.Title, false))">
-									<div class="clearfix">@groupedTitle.Title<br /><div class="float-start rounded bg-danger text-light border border-dark px-1"><small>@groupedTitle.Score</small></div>
+								<button class="btn btn-light m-1 mb-3 min-btn border border-danger shadow" @onclick="@(e => SelectNote(HttpUtility.HtmlDecode(groupedTitle.Title), false))">
+									<div class="clearfix">@HttpUtility.HtmlDecode(groupedTitle.Title)<br /><div class="float-start rounded bg-danger text-light border border-dark px-1"><small>@groupedTitle.Score</small></div>
 										@if (groupedTitle.LastProgressed < TimeSpan.FromHours(4))
 										{
 											<div class="float-end rounded bg-secondary text-light border border-dark px-1">
@@ -81,9 +82,9 @@
 							}
 							else if (groupedTitle.Score <= 5)
 							{
-								<button class="btn btn-light m-1 mb-3 min-btn border border-warning shadow" @onclick="@(e => SelectNote(groupedTitle.Title, false))">
+								<button class="btn btn-light m-1 mb-3 min-btn border border-warning shadow" @onclick="@(e => SelectNote(HttpUtility.HtmlDecode(groupedTitle.Title), false))">
 									<div class="clearfix">
-										@groupedTitle.Title<br /><div class="float-start rounded bg-warning text-light border border-dark px-1"><small>@groupedTitle.Score</small></div>
+										@HttpUtility.HtmlDecode(groupedTitle.Title)<br /><div class="float-start rounded bg-warning text-light border border-dark px-1"><small>@groupedTitle.Score</small></div>
 										@if (groupedTitle.LastProgressed < TimeSpan.FromHours(4))
 										{
 											<div class="float-end rounded bg-secondary text-light border border-dark px-1">
@@ -105,9 +106,9 @@
 							}
 							else if (groupedTitle.Score <= 7)
 							{
-								<button class="btn btn-light m-1 mb-3 min-btn border border-primary shadow" @onclick="@(e => SelectNote(groupedTitle.Title, false))">
+								<button class="btn btn-light m-1 mb-3 min-btn border border-primary shadow" @onclick="@(e => SelectNote(HttpUtility.HtmlDecode(groupedTitle.Title), false))">
 									<div class="clearfix">
-										@groupedTitle.Title<br /><div class="float-start rounded bg-primary text-light border border-dark px-1"><small>@groupedTitle.Score</small></div>
+										@HttpUtility.HtmlDecode(groupedTitle.Title)<br /><div class="float-start rounded bg-primary text-light border border-dark px-1"><small>@groupedTitle.Score</small></div>
 										@if (groupedTitle.LastProgressed < TimeSpan.FromHours(4))
 										{
 											<div class="float-end rounded bg-secondary text-light border border-dark px-1">
@@ -129,9 +130,9 @@
 							}
 							else
 							{
-								<button class="btn btn-light m-1 mb-3 min-btn border border-success shadow" @onclick="@(e => SelectNote(groupedTitle.Title, false))">
+								<button class="btn btn-light m-1 mb-3 min-btn border border-success shadow" @onclick="@(e => SelectNote(HttpUtility.HtmlDecode(groupedTitle.Title), false))">
 									<div class="clearfix">
-										@groupedTitle.Title<br /><div class="float-start rounded bg-success text-light border border-dark px-1"><small>@groupedTitle.Score</small></div>
+										@HttpUtility.HtmlDecode(groupedTitle.Title)<br /><div class="float-start rounded bg-success text-light border border-dark px-1"><small>@groupedTitle.Score</small></div>
 										@if (groupedTitle.LastProgressed < TimeSpan.FromHours(4))
 										{
 											<div class="float-end rounded bg-secondary text-light border border-dark px-1">
@@ -400,7 +401,7 @@
 			if (FirebaseAuthService.FirebaseAuthClient.User != null)
 			{
 				string key = "X00162027";
-				string user = FirebaseAuthService.FirebaseAuthClient.User.Info.Email.ToString();
+				string user = HttpUtility.HtmlEncode(FirebaseAuthService.FirebaseAuthClient.User.Info.Email.ToString());
 				string url_user_titles = $"{baseURI}/userNotes/key/{key}/user/{user}";
 				try
 				{
@@ -415,25 +416,6 @@
 					// Console.WriteLine(e.Message);
 				}
 
-				// Parallel lists of scores and dates for each of the user's notes
-				/*
-				if (GroupedUserTitles != null)
-						{
-						try
-						{
-						string url_user_p_scores = $"{baseURI}/score/key/{key}/user/{user}/title/";
-						foreach (var title in GroupedUserTitles)
-							{
-							var noteScore = await Http.GetFromJsonAsync<int>(url_user_p_scores);
-							parallelScores.Add(noteScore);
-					}
-					}
-					catch (Exception e)
-						{
-						Console.WriteLine(e.Message);
-				}
-				}
-				*/
 				awaitingTitles = false;
 			}
 			string url_EN_titles_ES = "https://europe-west1-tomanota-374115.cloudfunctions.net/get-EN-titles-ES";
@@ -457,12 +439,12 @@
 			if (result)
 			{
 				string key = "X00162027";
-				string user = FirebaseAuthService.FirebaseAuthClient.User.Info.Email.ToString();
-				string url = $"{baseURI}/userNotes/delete/key/{key}/user/{user}/title/{SelectedTitle}";
+				string user = HttpUtility.HtmlEncode(FirebaseAuthService.FirebaseAuthClient.User.Info.Email.ToString());
+				string url = $"{baseURI}/userNotes/delete/key/{key}/user/{user}/title/{HttpUtility.HtmlEncode(SelectedTitle)}";
 				await Http.DeleteAsync(url);
 				foreach (var groupTitle in GroupedUserTitles)
 				{
-					if (groupTitle.Title == SelectedTitle)
+					if (groupTitle.Title == HttpUtility.HtmlEncode(SelectedTitle))
 					{
 						GroupedUserTitles.Remove(groupTitle);
 						break;
@@ -478,7 +460,7 @@
 	{
 		if (SelectedTitle != null)
 		{
-			NavigationManager.NavigateTo("view-document/" + SelectedTitle + "/" + TitleIsPremade);
+			NavigationManager.NavigateTo("view-document/" + HttpUtility.HtmlEncode(SelectedTitle) + "/" + TitleIsPremade);
 		}
 	}
 
@@ -486,7 +468,7 @@
 	{
 		if (SelectedTitle != null)
 		{
-			NavigationManager.NavigateTo("quiz/" + SelectedTitle + "/" + TitleIsPremade);
+			NavigationManager.NavigateTo("quiz/" + HttpUtility.HtmlEncode(SelectedTitle) + "/" + TitleIsPremade);
 		}
 	}
 
