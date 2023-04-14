@@ -25,7 +25,22 @@
 				<h1>@HttpUtility.HtmlDecode(Title)</h1>
 				@if (ContainsScore)
 				{
-					<p>Score: @returnedPrompts.Score</p>
+					@if (returnedPrompts.Score <= 2)
+					{
+						<small class="rounded py-1 px-2 border border-light bg-danger text-light"><strong>Score: @returnedPrompts.Score</strong></small>
+					}
+					else if (returnedPrompts.Score <= 5)
+					{
+						<small class="rounded py-1 px-2 border border-light bg-warning text-light"><strong>Score: @returnedPrompts.Score</strong></small>
+					}
+					else if (returnedPrompts.Score <= 7)
+					{
+						<small class="rounded py-1 px-2 border border-light bg-primary text-light"><strong>Score: @returnedPrompts.Score</strong></small>
+					}
+					else
+					{
+						<small class="rounded py-1 px-2 border border-light bg-success text-light"><strong>Score: @returnedPrompts.Score</strong></small>
+					}
 				}
 			</div>
 			<div class="card-body">

@@ -90,6 +90,7 @@
 						<form @onsubmit="AdvanceQuiz">
 							<input type="text" class="quiz-input shadow-lg mt-5" @bind="@Response" />
 						</form>
+						<small class="text-warning">@ResponseErrorText</small>
 						<div class="">
 							<div class="text-center">
 								@if (PromptComplete)
@@ -129,12 +130,27 @@
 								<p>Perfect Result!</p>
 								<button class="btn btn-success" @onclick="NavigateToHome">Return to home</button>
 							</div>
+							@if (FirebaseAuthService.FirebaseAuthClient.User != null)
+							{
+								<p class="mt-5">Save these notes and track progress?</p>
+								<div>
+									<label>Title of new notes</label>
+									<div>
+										<input type="text" class="review-input shadow-lg my-2" @bind="NewTitle" />
+									</div>
+									<br />
+								</div>
+							}
+							else
+							{
+								<p>Log in modify notes and save progress</p>
+							}
 						}
 						else
 						{
 							<div class="text-center">
 								<p>Would you like to review the incorrect prompts?</p>
-								<button class="btn btn-success" @onclick="EnableStartReview">Review Notes</button>
+								<button class="btn btn-primary" @onclick="EnableStartReview">Review Notes</button>
 								<button class="btn btn-light" @onclick="NavigateToHome">Return to home</button>
 							</div>
 						}
@@ -237,6 +253,8 @@
 											<label><small>If you wish to save a new answer, please enter it here</small></label>
 											<br />
 											<input type="text" class="review-input shadow-lg my-2" @bind="NewNotes[errorIndexes[ReviewIndex]][1]" />
+											<br />
+											<small class="text-danger">@ReviewTextError</small>
 										</div>
 									}
 									else
@@ -244,14 +262,22 @@
 										<small class="mt-3">Log in modify notes and save progress</small>
 									}
 								</div>
-								<button class="btn btn-success" @onclick="e => {
-									if (ReviewIndex < errorIndexes.Count() - 1)
+								<button class="btn btn-primary" @onclick="e => {
+									if (NewNotes[errorIndexes[ReviewIndex]][1].Trim() != String.Empty)
 									{
-										ReviewIndex++;
+										ReviewTextError = String.Empty;
+										if (ReviewIndex < errorIndexes.Count() - 1)
+										{
+											ReviewIndex++;
+										}
+										else
+										{
+											ReviewComplete = true;
+										}
 									}
 									else
 									{
-										ReviewComplete = true;
+										SetErrorText();
 									}
 									}">
 									Review Next
@@ -273,9 +299,10 @@
 											<input type="text" class="review-input shadow-lg my-2" @bind="NewTitle" />
 										</div>
 										<br />
-										@*<div>
-											<label><small class="text-secondary">New titles must be unique</small></label>
-										</div>*@
+										<small class="text-warning">@NewTitleErrorText</small>
+									</div>
+									<div class="mt-1">
+										<button class="btn btn-success" @onclick="SaveNotes">Save notes</button>
 									</div>
 								}
 								else
@@ -283,9 +310,7 @@
 									<p>Log in modify notes and save progress</p>
 								}
 							</div>
-							<div class="mt-1">
-								<button class="btn btn-success" @onclick="SaveNotes">Save notes</button>
-							</div>
+							
 						}
 					}
 				}
@@ -321,8 +346,11 @@
 	bool QuizComplete { get; set; } = false;
 	string BtnText { get; set; } = "Check Answer";
 	bool PerfectResult { get; set; } = true;
+	String ResponseErrorText { get; set; } = String.Empty;
+	String NewTitleErrorText { get; set; } = String.Empty;
 
 	// Review Logic
+	String ReviewTextError { get; set; } = String.Empty;
 	bool ReviewComplete { get; set; } = false;
 	bool StartReview { get; set; } = false;
 	string WarnAPIUsage { get; set; } = string.Empty;
@@ -339,6 +367,11 @@
 		StartReview = true;
 	}
 
+	public void SetErrorText()
+	{
+		ReviewTextError = "Text entry required";
+	}
+
 	// Additional APIs
 
 	public enum Locales
@@ -352,7 +385,7 @@
 
 	// After review vars
 	String NewTitle { get; set; } = String.Empty;
-	List<List<String>> NewNotes = new List<List<String>>(); 
+	List<List<String>> NewNotes = new List<List<String>>();
 
 	List<string> finalSynonyms = new List<string>();
 	List<string> finalTranslations = new List<string>();
@@ -387,15 +420,15 @@
 
 		var client = new HttpClient();
 		var request = new HttpRequestMessage
-		{
-			Method = HttpMethod.Get,
-			RequestUri = new Uri($"https://voicerss-text-to-speech.p.rapidapi.com/?hl={lang}&src=Quiero%20mi%20dinero&key=046c4303fdd44b69b2126b0035ed8bc1&f=8khz_8bit_mono&c=mp3&r=0"),
-			Headers =
+			{
+				Method = HttpMethod.Get,
+				RequestUri = new Uri($"https://voicerss-text-to-speech.p.rapidapi.com/?hl={lang}&src=Quiero%20mi%20dinero&key=046c4303fdd44b69b2126b0035ed8bc1&f=8khz_8bit_mono&c=mp3&r=0"),
+				Headers =
 			{
 				{ "X-RapidAPI-Key", "3dd5c1afa7msha944fd8168e4e91p1e3b4ajsn41765a294a16" },
 				{ "X-RapidAPI-Host", "voicerss-text-to-speech.p.rapidapi.com" },
 			},
-		};
+			};
 		using (var response = await client.SendAsync(request))
 		{
 			response.EnsureSuccessStatusCode();
@@ -414,7 +447,8 @@
 			if (FromLocal == Locales.es)
 			{
 				lang = "spa";
-			} else if (FromLocal == Locales.de)
+			}
+			else if (FromLocal == Locales.de)
 			{
 				lang = "deu";
 			}
@@ -475,7 +509,7 @@
 				{ "X-RapidAPI-Key", "3dd5c1afa7msha944fd8168e4e91p1e3b4ajsn41765a294a16" },
 				{ "X-RapidAPI-Host", "google-translate1.p.rapidapi.com" },
 			},
-						Content = new FormUrlEncodedContent(new Dictionary<string, string>
+				Content = new FormUrlEncodedContent(new Dictionary<string, string>
 			{
 				{ "source", localFrom.ToString() },
 				{ "target", localTo.ToString() },
@@ -548,7 +582,7 @@
 					NavigateToHome();
 				}
 			}
-			catch(Exception e)
+			catch (Exception e)
 			{
 				Console.WriteLine(e.Message);
 			}
@@ -590,7 +624,7 @@
 				@* Console.WriteLine(returnedPrompts.Prompts[QuizIndex][2].ToString()); *@
 				if (Regex.IsMatch(HttpUtility.HtmlEncode(Response), returnedPrompts.Prompts[QuizIndex][2].ToString(), RegexOptions.IgnoreCase))
 				{
-					Console.WriteLine("Partial");
+					// Console.WriteLine("Partial");
 					UserAttemptYellow = RoundResult.UserAttempt.ToString();
 					ResponsiveButton = "btn btn-warning btn-lg btn-block mt-5";
 				}
@@ -658,12 +692,15 @@
 		if (!PromptComplete)
 		{
 			// Checking Ans
+			Response = Response.Trim();
 			if (Response == string.Empty)
 			{
-				Console.WriteLine("No Attempt!");
+				// Console.WriteLine("No Attempt!");
+				ResponseErrorText = "No attempt entered, make sure to try a good guess!";
 			}
 			else
 			{
+				ResponseErrorText = String.Empty;
 				//if (!String.IsNullOrEmpty(returnedPrompts.Prompts[quizIndex][1].ToString())) {
 				Ans = HttpUtility.HtmlDecode(returnedPrompts.Prompts[QuizIndex][1].ToString());
 				await GetResponseAsync();
@@ -729,8 +766,8 @@
 						}
 						else
 						{
-							Console.WriteLine("Too soon to increment score");
-						}	
+							// Console.WriteLine("Too soon to increment score");
+						}
 					}
 					else
 					{
@@ -784,8 +821,10 @@
 		string user = HttpUtility.HtmlEncode(FirebaseAuthService.FirebaseAuthClient.User.Info.Email.ToString());
 		if (FirebaseAuthService.FirebaseAuthClient.User.Info.Email != null)
 		{
+			NewTitle = NewTitle.Trim();
 			if (NewTitle != String.Empty)
 			{
+				NewTitleErrorText = String.Empty;
 				List<TitleGroup> existingTitleGroups = new List<TitleGroup>();
 				List<String> existingTitles = new List<String>();
 				string url_user_titles = $"{baseURI}/userNotes/key/{key}/user/{user}";
@@ -815,30 +854,30 @@
 				}
 
 				var content = "[";
-				for (int i = 0; i < NewNotes.Count() -1 ; i++)
+				for (int i = 0; i < NewNotes.Count() - 1; i++)
 				{
-					if (NewNotes.ElementAt(i).ElementAt(0).ToString() == String.Empty || NewNotes.ElementAt(i).ElementAt(1).ToString() == String.Empty)
+					if (NewNotes.ElementAt(i).ElementAt(0).ToString().Trim() == String.Empty || NewNotes.ElementAt(i).ElementAt(1).ToString().Trim() == String.Empty)
 					{
 						valid = false;
 						break;
 					}
-					content += $"[\"{HttpUtility.HtmlEncode(NewNotes.ElementAt(i).ElementAt(0))}\", \"{HttpUtility.HtmlEncode(NewNotes.ElementAt(i).ElementAt(1))}\"],";
+					content += $"[\"{HttpUtility.HtmlEncode(NewNotes.ElementAt(i).ElementAt(0)).Trim()}\", \"{HttpUtility.HtmlEncode(NewNotes.ElementAt(i).ElementAt(1)).Trim()}\"],";
 				}
-				if (NewNotes.ElementAt(NewNotes.Count() - 1).ElementAt(0).ToString() == String.Empty || NewNotes.ElementAt(NewNotes.Count() - 1).ElementAt(1).ToString() == String.Empty)
+				if (NewNotes.ElementAt(NewNotes.Count() - 1).ElementAt(0).ToString().Trim() == String.Empty || NewNotes.ElementAt(NewNotes.Count() - 1).ElementAt(1).ToString().Trim() == String.Empty)
 				{
 					notExisting = false;
 				}
-				content += $"[\"{HttpUtility.HtmlEncode(NewNotes.ElementAt(NewNotes.Count() - 1).ElementAt(0))}\", \"{HttpUtility.HtmlEncode(NewNotes.ElementAt(NewNotes.Count() - 1).ElementAt(1))}\"]]";
+				content += $"[\"{HttpUtility.HtmlEncode(NewNotes.ElementAt(NewNotes.Count() - 1).ElementAt(0)).Trim()}\", \"{HttpUtility.HtmlEncode(NewNotes.ElementAt(NewNotes.Count() - 1).ElementAt(1)).Trim()}\"]]";
 
 				if (valid)
 				{
-					Console.WriteLine("Is valid");
+					// Console.WriteLine("Is valid");
 					if (notExisting)
 					{
-						Console.WriteLine("Making new");
+						// Console.WriteLine("Making new");
 						var Content = new StringContent(content, Encoding.UTF8, "application/json");
 
-						var uri = $"{baseURI}/userNotes/newNote/key/{key}/userIn/{user}/titleIn/{HttpUtility.HtmlEncode(NewTitle)}/scoreIn/0";
+						var uri = $"{baseURI}/userNotes/newNote/key/{key}/userIn/{user}/titleIn/{HttpUtility.HtmlEncode(NewTitle)}/scoreIn/1";
 
 						try
 						{
@@ -860,11 +899,11 @@
 						{
 							try
 							{
-							string url = $"{baseURI}/userNotes/delete/key/{key}/user/{user}/title/{HttpUtility.HtmlEncode(NewTitle)}";
-							await Http.DeleteAsync(url);
-							var Content = new StringContent(content, Encoding.UTF8, "application/json");
+								string url = $"{baseURI}/userNotes/delete/key/{key}/user/{user}/title/{HttpUtility.HtmlEncode(NewTitle)}";
+								await Http.DeleteAsync(url);
+								var Content = new StringContent(content, Encoding.UTF8, "application/json");
 
-							var uri = $"{baseURI}/userNotes/newNote/key/{key}/userIn/{user}/titleIn/{HttpUtility.HtmlEncode(NewTitle)}/scoreIn/0";
+								var uri = $"{baseURI}/userNotes/newNote/key/{key}/userIn/{user}/titleIn/{HttpUtility.HtmlEncode(NewTitle)}/scoreIn/1";
 
 								// Console.WriteLine("Looks good");
 								// Console.WriteLine(content);
@@ -878,6 +917,10 @@
 						}
 					}
 				}
+			}
+			else
+			{
+				NewTitleErrorText = "New title cannot be empty";
 			}
 		}
 	}

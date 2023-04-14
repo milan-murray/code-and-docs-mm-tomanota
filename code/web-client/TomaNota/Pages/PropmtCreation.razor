@@ -32,6 +32,7 @@
 				<div class="mb-3">
 					<label for="title">Title</label>
 					<input class="form-control" type="text" id="title" @bind="noteTitle"/>
+					<small class="text-danger">@TitleErrorText</small>
 				</div>
 
 				@foreach (List<String> noteGroup in newNotes)
@@ -40,7 +41,7 @@
 						<div class="form-group">
 						<label>Given heading</label>
 						<input class="form-control" type="text" @bind="noteGroup[0]" />
-						<label>Answer</label>
+						<label class="mt-1">Answer</label>
 						<input class="form-control" type="text" @bind="noteGroup[1]" />
 						</div>
 					</form>
@@ -49,6 +50,7 @@
 				{
 					<h4 class="text-danger">Documents that are too large can be very difficult</h4>
 				}
+				<small class="text-danger">@BodyErrorText</small>
 				<div class="d-flex justify-content-between">
 					<div>
 						<button class="btn btn-light m-1" @onclick="ExtendInput">Add Entry</button>
@@ -69,6 +71,8 @@
 	int inputs = 1;
 	private static readonly HttpClient client = new HttpClient();
 	String baseURI = "https://user-web-api-tn.azurewebsites.net";
+	String TitleErrorText { get; set; } = String.Empty;
+	String BodyErrorText { get; set; } = String.Empty;
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -106,9 +110,11 @@
 
 	public async Task CreateNotes()
 	{
+		noteTitle = noteTitle.Trim();
 		if (noteTitle != string.Empty)
 		{
-
+			BodyErrorText = "";
+			TitleErrorText = "";
 			List<TitleGroup> existingTitleGroups = new List<TitleGroup>();
 			List<String> existingTitles = new List<String>();
 			string key = "X00162027";
@@ -133,8 +139,9 @@
 			}
 
 			bool valid = true;
-			if (existingTitles.Contains(noteTitle))
+			if (existingTitles.Contains(noteTitle) || noteTitle.Count() > 50)
 			{
+				TitleErrorText = "The title must be unique and less than 50 characters";
 				valid = false;	
 			}
 
@@ -143,18 +150,20 @@
 			var content = "[";
 			for (int i = 0; i < inputs - 1; i++)
 			{
-				if (newNotes.ElementAt(i).ElementAt(0).ToString() == String.Empty || newNotes.ElementAt(i).ElementAt(1).ToString() == String.Empty)
+				if (newNotes.ElementAt(i).ElementAt(0).ToString().Trim() == String.Empty || newNotes.ElementAt(i).ElementAt(1).ToString().Trim() == String.Empty)
 				{
 					valid = false;
+					BodyErrorText = "Entries can not be left empty";
 					break;
 				}
-				content += $"[\"{HttpUtility.HtmlEncode(newNotes.ElementAt(i).ElementAt(0))}\", \"{HttpUtility.HtmlEncode(newNotes.ElementAt(i).ElementAt(1))}\"],";
+				content += $"[\"{HttpUtility.HtmlEncode(newNotes.ElementAt(i).ElementAt(0)).Trim()}\", \"{HttpUtility.HtmlEncode(newNotes.ElementAt(i).ElementAt(1)).Trim()}\"],";
 			}
-			if (newNotes.ElementAt(inputs - 1).ElementAt(0).ToString() == String.Empty || newNotes.ElementAt(inputs - 1).ElementAt(1).ToString() == String.Empty)
+			if (newNotes.ElementAt(inputs - 1).ElementAt(0).ToString().Trim() == String.Empty || newNotes.ElementAt(inputs - 1).ElementAt(1).ToString().Trim() == String.Empty)
 			{
+				BodyErrorText = "Entries can not be left empty";
 				valid = false;
 			}
-			content += $"[\"{HttpUtility.HtmlEncode(newNotes.ElementAt(inputs - 1).ElementAt(0))}\", \"{HttpUtility.HtmlEncode(newNotes.ElementAt(inputs - 1).ElementAt(1))}\"]]";
+			content += $"[\"{HttpUtility.HtmlEncode(newNotes.ElementAt(inputs - 1).ElementAt(0)).Trim()}\", \"{HttpUtility.HtmlEncode(newNotes.ElementAt(inputs - 1).ElementAt(1)).Trim()}\"]]";
 
 			if (valid)
 			{
@@ -172,6 +181,10 @@
 					Console.WriteLine(e.Message);
 				}
 			}
+		}
+		else
+		{
+			TitleErrorText = "Title cannot be empty";
 		}
 	}
 }

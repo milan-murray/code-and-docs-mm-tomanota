@@ -71,10 +71,10 @@
 
 			var key = "X00162027";
 			var baseURI = "https://user-web-api-tn.azurewebsites.net";
-			var content = "[[\"How to make the most of TomaNota?\", \"Learning a new topic? Take notes from classes or books and add them here!\"],[\"What do the numbers in buttons mean?\", \"As you learn stored notes the current score out of 10 is displayed in the lower left, hours since the last session are displayed on the right\"],[\"Why is the score not increasing on my notes?\", \"Only after 4 hours have passed can progress be made on notes! This is to help you space everything out.\"],[\"I typed the correct answer but got marked as incorrect!\",\"By design the answers you give are to exactly match the specified answer, and are case sensitive!\"],[\"Should I delete this note from my account or learn it off?\",\"This note is here only as a guide and is recommened to be deleted as well as the other default exmaple notes.\"]]";
+			var content = "[[\"How to make the most of TomaNota?\", \"Learning a new topic? Take notes from classes or books and add them here!\"],[\"What do the numbers in the buttons on the home screen mean?\", \"As you learn stored notes the current score out of 10 is displayed in the lower left. Hours since the last session are displayed on the right\"],[\"Why is the score not increasing on my notes?\", \"Only after 4 hours have passed can progress be made on notes! This is to help you space everything out.\"],[\"I typed the correct answer but it got marked as incorrect!\",\"By design the answers you typr should exactly match the specified answer, and are case sensitive!\"],[\"Should I delete this note from my account?\",\"This note is here only as a guide and is recommened to be deleted as well as the other default exmaple notes.\"]]";
 			var Content = new StringContent(content, Encoding.UTF8, "application/json");
 
-			var uri = $"{baseURI}/userNotes/newNote/key/{key}/userIn/{Email}/titleIn/Welcome to TomaNota!/scoreIn/10";
+			var uri = $"{baseURI}/userNotes/newNote/key/{key}/userIn/{Email}/titleIn/Welcome to TomaNota! User guide/scoreIn/9";
 
 			try
 			{
@@ -99,7 +99,7 @@
 				Console.WriteLine(e.Message);
 			}
 
-			content = "[[\"There is always space for more spanish notes\", \"Siempre hay espacio para mas notas del espanol\"],[\"And why not add german notes and more languages\", \"Y por que no anadir el aleman y mas idiomas\"]]";
+			content = "[[\"There is always space for more Spanish notes\", \"Siempre hay espacio para mas notas del español\"],[\"And why not add german notes and more languages\", \"Y por que no añadir el aleman y mas idiomas\"]]";
 			Content = new StringContent(content, Encoding.UTF8, "application/json");
 
 			uri = $"{baseURI}/userNotes/newNote/key/{key}/userIn/{Email}/titleIn/Example Notes - Spanish/scoreIn/7";

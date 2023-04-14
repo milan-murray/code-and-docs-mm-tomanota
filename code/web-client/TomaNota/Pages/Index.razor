@@ -28,6 +28,11 @@
 	.min-btn {
 		min-width: 30vh;
 	}
+
+	.min-height-title {
+		min-height: 3vh;
+		
+	}
 </style>
 
 <div class="top-section container">
@@ -51,7 +56,15 @@
 						{
 							@if (groupedTitle.Score == 10)
 							{
-								<button class="btn btn-light border border-success m-1 mb-3 min-btn shadow" @onclick="@(e => SelectNote(HttpUtility.HtmlDecode(groupedTitle.Title), false))"><div>@HttpUtility.HtmlDecode(groupedTitle.Title)<br /><small class="text-success"><strong>Notes complete!</strong></small></div></button>
+								<button class="btn btn-light border border-success m-1 mb-3 min-btn shadow" @onclick="@(e => SelectNote(HttpUtility.HtmlDecode(groupedTitle.Title), false))">
+									<div>
+										<div class="min-height-title">@HttpUtility.HtmlDecode(groupedTitle.Title)</div>
+										<br />
+										<small class="text-success">
+											<strong>Notes complete!</strong>
+										</small>
+										</div>
+								</button>
 							}
 							else if (groupedTitle.LastProgressed == null)
 							{
@@ -60,7 +73,12 @@
 							else if (groupedTitle.Score <= 2)
 							{
 								<button class="btn btn-light m-1 mb-3 min-btn border border-danger shadow" @onclick="@(e => SelectNote(HttpUtility.HtmlDecode(groupedTitle.Title), false))">
-									<div class="clearfix">@HttpUtility.HtmlDecode(groupedTitle.Title)<br /><div class="float-start rounded bg-danger text-light border border-dark px-1"><small>@groupedTitle.Score</small></div>
+									<div class="clearfix">
+										<div class="min-height-title">@HttpUtility.HtmlDecode(groupedTitle.Title)</div>
+										<br />
+										<div class="float-start rounded bg-danger text-light border border-dark px-1">
+											<small>@groupedTitle.Score</small>
+											</div>
 										@if (groupedTitle.LastProgressed < TimeSpan.FromHours(4))
 										{
 											<div class="float-end rounded bg-secondary text-light border border-dark px-1">
@@ -84,7 +102,11 @@
 							{
 								<button class="btn btn-light m-1 mb-3 min-btn border border-warning shadow" @onclick="@(e => SelectNote(HttpUtility.HtmlDecode(groupedTitle.Title), false))">
 									<div class="clearfix">
-										@HttpUtility.HtmlDecode(groupedTitle.Title)<br /><div class="float-start rounded bg-warning text-light border border-dark px-1"><small>@groupedTitle.Score</small></div>
+										<div class="min-height-title">@HttpUtility.HtmlDecode(groupedTitle.Title)</div>
+										<br />
+										<div class="float-start rounded bg-warning text-light border border-dark px-1">
+											<small>@groupedTitle.Score</small>
+										</div>
 										@if (groupedTitle.LastProgressed < TimeSpan.FromHours(4))
 										{
 											<div class="float-end rounded bg-secondary text-light border border-dark px-1">
@@ -108,7 +130,11 @@
 							{
 								<button class="btn btn-light m-1 mb-3 min-btn border border-primary shadow" @onclick="@(e => SelectNote(HttpUtility.HtmlDecode(groupedTitle.Title), false))">
 									<div class="clearfix">
-										@HttpUtility.HtmlDecode(groupedTitle.Title)<br /><div class="float-start rounded bg-primary text-light border border-dark px-1"><small>@groupedTitle.Score</small></div>
+										<div class="min-height-title">@HttpUtility.HtmlDecode(groupedTitle.Title)</div>
+										<br />
+										<div class="float-start rounded bg-primary text-light border border-dark px-1">
+											<small>@groupedTitle.Score</small>
+										</div>
 										@if (groupedTitle.LastProgressed < TimeSpan.FromHours(4))
 										{
 											<div class="float-end rounded bg-secondary text-light border border-dark px-1">
@@ -132,7 +158,11 @@
 							{
 								<button class="btn btn-light m-1 mb-3 min-btn border border-success shadow" @onclick="@(e => SelectNote(HttpUtility.HtmlDecode(groupedTitle.Title), false))">
 									<div class="clearfix">
-										@HttpUtility.HtmlDecode(groupedTitle.Title)<br /><div class="float-start rounded bg-success text-light border border-dark px-1"><small>@groupedTitle.Score</small></div>
+										<div class="min-height-title">@HttpUtility.HtmlDecode(groupedTitle.Title)</div>
+										<br />
+										<div class="float-start rounded bg-success text-light border border-dark px-1">
+											<small>@groupedTitle.Score</small>
+										</div>
 										@if (groupedTitle.LastProgressed < TimeSpan.FromHours(4))
 										{
 											<div class="float-end rounded bg-secondary text-light border border-dark px-1">
