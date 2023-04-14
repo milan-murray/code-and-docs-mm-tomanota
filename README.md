@@ -9,7 +9,7 @@
 
 ### Web Client (Deployed)
 
-	URL: Currently Unavailable
+	URL: https://tomanota.azurewebsites.net/
 
 ## About
 
