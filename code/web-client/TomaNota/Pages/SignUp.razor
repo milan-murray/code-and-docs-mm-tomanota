@@ -63,6 +63,7 @@
 	{
 		try
 		{
+			Email = Email.ToLower();
 			var userCredential = await FirebaseAuthService.FirebaseAuthClient.CreateUserWithEmailAndPasswordAsync(Email, Password, Username);
 			// Console.WriteLine(userCredential.User.ToString());
 
