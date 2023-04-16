@@ -16,7 +16,10 @@
 		<div class="card-body">
 			@if (FirebaseAuthService.FirebaseAuthClient.User != null)
 			{
-				<h4>Account settings for @FirebaseAuthService.FirebaseAuthClient.User.Info.DisplayName</h4>
+				@if (FirebaseAuthService.FirebaseAuthClient.User.Info.DisplayName != null)
+				{
+					<h4>Account settings for @FirebaseAuthService.FirebaseAuthClient.User.Info.DisplayName</h4>
+				}
 				<div class="my-3">
 					<p>Email: @FirebaseAuthService.FirebaseAuthClient.User.Info.Email</p>
 					<label>New password</label>
