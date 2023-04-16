@@ -27,40 +27,81 @@
 				{
 					@if (returnedPrompts.Score <= 2)
 					{
-						<small class="rounded py-1 px-2 border border-light bg-danger text-light"><strong>Score: @returnedPrompts.Score</strong></small>
+						<small class="rounded py-1 px-2 border border-light bg-danger text-light"><strong>Overall score: @returnedPrompts.Score</strong></small>
 					}
 					else if (returnedPrompts.Score <= 5)
 					{
-						<small class="rounded py-1 px-2 border border-light bg-warning text-light"><strong>Score: @returnedPrompts.Score</strong></small>
+						<small class="rounded py-1 px-2 border border-light bg-warning text-light"><strong>Overall score: @returnedPrompts.Score</strong></small>
 					}
 					else if (returnedPrompts.Score <= 7)
 					{
-						<small class="rounded py-1 px-2 border border-light bg-primary text-light"><strong>Score: @returnedPrompts.Score</strong></small>
+						<small class="rounded py-1 px-2 border border-light bg-primary text-light"><strong>Overall score: @returnedPrompts.Score</strong></small>
 					}
 					else
 					{
-						<small class="rounded py-1 px-2 border border-light bg-success text-light"><strong>Score: @returnedPrompts.Score</strong></small>
+						<small class="rounded py-1 px-2 border border-light bg-success text-light"><strong>Overall score: @returnedPrompts.Score</strong></small>
 					}
 				}
 			</div>
 			<div class="card-body">
-				<table class="table table-dark table-hover">
-					<thead>
-						<tr>
-							<th>Given heading</th>
-							<th>Answer</th>
-						</tr>
-					</thead>
-					<tbody>
-						@foreach (var prompt in returnedPrompts.Prompts)
-						{
+				<div class="card mb-3">
+					<table class="table table-light table-hover">
+						<thead>
 							<tr>
-								<td>@HttpUtility.HtmlDecode(prompt[0].ToString())</td>
-								<td>@HttpUtility.HtmlDecode(prompt[1].ToString())</td>
+								<th>Given heading</th>
+								<th>Answer</th>
 							</tr>
-						}
-					</tbody>
-				</table>
+						</thead>
+						<tbody>
+							@if (!Premade)
+							{
+
+								@foreach (var prompt in returnedPrompts.Prompts.Select((value, index) => new { value, index }))
+								{
+									@if (individualScores.ElementAtOrDefault(prompt.index) < 1)
+									{
+										<tr class="table-danger">
+											<td>@HttpUtility.HtmlDecode(prompt.value[0].ToString())</td>
+											<td>@HttpUtility.HtmlDecode(prompt.value[1].ToString())</td>
+										</tr>
+									}
+									else if (individualScores.ElementAtOrDefault(prompt.index) < 2)
+									{
+										<tr class="table-warning">
+											<td>@HttpUtility.HtmlDecode(prompt.value[0].ToString())</td>
+											<td>@HttpUtility.HtmlDecode(prompt.value[1].ToString())</td>
+										</tr>
+									}
+									else if (individualScores.ElementAtOrDefault(prompt.index) < 4)
+									{
+										<tr>
+											<td>@HttpUtility.HtmlDecode(prompt.value[0].ToString())</td>
+											<td>@HttpUtility.HtmlDecode(prompt.value[1].ToString())</td>
+										</tr>
+									}
+									else
+									{
+										<tr class="table-success">
+											<td>@HttpUtility.HtmlDecode(prompt.value[0].ToString())</td>
+											<td>@HttpUtility.HtmlDecode(prompt.value[1].ToString())</td>
+										</tr>
+									}
+								}
+							}
+							else
+							{
+								@foreach (var prompt in returnedPrompts.Prompts)
+								{
+									<tr>
+										<td>@HttpUtility.HtmlDecode(prompt[0].ToString())</td>
+										<td>@HttpUtility.HtmlDecode(prompt[1].ToString())</td>
+									</tr>
+								}
+
+							}
+						</tbody>
+					</table>
+				</div>
 				<button class="btn btn-light btn-block" @onclick="NavigateToQuiz">Attempt Notes</button>
 			</div>
 		}
@@ -75,6 +116,8 @@
 	private DocPrompts? returnedPrompts = new DocPrompts();
 	bool ContainsScore { get; set; } = false;
 	String baseURI = "https://user-web-api-tn.azurewebsites.net";
+	// String baseURI = "https://localhost:7080";
+	List<int> individualScores = new();
 
 	public class DocPrompts
 	{
@@ -88,7 +131,7 @@
 		{
 			var jsonString = await Http.GetStringAsync("https://europe-west1-tomanota-374115.cloudfunctions.net/get-prompts?q=" + Title.ToString());
 			returnedPrompts.Prompts = JsonSerializer.Deserialize<List<List<object>>>(jsonString);
-			ContainsScore = returnedPrompts.Prompts[0].Count < 2 ;
+			ContainsScore = returnedPrompts.Prompts[0].Count < 2;
 		}
 		else
 		{
@@ -97,6 +140,9 @@
 				string key = "X00162027";
 				string user = HttpUtility.HtmlEncode(FirebaseAuthService.FirebaseAuthClient.User.Info.Email.ToString());
 				var jsonString = await Http.GetStringAsync($"{baseURI}/userNotes/key/{key}/user/{user}/title/{Title.ToString()}");
+				var scoreDetail = await Http.GetStringAsync($"{baseURI}/userNotes/scoreDetail/key/{key}/user/{user}/title/{Title.ToString()}");
+				var scoreResponse = JsonSerializer.Deserialize<List<List<int>>>(scoreDetail);
+				individualScores = scoreResponse.ElementAt(0);
 				returnedPrompts.Score = Int32.Parse(await Http.GetStringAsync($"{baseURI}/userNotes/score/key/{key}/user/{user}/title/{Title.ToString()}"));
 				returnedPrompts.Prompts = JsonSerializer.Deserialize<List<List<object>>>(jsonString);
 				ContainsScore = true;

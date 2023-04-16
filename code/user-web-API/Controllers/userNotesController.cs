@@ -45,6 +45,24 @@ public class userNotesController : ControllerBase
 		return Unauthorized();
 	}
 
+	[HttpGet("scoreDetail/key/{keyIn}/user/{userIn}/title/{titleIn}")]
+	[ProducesResponseType(StatusCodes.Status204NoContent)]
+	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+	[ProducesResponseType(StatusCodes.Status200OK)]
+	public IActionResult getScoreDetail([FromRoute] string keyIn, [FromRoute] string userIn, [FromRoute] string titleIn)
+	{
+		if (keyIn == APIKEY)
+		{
+			userNotes note = noteStorage.FirstOrDefault(n => n.User == userIn && n.Title == titleIn);
+			if (note == null)
+			{
+				return BadRequest();
+			}
+			return Ok(noteStorage.Where(n => n.Title == titleIn).Where(u => u.User == userIn).Select(s => s.ParallelIndividualScores));
+		}
+		return Unauthorized();
+	}
+
 	[HttpGet("score/key/{keyIn}/user/{userIn}/title/{titleIn}")]
 	[ProducesResponseType(StatusCodes.Status204NoContent)]
 	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -176,7 +194,28 @@ public class userNotesController : ControllerBase
 			{
 				return BadRequest();
 			}
-			noteStorage.Add(new userNotes { User = userIn, Title = titleIn, Prompts = PromptsIn, Score = scoreIn, LastProgressed = null });
+			List<int> setScores = new();
+			foreach (var p in PromptsIn) { setScores.Add(2); }
+			noteStorage.Add(new userNotes { User = userIn, Title = titleIn, Prompts = PromptsIn, Score = scoreIn, ParallelIndividualScores = setScores, LastProgressed = null });
+			return Ok();
+		}
+		return Unauthorized();
+	}
+
+	[HttpPut("scoreDetail/key/{keyIn}/userIn/{userIn}/titleIn/{titleIn}/")]
+	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+	[ProducesResponseType(StatusCodes.Status400BadRequest)]
+	[ProducesResponseType(StatusCodes.Status200OK)]
+	public IActionResult setScoreDetail([FromRoute] string keyIn, [FromRoute] string userIn, [FromRoute] string titleIn, [FromBody] List<int> scoresIn)
+	{
+		if (keyIn == APIKEY)
+		{
+			userNotes note = noteStorage.FirstOrDefault(n => n.User == userIn && n.Title == titleIn);
+			if (note == null)
+			{
+				return BadRequest();
+			}
+			note.ParallelIndividualScores = scoresIn;
 			return Ok();
 		}
 		return Unauthorized();

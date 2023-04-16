@@ -71,6 +71,7 @@
 	int inputs = 1;
 	private static readonly HttpClient client = new HttpClient();
 	String baseURI = "https://user-web-api-tn.azurewebsites.net";
+	// String baseURI = "https://localhost:7080";
 	String TitleErrorText { get; set; } = String.Empty;
 	String BodyErrorText { get; set; } = String.Empty;
 
@@ -145,8 +146,6 @@
 				valid = false;	
 			}
 
-			// TODO: Prevent special characters from being entered
-			// TODO: Prevent titles from containing special characters and from being too long
 			var content = "[";
 			for (int i = 0; i < inputs - 1; i++)
 			{
@@ -169,11 +168,12 @@
 			{
 				var Content = new StringContent(content, Encoding.UTF8, "application/json");
 
-				var uri = $"{baseURI}/userNotes/newNote/key/{key}/userIn/{user}/titleIn/{HttpUtility.HtmlEncode(noteTitle)}/scoreIn/0";
+				var uriNewNote = $"{baseURI}/userNotes/newNote/key/{key}/userIn/{user}/titleIn/{HttpUtility.HtmlEncode(noteTitle)}/scoreIn/0";
 
 				try
 				{
-					await client.PostAsync(uri, Content);
+					await client.PostAsync(uriNewNote, Content);
+
 					NavigationManager.NavigateTo("/");
 				}
 				catch (Exception e)

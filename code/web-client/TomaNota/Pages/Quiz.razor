@@ -328,6 +328,7 @@
 @code
 {
 	String baseURI = "https://user-web-api-tn.azurewebsites.net";
+	// String baseURI = "https://localhost:7080";
 
 	[Parameter]
 	public string Title { get; set; } = string.Empty;
@@ -354,6 +355,9 @@
 	bool PerfectResult { get; set; } = true;
 	String ResponseErrorText { get; set; } = String.Empty;
 	String NewTitleErrorText { get; set; } = String.Empty;
+	List<int> individualScores = new();
+	List<int> completedPromptIndex = new();
+	bool perfected = false;
 
 	// Review Logic
 	String ReviewTextError { get; set; } = String.Empty;
@@ -439,7 +443,7 @@
 		{
 			response.EnsureSuccessStatusCode();
 			var body = await response.Content.ReadAsStringAsync();
-			Console.WriteLine(body);
+			// Console.WriteLine(body);
 		}
 	}
 
@@ -503,8 +507,8 @@
 	async Task<List<string>> Translate(string textIn, Locales localFrom, Locales localTo)
 	{
 		List<string> responseTranslations = new List<string>();
-		Console.WriteLine("From: " + localFrom.ToString());
-		Console.WriteLine("To: " + localTo.ToString());
+		// Console.WriteLine("From: " + localFrom.ToString());
+		// Console.WriteLine("To: " + localTo.ToString());
 		var client = new HttpClient();
 		var request = new HttpRequestMessage
 			{
@@ -576,11 +580,41 @@
 					string key = "X00162027";
 					string user = FirebaseAuthService.FirebaseAuthClient.User.Info.Email.ToString();
 					var jsonString = await Http.GetStringAsync($"{baseURI}/userNotes/key/{key}/user/{user}/title/{Title.ToString()}");
+					var jsonScoreDetail = await Http.GetStringAsync($"{baseURI}/userNotes/scoreDetail/key/{key}/user/{user}/title/{Title.ToString()}");
+					var indivScoresRes = JsonSerializer.Deserialize<List<List<int>>>(jsonScoreDetail);
+					individualScores = indivScoresRes.ElementAt(0);
+
+					bool indivPerfect = true;
+					foreach (var score in individualScores.Select((value, index) => new { value, index }))
+					{
+						// Console.WriteLine(score.value);
+						if (score.value >= 4)
+						{
+							completedPromptIndex.Add(score.index);
+						}
+						else
+						{
+							indivPerfect = false;
+						}
+					}
+
 					returnedPrompts.CurrentScore = Int32.Parse(await Http.GetStringAsync($"{baseURI}/userNotes/score/key/{key}/user/{user}/title/{Title.ToString()}"));
+
+					if (returnedPrompts.CurrentScore >= 10 && !indivPerfect)
+					{
+						perfected = true;
+					}
+
 					returnedPrompts.Prompts = JsonSerializer.Deserialize<List<List<String>>>(jsonString);
 					returnedPrompts.numOfPrompts = returnedPrompts.Prompts.Count();
 					//Console.WriteLine(returnedPrompts.Prompts[0][1].ToString());
-					CurrentHeading = returnedPrompts.Prompts[0][0].ToString();
+
+					while (completedPromptIndex.Contains(QuizIndex) && perfected)
+					{
+						QuizIndex++;
+					}
+
+					CurrentHeading = returnedPrompts.Prompts[QuizIndex][0].ToString();
 
 				}
 				else
@@ -612,6 +646,17 @@
 		else
 		{
 			RoundResult = new Outcome() { AreEqual = false, CorrectAnswer = returnedPrompts.Prompts[QuizIndex][1].ToString(), Index = -1, UserAttempt = "" };
+		}
+		if (!Premade)
+		{
+			if (RoundResult.AreEqual && individualScores.ElementAt(QuizIndex) < 5)
+			{
+				individualScores[QuizIndex] = individualScores.ElementAt(QuizIndex) + 1;
+			}
+			else if (!RoundResult.AreEqual && individualScores.ElementAt(QuizIndex) > 0)
+			{
+				individualScores[QuizIndex] = individualScores.ElementAt(QuizIndex) - 1;
+			}
 		}
 	}
 
@@ -727,9 +772,14 @@
 			UserAttemptYellow = "";
 			ResponsiveButton = "btn btn-light btn-lg btn-block mt-5";
 
-			if (QuizIndex < returnedPrompts.numOfPrompts - 1)
+			QuizIndex++;
+			while (completedPromptIndex.Contains(QuizIndex) && perfected)
 			{
 				QuizIndex++;
+			}
+
+			if (QuizIndex < returnedPrompts.numOfPrompts)
+			{
 				CurrentHeading = returnedPrompts.Prompts[QuizIndex][0].ToString();
 			}
 			else
@@ -740,6 +790,10 @@
 				{
 					string key = "X00162027";
 					string user = FirebaseAuthService.FirebaseAuthClient.User.Info.Email.ToString();
+					var scoreDetailContent = new StringContent(JsonSerializer.Serialize(individualScores), Encoding.UTF8, "application/json");
+
+					await Http.PutAsync($"{baseURI}/userNotes/scoreDetail/key/{key}/userIn/{user}/titleIn/{Title}", scoreDetailContent);
+
 					bool started = await Http.GetFromJsonAsync<bool>($"{baseURI}/userNotes/started/key/{key}/user/{user}/title/{Title}");
 					if (started)
 					{
