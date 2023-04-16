@@ -77,7 +77,7 @@ public class ReviewActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
                     }
-                    Log.d("Expected", "List of prompts: " + prompts.get(0).toString());
+                    Log.d("Expected", "List of prompts: " + response);
 
                     promptList.removeAllViews();
                     for (int i = 0; i < prompts.size(); i++)

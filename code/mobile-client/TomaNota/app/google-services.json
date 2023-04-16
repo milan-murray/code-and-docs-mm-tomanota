@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "657532234302",
+    "project_id": "tn-userspace",
+    "storage_bucket": "tn-userspace.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:657532234302:android:f74bc0628dc25b65cebf6f",
+        "android_client_info": {
+          "package_name": "com.example.tomanota"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "657532234302-hu11p1bueqnadgeoopqu6b1f81oajpt3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDrhKSHiySW8eNzd_o0K8X-CYiF3yX58Jw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "657532234302-hu11p1bueqnadgeoopqu6b1f81oajpt3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

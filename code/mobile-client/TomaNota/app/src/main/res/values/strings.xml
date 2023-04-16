@@ -7,4 +7,7 @@
     <string name="germanBtn">German Notes</string>
     <string name="Return">Back</string>
     <string name="signInPrompt">Sign in to create notes and view progress!</string>
+    <string name="destroyNotes">Delete</string>
+    <string name="CreateNotes">Create new</string>
+    <string name="users_titles_tip">Your notes</string>
 </resources>

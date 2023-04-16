@@ -12,6 +12,8 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.ScrollView;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -26,6 +28,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -42,11 +45,64 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        final TableLayout userTitlesList = (TableLayout) findViewById(R.id.user_table_titles);
+
         final TextView textViewSelected = (TextView) findViewById(R.id.selectedTextID);
         textViewSelected.setText(selectedTitle);
 
         final Button btnReview = (Button) findViewById(R.id.btnReview);
         btnReview.setEnabled(false);
+
+        String key = "X00162027";
+        String user = "bob@gmail.com"; // TODO: Login with firebase
+        String baseURI = "https://user-web-api-tn.azurewebsites.net";
+        String URL = baseURI + "/userNotes/key/" + key + "/user/" + user;
+        List<String> titles = new ArrayList<>();
+        // Gson gson = new Gson();
+
+        RequestQueue requestQueue = Volley.newRequestQueue(MainActivity.this);
+
+        JsonArrayRequest objectRequest = new JsonArrayRequest(
+                Request.Method.GET,
+                URL,
+                null,
+                response -> {
+                    for (int i = 0; i < response.length(); i++) {
+                        try {
+                            String title = response.getString(i);
+                            titles.add(title);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    Log.d("Expected", "List of titles: " + titles.toString());
+
+                    for (int i = 0; i < titles.size(); i++) {
+                        Button button = new Button(MainActivity.this);
+                        button.setText(titles.get(i));
+
+                        button.setLayoutParams(new LinearLayout.LayoutParams(
+                                LinearLayout.LayoutParams.MATCH_PARENT,
+                                LinearLayout.LayoutParams.WRAP_CONTENT));
+                        userTitlesList.addView(button);
+
+                        button.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                selectedTitle = button.getText().toString();
+                                textViewSelected.setText(selectedTitle);
+                                btnReview.setEnabled(true);
+                            }
+                        });
+                    }
+                },
+                error -> {
+                    Log.e("TAG", "Error: " + error.getMessage());
+                }
+        );
+
+        requestQueue.add(objectRequest);
 
         btnReview.setOnClickListener(new View.OnClickListener() {
             @Override
