@@ -19,6 +19,8 @@
 
 	.bottom-section {
 		max-height: 15em;
+		padding-right: 1em;
+		padding-left: 1em;
 	}
 
 	.btn-block {
@@ -31,7 +33,6 @@
 
 	.min-height-title {
 		min-height: 3vh;
-		
 	}
 </style>
 
@@ -63,7 +64,7 @@
 										<small class="text-success">
 											<strong>Notes complete!</strong>
 										</small>
-										</div>
+									</div>
 								</button>
 							}
 							else if (groupedTitle.LastProgressed == null)
@@ -78,7 +79,7 @@
 										<br />
 										<div class="float-start rounded bg-danger text-light border border-dark px-1">
 											<small>@groupedTitle.Score</small>
-											</div>
+										</div>
 										@if (groupedTitle.LastProgressed < TimeSpan.FromHours(4))
 										{
 											<div class="float-end rounded bg-secondary text-light border border-dark px-1">
@@ -96,7 +97,7 @@
 											</div>
 										}
 									</div>
-								</button>	
+								</button>
 							}
 							else if (groupedTitle.Score <= 5)
 							{
@@ -193,192 +194,203 @@
 		</div>
 	}
 
-	@* English *@
-	<div class="card bg-light text-dark shadow mb-3">
-		<div class="card-header">
-			<h4>Pre-made Notes ~ English Speakers</h4>
-		</div>
-		<div class="card-body">
-			<div class="card bg-light text-dark mb-3">
-				<div class="card-header">
-					<h5>Spanish</h5>
-				</div>
-				<div class="card-body">
-					<div class="d-flex justify-content-evenly flex-wrap">
-						@if (SpanishTitlesEN == null)
-						{
-							<div class="spinner-border" role="status">
-								<span class="sr-only"></span>
-							</div>
-						}
-						else
-						{
-							try
+	<Accordion>
+		<Collapse Visible="@collapse1Visible">
+			<CollapseHeader>
+				<Heading Size="HeadingSize.Is5">
+					<AccordionToggle>Premade notes for English speakers</AccordionToggle>
+				</Heading>
+			</CollapseHeader>
+			<CollapseBody>
+				<div class="card bg-light text-dark mb-3">
+					<div class="card-header">
+						<h5>Spanish</h5>
+					</div>
+					<div class="card-body">
+						<div class="d-flex justify-content-evenly flex-wrap">
+							@if (SpanishTitlesEN == null)
 							{
-								@foreach (var title in SpanishTitlesEN)
+								<div class="spinner-border" role="status">
+									<span class="sr-only"></span>
+								</div>
+							}
+							else
+							{
+								try
+								{
+									@foreach (var title in SpanishTitlesEN)
+									{
+										<button class="btn btn-primary m-1" @onclick="@(e => SelectNote(title, true))">@title</button>
+									}
+								}
+								catch (Exception e)
+								{
+									// Console.WriteLine(e.Message);
+								}
+							}
+						</div>
+					</div>
+				</div>
+				<div class="card bg-light text-dark mb-3">
+					<div class="card-header">
+						<h5>German</h5>
+					</div>
+					<div class="card-body">
+						<div class="d-flex justify-content-evenly flex-wrap">
+							@if (GermanTitlesEN == null)
+							{
+								<div class="spinner-border" role="status">
+									<span class="sr-only"></span>
+								</div>
+							}
+							else
+							{
+								@foreach (var title in GermanTitlesEN)
 								{
 									<button class="btn btn-primary m-1" @onclick="@(e => SelectNote(title, true))">@title</button>
 								}
-							} catch(Exception e)
-							{
-								// Console.WriteLine(e.Message);
 							}
-						}
+						</div>
 					</div>
 				</div>
-			</div>
-			<div class="card bg-light text-dark mb-3">
-				<div class="card-header">
-					<h5>German</h5>
-				</div>
-				<div class="card-body">
-					<div class="d-flex justify-content-evenly flex-wrap">
-						@if (GermanTitlesEN == null)
-						{
-							<div class="spinner-border" role="status">
-								<span class="sr-only"></span>
-							</div>
-						}
-						else
-						{
-							@foreach (var title in GermanTitlesEN)
+				<div class="card bg-light text-dark">
+					<div class="card-header">
+						<h5>Irish</h5>
+					</div>
+					<div class="card-body">
+						<div class="d-flex justify-content-evenly flex-wrap">
+							@if (IrishTitlesEN == null)
 							{
-								<button class="btn btn-primary m-1" @onclick="@(e => SelectNote(title, true))">@title</button>
+								<div class="spinner-border" role="status">
+									<span class="sr-only"></span>
+								</div>
 							}
-						}
+							else
+							{
+								@foreach (var title in IrishTitlesEN)
+								{
+									<button class="btn btn-primary m-1" @onclick="@(e => SelectNote(title, true))">@title</button>
+								}
+							}
+						</div>
 					</div>
 				</div>
-			</div>
-			<div class="card bg-light text-dark">
-				<div class="card-header">
-					<h5>Irish</h5>
-				</div>
-				<div class="card-body">
-					<div class="d-flex justify-content-evenly flex-wrap">
-						@if (IrishTitlesEN == null)
-						{
-							<div class="spinner-border" role="status">
-								<span class="sr-only"></span>
-							</div>
-						}
-						else
-						{
-							@foreach (var title in IrishTitlesEN)
-							{
-								<button class="btn btn-primary m-1" @onclick="@(e => SelectNote(title, true))">@title</button>
-							}
-						}
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+			</CollapseBody>
+		</Collapse>
 
-	@* Spanish *@
-	<div class="card bg-light text-dark shadow mb-3">
-		<div class="card-header">
-			<h3>Notas Prehechas ~ Hispanohablantes</h3>
-		</div>
-		<div class="card-body">
-			<div class="card bg-light text-dark mb-3">
-				<div class="card-header">
-					<h5>Inglés</h5>
-				</div>
-				<div class="card-body">
-					<div class="d-flex justify-content-evenly flex-wrap">
-						@if (EnglishTitlesES == null)
-						{
-							<div class="spinner-border" role="status">
-								<span class="sr-only"></span>
-							</div>
-						}
-						else
-						{
-							@foreach (var title in EnglishTitlesES)
+		<Collapse Visible="@collapse2Visible">
+			<CollapseHeader>
+				<Heading Size="HeadingSize.Is5">
+					<AccordionToggle>Notas prehechas para hispanohablantes</AccordionToggle>
+				</Heading>
+			</CollapseHeader>
+			<CollapseBody>
+				<div class="card bg-light text-dark mb-3">
+					<div class="card-header">
+						<h5>Inglés</h5>
+					</div>
+					<div class="card-body">
+						<div class="d-flex justify-content-evenly flex-wrap">
+							@if (EnglishTitlesES == null)
 							{
-								<button class="btn btn-primary m-1" @onclick="@(e => SelectNote(title, true))">@title</button>
+								<div class="spinner-border" role="status">
+									<span class="sr-only"></span>
+								</div>
 							}
-						}
+							else
+							{
+								@foreach (var title in EnglishTitlesES)
+								{
+									<button class="btn btn-primary m-1" @onclick="@(e => SelectNote(title, true))">@title</button>
+								}
+							}
+						</div>
 					</div>
 				</div>
-			</div>
-			<div class="card bg-light text-dark">
-				<div class="card-header">
-					<h5>Alemán</h5>
-				</div>
-				<div class="card-body">
-					<div class="d-flex justify-content-evenly flex-wrap">
-						@if (GermanTitlesES == null)
-						{
-							<div class="spinner-border" role="status">
-								<span class="sr-only"></span>
-							</div>
-						}
-						else
-						{
-							@foreach (var title in GermanTitlesES)
+				<div class="card bg-light text-dark">
+					<div class="card-header">
+						<h5>Alemán</h5>
+					</div>
+					<div class="card-body">
+						<div class="d-flex justify-content-evenly flex-wrap">
+							@if (GermanTitlesES == null)
 							{
-								<button class="btn btn-primary m-1" @onclick="@(e => SelectNote(title, true))">@title</button>
+								<div class="spinner-border" role="status">
+									<span class="sr-only"></span>
+								</div>
 							}
-						}
+							else
+							{
+								@foreach (var title in GermanTitlesES)
+								{
+									<button class="btn btn-primary m-1" @onclick="@(e => SelectNote(title, true))">@title</button>
+								}
+							}
+						</div>
 					</div>
 				</div>
-			</div>
-		</div>
-	</div>
+			</CollapseBody>
+		</Collapse>
+		<Collapse Visible="@collapse3Visible">
+			<CollapseHeader>
+				<Heading Size="HeadingSize.Is5">
+					<AccordionToggle>vorgefertigte Notizen ~ Deutschsprachige</AccordionToggle>
+				</Heading>
+			</CollapseHeader>
+			<CollapseBody>
+				<div class="card bg-light text-dark mb-3">
+					<div class="card-header">
+						<h5>Englisch</h5>
+					</div>
+					<div class="card-body">
+						<div class="d-flex justify-content-evenly flex-wrap">
+							@if (EnglishTitlesDE == null)
+							{
+								<div class="spinner-border" role="status">
+									<span class="sr-only"></span>
+								</div>
+							}
+							else
+							{
+								@foreach (var title in EnglishTitlesDE)
+								{
+									<button class="btn btn-primary m-1" @onclick="@(e => SelectNote(title, true))">@title</button>
+								}
+							}
+						</div>
+					</div>
+				</div>
+				<div class="card bg-light text-dark">
+					<div class="card-header">
+						<h5>Spanisch</h5>
+					</div>
+					<div class="card-body">
+						<div class="d-flex justify-content-evenly flex-wrap">
+							@if (SpanishTitlesDE == null)
+							{
+								<div class="spinner-border" role="status">
+									<span class="sr-only"></span>
+								</div>
+							}
+							else
+							{
+								@foreach (var title in SpanishTitlesDE)
+								{
+									<button class="btn btn-light">@title</button>
+								}
+							}
+						</div>
+					</div>
+				</div>
+			</CollapseBody>
+		</Collapse>
+	</Accordion>
 
-	@* German *@
-	<div class="card bg-light text-dark shadow mb-3">
-		<div class="card-header">
-			<h3>vorgefertigte Notizen ~ Deutschsprachige</h3>
-		</div>
-		<div class="card-body">
-			<div class="card bg-light text-dark mb-3">
-				<div class="card-header">
-					<h5>Englisch</h5>
-				</div>
-				<div class="card-body">
-					<div class="d-flex justify-content-evenly flex-wrap">
-						@if (EnglishTitlesDE == null)
-						{
-							<div class="spinner-border" role="status">
-								<span class="sr-only"></span>
-							</div>
-						}
-						else
-						{
-							@foreach (var title in EnglishTitlesDE)
-							{
-								<button class="btn btn-primary m-1" @onclick="@(e => SelectNote(title, true))">@title</button>
-							}
-						}
-					</div>
-				</div>
-			</div>
-			<div class="card bg-light text-dark">
-				<div class="card-header">
-					<h5>Spanisch</h5>
-				</div>
-				<div class="card-body">
-					<div class="d-flex justify-content-evenly flex-wrap">
-						@if (SpanishTitlesDE == null)
-						{
-							<div class="spinner-border" role="status">
-								<span class="sr-only"></span>
-							</div>
-						}
-						else
-						{
-							@foreach (var title in SpanishTitlesDE)
-							{
-								<button class="btn btn-light">@title</button>
-							}
-						}
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+	@code {
+		bool collapse1Visible = true;
+		bool collapse2Visible = false;
+		bool collapse3Visible = false;
+	}
 </div>
 
 <div class="rounded-top bg-dark mt-3 mx-3 fixed-bottom bottom-section shadow">
@@ -412,7 +424,7 @@
 	String[]? IrishTitlesEN { get; set; }
 	String[]? SpanishTitlesDE { get; set; }
 	String[]? EnglishTitlesDE { get; set; }
-	String baseURI = "https://user-web-api-tn.azurewebsites.net"; 
+	String baseURI = "https://user-web-api-tn.azurewebsites.net";
 	// String baseURI = "https://localhost:7080";
 
 	public class TitleGroup
@@ -442,7 +454,7 @@
 					// Console.WriteLine(JSONResponse.ToString());
 					GroupedUserTitles = JsonSerializer.Deserialize<List<TitleGroup>>(JSONResponse);
 				}
-				catch(Exception e)
+				catch (Exception e)
 				{
 					// Console.WriteLine(e.Message);
 				}
@@ -456,7 +468,7 @@
 			GermanTitlesEN = await Http.GetFromJsonAsync<String[]?>(url_EN_titles_DE);
 			IrishTitlesEN = await Http.GetFromJsonAsync<String[]?>(url_EN_titles_IE);
 		}
-		catch(HttpRequestException e)
+		catch (HttpRequestException e)
 		{
 			Console.WriteLine(e.Message);
 		}
