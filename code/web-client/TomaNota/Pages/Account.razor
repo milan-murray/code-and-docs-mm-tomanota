@@ -9,23 +9,30 @@
 @inject IFirebaseAuthService FirebaseAuthService
 
 <div class="container">
+	<div class="card text-light bg-dark mb-5">
+		<div class="card-header">
+			<h4>Note learning progress for @DateTime.Now.ToString("yyyy")</h4>
+		</div>
+		<div class="card-body">
+			<div class="container">
+				<Chart @ref="barChart" Type="ChartType.Bar" TItem="int" Clicked="@OnClicked" />
+			</div>
+		</div>
+	</div>
 	<div class="card text-light bg-dark">
 		<div class="card-header">
-			<h3>Account settings</h3>
+			@if (FirebaseAuthService.FirebaseAuthClient.User.Info.DisplayName != null)
+			{
+				<h4>Account settings for @FirebaseAuthService.FirebaseAuthClient.User.Info.DisplayName</h4>
+			}
+			else
+			{
+				<h4>Account settings</h4>
+			}
 		</div>
 		<div class="card-body">
 			@if (FirebaseAuthService.FirebaseAuthClient.User != null)
 			{
-				<div class="card">
-					<Button Color="Color.Primary" Clicked="@(async () => await HandleRedraw())">Redraw</Button>
-
-					<LineChart @ref="lineChart" TItem="double" />
-				</div>
-
-				@if (FirebaseAuthService.FirebaseAuthClient.User.Info.DisplayName != null)
-				{
-					<h4>Account settings for @FirebaseAuthService.FirebaseAuthClient.User.Info.DisplayName</h4>
-				}
 				<div class="my-3">
 					<p>Email: @FirebaseAuthService.FirebaseAuthClient.User.Info.Email</p>
 					<label>New password</label>
@@ -54,14 +61,14 @@
 @code {
 
 	/*
-	* Sample Chart Code
+	* Monthly Chart Code
 	*/
 
-	LineChart<double> lineChart;
+	Chart<int> barChart;
 
 	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{
-		if (firstRender)
+		if (firstRender && FirebaseAuthService.FirebaseAuthClient.User != null)
 		{
 			await HandleRedraw();
 		}
@@ -69,44 +76,45 @@
 
 	async Task HandleRedraw()
 	{
-		await lineChart.Clear();
+		await barChart.Clear();
 
-		await lineChart.AddLabelsDatasetsAndUpdate(Labels, GetLineChartDataset());
+		await barChart.AddLabelsDatasetsAndUpdate(Labels, GetBarChartDataset());
 	}
 
-	LineChartDataset<double> GetLineChartDataset()
+	private BarChartDataset<int> GetBarChartDataset()
 	{
-		return new LineChartDataset<double>
+		return new()
 			{
-				Label = "# of randoms",
+				Label = "Note learning progress this year",
 				Data = RandomizeData(),
 				BackgroundColor = backgroundColors,
 				BorderColor = borderColors,
-				Fill = true,
-				PointRadius = 3,
-				CubicInterpolationMode = "monotone",
+				BorderWidth = 1
 			};
 	}
 
-	string[] Labels = { "Red", "Blue", "Yellow", "Green", "Purple", "Orange" };
-	List<string> backgroundColors = new List<string> { ChartColor.FromRgba(255, 99, 132, 0.2f), ChartColor.FromRgba(54, 162, 235, 0.2f), ChartColor.FromRgba(255, 206, 86, 0.2f), ChartColor.FromRgba(75, 192, 192, 0.2f), ChartColor.FromRgba(153, 102, 255, 0.2f), ChartColor.FromRgba(255, 159, 64, 0.2f) };
-	List<string> borderColors = new List<string> { ChartColor.FromRgba(255, 99, 132, 1f), ChartColor.FromRgba(54, 162, 235, 1f), ChartColor.FromRgba(255, 206, 86, 1f), ChartColor.FromRgba(75, 192, 192, 1f), ChartColor.FromRgba(153, 102, 255, 1f), ChartColor.FromRgba(255, 159, 64, 1f) };
+	string[] Labels = { "January", "Febuary", "March", "April", "May", "June", "July", "August", "Spetember", "October", "November", "December" };
+	List<string> backgroundColors = new List<string> { ChartColor.FromRgba(75, 192, 192, 0.2f) };
+	List<string> borderColors = new List<string> { ChartColor.FromRgba(75, 192, 192, 1f) };
 
-	List<double> RandomizeData()
+	List<int> RandomizeData()
 	{
-		var r = new Random(DateTime.Now.Millisecond);
+		// Temporary hard coded data
+		return new List<int> {
+			5, 10, 12, 24, 15, 1, 8 , 2, 3, 40, 36, 32
+		};
+	}
 
-		return new List<double> {
-				r.Next( 3, 50 ) * r.NextDouble(),
-				r.Next( 3, 50 ) * r.NextDouble(),
-				r.Next( 3, 50 ) * r.NextDouble(),
-				r.Next( 3, 50 ) * r.NextDouble(),
-				r.Next( 3, 50 ) * r.NextDouble(),
-				r.Next( 3, 50 ) * r.NextDouble() };
+	Task OnClicked(ChartMouseEventArgs e)
+	{
+		var model = e.Model as BarChartModel;
+
+		Console.WriteLine($"Handling event for {nameof(BarChartModel)}: x:{model.X} y:{model.Y}");
+		return Task.CompletedTask;
 	}
 
 	/*
-	 * End of sample code
+	 * End of chart code
 	 */
 
 
@@ -164,22 +172,23 @@
 	{
 		if (FirebaseAuthService.FirebaseAuthClient.User != null)
 		{
-			bool result = await IJSRuntime.InvokeAsync<bool>("confirm", "Delete account? This action cannot be undone.");
-			if (result)
-			{
-				try
-				{
-					await FirebaseAuthService.FirebaseAuthClient.User.DeleteAsync();
-					NavigationManager.NavigateTo("/");
-				}
-				catch (Exception e)
-				{
-					DeleteAccountError = "Session expired. Please try to log in again.";
-					Console.WriteLine(e.Message);
-				}
-
-				// TODO: Delete all user's notes
-			}
-		}
+			bool result = await IJSRuntime.InvokeAsync<bool>
+	("confirm", "Delete account? This action cannot be undone.");
+	if (result)
+	{
+	try
+	{
+	await FirebaseAuthService.FirebaseAuthClient.User.DeleteAsync();
+	NavigationManager.NavigateTo("/");
 	}
-}
+	catch (Exception e)
+	{
+	DeleteAccountError = "Session expired. Please try to log in again.";
+	Console.WriteLine(e.Message);
+	}
+
+	// TODO: Delete all user's notes
+	}
+	}
+	}
+	}

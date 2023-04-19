@@ -192,8 +192,15 @@
 				</div>
 			</div>
 		</div>
-	}
 
+		<div class="container">
+			<div class="card bg-light shadown mb-5 mx-5">
+				<div class="card-body">
+					<Chart @ref="barChart" Type="ChartType.Bar" TItem="int" Clicked="@OnClicked" />
+				</div>
+			</div>
+		</div>
+	}
 	<Accordion>
 		<Collapse Visible="@collapse1Visible">
 			<CollapseHeader>
@@ -385,14 +392,7 @@
 			</CollapseBody>
 		</Collapse>
 	</Accordion>
-
-	@code {
-		bool collapse1Visible = true;
-		bool collapse2Visible = false;
-		bool collapse3Visible = false;
-	}
 </div>
-
 <div class="rounded-top bg-dark mt-3 mx-3 fixed-bottom bottom-section shadow">
 	<div class="card-body">
 		<div class="text-center">
@@ -426,6 +426,11 @@
 	String[]? EnglishTitlesDE { get; set; }
 	String baseURI = "https://user-web-api-tn.azurewebsites.net";
 	// String baseURI = "https://localhost:7080";
+
+	// Accordion
+	bool collapse1Visible = true;
+	bool collapse2Visible = false;
+	bool collapse3Visible = false;
 
 	public class TitleGroup
 	{
@@ -528,4 +533,56 @@
 		TitleIsPremade = premadeIn;
 	}
 
+	/*
+	* Chart code
+	*/
+
+	Chart<int> barChart;
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender && FirebaseAuthService.FirebaseAuthClient.User != null)
+		{
+			await HandleRedraw();
+		}
+	}
+
+	async Task HandleRedraw()
+	{
+		await barChart.Clear();
+
+		await barChart.AddLabelsDatasetsAndUpdate(Labels, GetBarChartDataset());
+	}
+
+	private BarChartDataset<int> GetBarChartDataset()
+	{
+		return new()
+			{
+				Label = "Note progress this week",
+				Data = RandomizeData(),
+				BackgroundColor = backgroundColors,
+				BorderColor = borderColors,
+				BorderWidth = 1
+			};
+	}
+
+	string[] Labels = { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
+	List<string> backgroundColors = new List<string> { ChartColor.FromRgba(75, 192, 192, 0.2f) };
+	List<string> borderColors = new List<string> { ChartColor.FromRgba(75, 192, 192, 1f) };
+
+	List<int> RandomizeData()
+	{
+		// Temporary hard coded data
+		return new List<int> {
+			5, 10, 12, 24, 15, 1, 8
+		};
+	}
+
+	Task OnClicked(ChartMouseEventArgs e)
+	{
+		var model = e.Model as BarChartModel;
+
+		Console.WriteLine($"Handling event for {nameof(BarChartModel)}: x:{model.X} y:{model.Y}");
+		return Task.CompletedTask;
+	}
 }
