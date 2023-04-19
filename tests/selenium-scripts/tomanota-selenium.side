@@ -4384,6 +4384,13 @@
       "targets": [],
       "value": ""
     }, {
+      "id": "df91d104-17a8-4b6f-b7fd-8b8008877893",
+      "comment": "",
+      "command": "chooseCancelOnNextConfirmation",
+      "target": "",
+      "targets": [],
+      "value": ""
+    }, {
       "id": "ae8d2f17-df5f-440e-a8e7-8cdfc7c9adea",
       "comment": "",
       "command": "webdriverChooseOkOnVisibleConfirmation",
@@ -4394,20 +4401,13 @@
       "id": "c52e0011-99ac-4e7e-9a1f-a53235dba6e6",
       "comment": "",
       "command": "assertElementPresent",
-      "target": "css=h4",
+      "target": "css=.mx-2",
       "targets": [
-        ["css=h4", "css:finder"],
-        ["xpath=//div[@id='app']/main/div/div[2]/div/div/div/h4", "xpath:idRelative"],
-        ["xpath=//h4", "xpath:position"],
-        ["xpath=//h4[contains(.,'Pre-made Notes ~ English Speakers')]", "xpath:innerText"]
+        ["css=.mx-2", "css:finder"],
+        ["xpath=//div[@id='app']/main/div/div/div/div/div/h5", "xpath:idRelative"],
+        ["xpath=//h5", "xpath:position"],
+        ["xpath=//h5[contains(.,'Welcome!')]", "xpath:innerText"]
       ],
-      "value": ""
-    }, {
-      "id": "df91d104-17a8-4b6f-b7fd-8b8008877893",
-      "comment": "",
-      "command": "chooseCancelOnNextConfirmation",
-      "target": "",
-      "targets": [],
       "value": ""
     }, {
       "id": "bae566ad-802b-413c-b5aa-8671dc5c8001",
