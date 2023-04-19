@@ -1,5 +1,7 @@
+using System.Globalization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace user_web_API.Controllers;
 
@@ -8,9 +10,10 @@ namespace user_web_API.Controllers;
 [Route("[controller]")]
 public class userNotesController : ControllerBase
 {
-	private String APIKEY = "X00162027";
+	private string APIKEY = "X00162027";
 
 	private static readonly List<userNotes> noteStorage = new();
+	private static readonly List<User> userStorage = new();
 
 	[HttpGet("key/{keyIn}")]
 	[ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -36,11 +39,11 @@ public class userNotesController : ControllerBase
 	{
 		if (keyIn == APIKEY)
 		{
-			if (noteStorage.Where(n => n.Title == titleIn).Where(u => u.User == userIn).Select(p => p.Prompts).Count() == 0)
+			if (noteStorage.Where(n => n.Title == titleIn).Where(u => u.UserInfo.UserName == userIn).Select(p => p.Prompts).Count() == 0)
 			{
 				return NoContent();
 			}
-			return Ok(noteStorage.Where(n => n.Title == titleIn).Where(u => u.User == userIn).Select(p => p.Prompts.Select(i => i.Cast<object>().ToList().ToList())).SingleOrDefault());
+			return Ok(noteStorage.Where(n => n.Title == titleIn).Where(u => u.UserInfo.UserName == userIn).Select(p => p.Prompts.Select(i => i.Cast<object>().ToList().ToList())).SingleOrDefault());
 		}
 		return Unauthorized();
 	}
@@ -53,12 +56,12 @@ public class userNotesController : ControllerBase
 	{
 		if (keyIn == APIKEY)
 		{
-			userNotes note = noteStorage.FirstOrDefault(n => n.User == userIn && n.Title == titleIn);
+			userNotes note = noteStorage.FirstOrDefault(n => n.UserInfo.UserName == userIn && n.Title == titleIn);
 			if (note == null)
 			{
 				return BadRequest();
 			}
-			return Ok(noteStorage.Where(n => n.Title == titleIn).Where(u => u.User == userIn).Select(s => s.ParallelIndividualScores));
+			return Ok(noteStorage.Where(n => n.Title == titleIn).Where(u => u.UserInfo.UserName == userIn).Select(s => s.ParallelIndividualScores));
 		}
 		return Unauthorized();
 	}
@@ -71,11 +74,11 @@ public class userNotesController : ControllerBase
 	{
 		if (keyIn == APIKEY)
 		{
-			if (noteStorage.Where(n => n.Title == titleIn).Where(u => u.User == userIn).Select(p => p.Prompts).Count() == 0)
+			if (noteStorage.Where(n => n.Title == titleIn).Where(u => u.UserInfo.UserName == userIn).Select(p => p.Prompts).Count() == 0)
 			{
 				return NoContent();
 			}
-			return Ok(noteStorage.Where(n => n.Title == titleIn).Where(u => u.User == userIn).Select(p => p.Score).FirstOrDefault());
+			return Ok(noteStorage.Where(n => n.Title == titleIn).Where(u => u.UserInfo.UserName == userIn).Select(p => p.Score).FirstOrDefault());
 		}
 		return Unauthorized();
 	}
@@ -89,12 +92,12 @@ public class userNotesController : ControllerBase
 	{
 		if (keyIn == APIKEY)
 		{
-			userNotes note = noteStorage.FirstOrDefault(n => n.User == userIn && n.Title == titleIn);
+			userNotes note = noteStorage.FirstOrDefault(n => n.UserInfo.UserName == userIn && n.Title == titleIn);
 			if (note == null)
 			{
 				return NotFound();
 			}
-			var noteTime = noteStorage.Where(n => n.Title == titleIn).Where(u => u.User == userIn).Select(p => p.LastProgressed).FirstOrDefault();
+			var noteTime = noteStorage.Where(n => n.Title == titleIn).Where(u => u.UserInfo.UserName == userIn).Select(p => p.LastProgressed).FirstOrDefault();
 			if (noteTime == null)
 			{
 				return NoContent();
@@ -112,12 +115,12 @@ public class userNotesController : ControllerBase
 	{
 		if (keyIn == APIKEY)
 		{
-			userNotes note = noteStorage.FirstOrDefault(n => n.User == userIn && n.Title == titleIn);
+			userNotes note = noteStorage.FirstOrDefault(n => n.UserInfo.UserName == userIn && n.Title == titleIn);
 			if (note == null)
 			{
 				return NotFound();
 			}
-			var noteTime = noteStorage.Where(n => n.Title == titleIn).Where(u => u.User == userIn).Select(p => p.LastProgressed).FirstOrDefault();
+			var noteTime = noteStorage.Where(n => n.Title == titleIn).Where(u => u.UserInfo.UserName == userIn).Select(p => p.LastProgressed).FirstOrDefault();
 			if (noteTime == null)
 			{
 				return Ok(false);
@@ -136,12 +139,12 @@ public class userNotesController : ControllerBase
 	{
 		if (keyIn == APIKEY)
 		{
-			userNotes note = noteStorage.FirstOrDefault(n => n.User == userIn && n.Title == titleIn);
+			userNotes note = noteStorage.FirstOrDefault(n => n.UserInfo.UserName == userIn && n.Title == titleIn);
 			if (note == null)
 			{
 				return NotFound();
 			}
-			var noteTime = noteStorage.Where(n => n.Title == titleIn).Where(u => u.User == userIn).Select(p => p.LastProgressed).FirstOrDefault();
+			var noteTime = noteStorage.Where(n => n.Title == titleIn).Where(u => u.UserInfo.UserName == userIn).Select(p => p.LastProgressed).FirstOrDefault();
 			if (noteTime == null)
 			{
 				return NoContent();
@@ -154,7 +157,7 @@ public class userNotesController : ControllerBase
 	// Class for title return type below
 	public class TitleGroup
 	{
-		public String Title { get; set; }
+		public string Title { get; set; }
 		public int Score { get; set; }
 		public TimeSpan? LastProgressed { get; set; }
 	}
@@ -167,11 +170,11 @@ public class userNotesController : ControllerBase
 	{
 		if (keyIn == APIKEY)
 		{
-			if (noteStorage.Where(u => u.User == userIn).Select(t => t.Title).Count() == 0)
+			if (noteStorage.Where(u => u.UserInfo.UserName == userIn).Select(t => t.Title).Count() == 0)
 			{
 				return NoContent();
 			}
-			return Ok(noteStorage.Where(u => u.User == userIn).Select(t => new TitleGroup
+			return Ok(noteStorage.Where(u => u.UserInfo.UserName == userIn).Select(t => new TitleGroup
 			{
 				Title = t.Title,
 				Score = t.Score,
@@ -190,13 +193,21 @@ public class userNotesController : ControllerBase
 	{
 		if (keyIn == APIKEY)
 		{
-			if (noteStorage.FirstOrDefault(n => n.User == userIn && n.Title == titleIn) != null)
+			if (noteStorage.FirstOrDefault(n => n.UserInfo.UserName == userIn && n.Title == titleIn) != null)
 			{
 				return BadRequest();
 			}
 			List<int> setScores = new();
 			foreach (var p in PromptsIn) { setScores.Add(2); }
-			noteStorage.Add(new userNotes { User = userIn, Title = titleIn, Prompts = PromptsIn, Score = scoreIn, ParallelIndividualScores = setScores, LastProgressed = null });
+
+			User user = userStorage.FirstOrDefault(u => u.UserName == userIn);
+			if (user == null)
+			{
+				user = new User() { UserName = userIn, CurrentDate = DateTime.Now, MonthProgress = new List<int> { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, WeekProgress = new List<int> { 0, 0, 0, 0, 0, 0, 0 } };
+				userStorage.Add(user);
+			}
+
+			noteStorage.Add(new userNotes { UserInfo = user, Title = titleIn, Prompts = PromptsIn, Score = scoreIn, ParallelIndividualScores = setScores, LastProgressed = null });
 			return Ok();
 		}
 		return Unauthorized();
@@ -210,7 +221,7 @@ public class userNotesController : ControllerBase
 	{
 		if (keyIn == APIKEY)
 		{
-			userNotes note = noteStorage.FirstOrDefault(n => n.User == userIn && n.Title == titleIn);
+			userNotes note = noteStorage.FirstOrDefault(n => n.UserInfo.UserName == userIn && n.Title == titleIn);
 			if (note == null)
 			{
 				return BadRequest();
@@ -230,7 +241,7 @@ public class userNotesController : ControllerBase
 	{
 		if (keyIn == APIKEY)
 		{
-			userNotes note = noteStorage.FirstOrDefault(n => n.User == userIn && n.Title == titleIn);
+			userNotes note = noteStorage.FirstOrDefault(n => n.UserInfo.UserName == userIn && n.Title == titleIn);
 			if (note == null)
 			{
 				return NotFound();
@@ -254,7 +265,7 @@ public class userNotesController : ControllerBase
 	{
 		if (keyIn == APIKEY)
 		{
-			userNotes note = noteStorage.FirstOrDefault(n => n.User == userIn && n.Title == titleIn);
+			userNotes note = noteStorage.FirstOrDefault(n => n.UserInfo.UserName == userIn && n.Title == titleIn);
 			if (note == null)
 			{
 				return NotFound();
@@ -278,7 +289,7 @@ public class userNotesController : ControllerBase
 	{
 		if (keyIn == APIKEY)
 		{
-			userNotes note = noteStorage.FirstOrDefault(n => n.User == userIn && n.Title == titleIn);
+			userNotes note = noteStorage.FirstOrDefault(n => n.UserInfo.UserName == userIn && n.Title == titleIn);
 			if (note == null)
 			{
 				return NotFound();
@@ -299,6 +310,86 @@ public class userNotesController : ControllerBase
 		return Unauthorized();
 	}
 
+	[HttpGet("userWeekProgress/key/{keyIn}/userIn/{userIn}")]
+	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+	[ProducesResponseType(StatusCodes.Status200OK)]
+	[ProducesResponseType(StatusCodes.Status404NotFound)]
+	public IActionResult getWeekProgress([FromRoute] string keyIn, [FromRoute] string userIn)
+	{
+		if (keyIn == APIKEY)
+		{
+			User user = userStorage.FirstOrDefault(n => n.UserName == userIn);
+			if (user == null)
+			{
+				return NotFound();
+			}
+			return Ok(user.WeekProgress);
+		}
+		return Unauthorized();
+	}
+
+	[HttpGet("userMonthProgress/key/{keyIn}/userIn/{userIn}")]
+	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+	[ProducesResponseType(StatusCodes.Status200OK)]
+	[ProducesResponseType(StatusCodes.Status404NotFound)]
+	public IActionResult getMonthProgress([FromRoute] string keyIn, [FromRoute] string userIn)
+	{
+		if (keyIn == APIKEY)
+		{
+			User user = userStorage.FirstOrDefault(n => n.UserName == userIn);
+			if (user == null)
+			{
+				return NotFound();
+			}
+			return Ok(user.MonthProgress);
+		}
+		return Unauthorized();
+	}
+
+	[HttpPut("userProgress/key/{keyIn}/userIn/{userIn}")]
+	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+	[ProducesResponseType(StatusCodes.Status200OK)]
+	[ProducesResponseType(StatusCodes.Status404NotFound)]
+	public IActionResult addProgress([FromRoute] string keyIn, [FromRoute] string userIn)
+	{
+		if (keyIn == APIKEY)
+		{
+			User user = userStorage.FirstOrDefault(n => n.UserName == userIn);
+			if (user == null)
+			{
+				return NotFound();
+			}
+			DateTime now = DateTime.Now;
+			if (DateTime.Now.Year == user.CurrentDate.Year)
+			{
+				CultureInfo culture = CultureInfo.CurrentCulture;
+				CalendarWeekRule weekRule = culture.DateTimeFormat.CalendarWeekRule;
+				DayOfWeek firstDayOfWeek = culture.DateTimeFormat.FirstDayOfWeek;
+				int week1 = culture.Calendar.GetWeekOfYear(now, weekRule, firstDayOfWeek);
+				int week2 = culture.Calendar.GetWeekOfYear(user.CurrentDate, weekRule, firstDayOfWeek);
+				
+				if (week1 == week2)
+				{
+					int dayIndex = ((int)now.DayOfWeek - 1) % 7;
+					user.WeekProgress[dayIndex] += 1;
+				}
+				else
+				{
+					user.WeekProgress = new List<int>() { 0, 0, 0, 0, 0, 0, 0 };
+				}
+				user.MonthProgress[now.Month - 1] += 1;
+				return Ok();
+			}
+			else // New year
+			{
+				user.WeekProgress = new List<int>() { 0, 0, 0, 0, 0, 0, 0 };
+				user.MonthProgress = new List<int>() { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+			}
+			return Ok();
+		}
+		return Unauthorized();
+	}
+
 	[HttpDelete("delete/key/{keyIn}/user/{userIn}/title/{titleIn}")]
 	[ProducesResponseType(StatusCodes.Status404NotFound)]
 	[ProducesResponseType(StatusCodes.Status200OK)]
@@ -307,7 +398,7 @@ public class userNotesController : ControllerBase
 	{
 		if (keyIn == APIKEY)
 		{
-			userNotes noteToDelete = noteStorage.Where(u => u.User == userIn).Where(t => t.Title == titleIn).FirstOrDefault();
+			userNotes noteToDelete = noteStorage.Where(u => u.UserInfo.UserName == userIn).Where(t => t.Title == titleIn).FirstOrDefault();
 
 			if (noteToDelete != null)
 			{
