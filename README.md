@@ -2,14 +2,23 @@
 
 ## Setup Steps
 
-### Web Client (Local)
-
-	cd code/web-client/TomaNota/
-	dotnet run
-
 ### Web Client (Deployed)
 
 URL: https://tomanota.azurewebsites.net/
+
+### Web Client (Local)
+
+``` shell
+cd code/web-client/TomaNota/
+dotnet run
+```
+
+### RESTful Web API (Local)
+
+``` shell
+cd code/user-web-API/
+dotnet run
+```
 
 ## About
 
