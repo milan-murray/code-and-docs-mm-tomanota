@@ -1,6 +1,7 @@
 ﻿@page "/account"
 @using Microsoft.JSInterop
 @using System
+@using System.Web
 @using System.Text.Json
 @using System.Text.Json.Serialization
 @inject IJSRuntime IJSRuntime
@@ -63,6 +64,7 @@
 	/*
 	* Monthly Chart Code
 	*/
+	String baseURI = "https://user-web-api-tn.azurewebsites.net";
 
 	Chart<int> barChart;
 
@@ -78,15 +80,15 @@
 	{
 		await barChart.Clear();
 
-		await barChart.AddLabelsDatasetsAndUpdate(Labels, GetBarChartDataset());
+		await barChart.AddLabelsDatasetsAndUpdate(Labels, await GetBarChartDataset());
 	}
 
-	private BarChartDataset<int> GetBarChartDataset()
+	private async Task<BarChartDataset<int>> GetBarChartDataset()
 	{
 		return new()
 			{
 				Label = "Note learning progress this year",
-				Data = RandomizeData(),
+				Data = await MonthlyData(),
 				BackgroundColor = backgroundColors,
 				BorderColor = borderColors,
 				BorderWidth = 1
@@ -97,12 +99,15 @@
 	List<string> backgroundColors = new List<string> { ChartColor.FromRgba(75, 192, 192, 0.2f) };
 	List<string> borderColors = new List<string> { ChartColor.FromRgba(75, 192, 192, 1f) };
 
-	List<int> RandomizeData()
+	async Task<List<int>> MonthlyData()
 	{
-		// Temporary hard coded data
-		return new List<int> {
-			5, 10, 12, 24, 15, 1, 8 , 2, 3, 40, 36, 32
-		};
+		string key = "X00162027";
+		string user = HttpUtility.HtmlEncode(FirebaseAuthService.FirebaseAuthClient.User.Info.Email.ToString());
+		string url = $"{baseURI}/userNotes/userMonthProgress/key/{key}/userIn/{user}";
+		Console.WriteLine(url);
+		var httpRes = await Http.GetFromJsonAsync<List<int>>(url);
+
+		return httpRes;
 	}
 
 	Task OnClicked(ChartMouseEventArgs e)
@@ -173,22 +178,22 @@
 		if (FirebaseAuthService.FirebaseAuthClient.User != null)
 		{
 			bool result = await IJSRuntime.InvokeAsync<bool>
-	("confirm", "Delete account? This action cannot be undone.");
-	if (result)
-	{
-	try
-	{
-	await FirebaseAuthService.FirebaseAuthClient.User.DeleteAsync();
-	NavigationManager.NavigateTo("/");
-	}
-	catch (Exception e)
-	{
-	DeleteAccountError = "Session expired. Please try to log in again.";
-	Console.WriteLine(e.Message);
-	}
+			("confirm", "Delete account? This action cannot be undone.");
+			if (result)
+			{
+				try
+				{
+					await FirebaseAuthService.FirebaseAuthClient.User.DeleteAsync();
+					NavigationManager.NavigateTo("/");
+				}
+				catch (Exception e)
+				{
+					DeleteAccountError = "Session expired. Please try to log in again.";
+					Console.WriteLine(e.Message);
+				}
 
-	// TODO: Delete all user's notes
-	}
-	}
-	}
+				// TODO: Delete all user's notes
+				}
+			}
+		}
 	}

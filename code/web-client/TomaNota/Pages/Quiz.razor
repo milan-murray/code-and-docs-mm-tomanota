@@ -793,6 +793,7 @@
 					var scoreDetailContent = new StringContent(JsonSerializer.Serialize(individualScores), Encoding.UTF8, "application/json");
 
 					await Http.PutAsync($"{baseURI}/userNotes/scoreDetail/key/{key}/userIn/{user}/titleIn/{Title}", scoreDetailContent);
+					await Http.PutAsync($"{baseURI}/userNotes/userProgress/key/{key}/userIn/{user}", null);
 
 					bool started = await Http.GetFromJsonAsync<bool>($"{baseURI}/userNotes/started/key/{key}/user/{user}/title/{Title}");
 					if (started)

@@ -551,15 +551,17 @@
 	{
 		await barChart.Clear();
 
-		await barChart.AddLabelsDatasetsAndUpdate(Labels, GetBarChartDataset());
+		await barChart.AddLabelsDatasetsAndUpdate(Labels, await GetBarChartDataset());
+
+
 	}
 
-	private BarChartDataset<int> GetBarChartDataset()
+	private async Task<BarChartDataset<int>> GetBarChartDataset()
 	{
 		return new()
 			{
 				Label = "Note progress this week",
-				Data = RandomizeData(),
+				Data = await WeeklyData(),
 				BackgroundColor = backgroundColors,
 				BorderColor = borderColors,
 				BorderWidth = 1
@@ -570,12 +572,15 @@
 	List<string> backgroundColors = new List<string> { ChartColor.FromRgba(75, 192, 192, 0.2f) };
 	List<string> borderColors = new List<string> { ChartColor.FromRgba(75, 192, 192, 1f) };
 
-	List<int> RandomizeData()
+	public async Task<List<int>> WeeklyData()
 	{
-		// Temporary hard coded data
-		return new List<int> {
-			5, 10, 12, 24, 15, 1, 8
-		};
+		string key = "X00162027";
+		string user = HttpUtility.HtmlEncode(FirebaseAuthService.FirebaseAuthClient.User.Info.Email.ToString());
+		string url = $"{baseURI}/userNotes/userWeekProgress/key/{key}/userIn/{user}";
+		Console.WriteLine(url);
+		var httpRes = await Http.GetFromJsonAsync<List<int>>(url);
+
+		return httpRes;
 	}
 
 	Task OnClicked(ChartMouseEventArgs e)
