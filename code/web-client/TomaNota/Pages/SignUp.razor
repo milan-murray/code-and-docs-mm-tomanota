@@ -42,6 +42,17 @@
 					<div class="form-group">
 						<label for="password"><span class="text-danger">*</span> Password:</label>
 						<input class="form-control" id="password" type="password" @bind="@Password" />
+					</div><div class="form-group">
+						<label for="passwordRe"><span class="text-danger">*</span> Repeat password:</label>
+						<input class="form-control" id="passwordRe" type="password" @bind="@PasswordRe" />
+					</div>
+					<div class="form-group">
+						<label class="me-1" for="userLang"><span class="text-danger">*</span> Native language: </label>
+						<select id="userLang" @bind="UserLang">
+							<option value="@Language.English">English</option>
+							<option value="@Language.Spanish">Spanish</option>
+							<option value="@Language.German">German</option>
+						</select>
 					</div>
 				</form>
 				<button class="btn btn-primary btn-block" @onclick="SignUpNewUser">Sign Up</button>
@@ -54,10 +65,21 @@
 
 
 @code {
+
+	public enum Language
+	{
+		English,
+		Spanish,
+		German
+	}
+
 	String Email = "";
 	String Password = "";
+	String PasswordRe = "";
 	String Username = "";
 	String ErrorText = "";
+	Language UserLang { get; set; } = Language.English;
+
 	private static readonly HttpClient client = new HttpClient();
 
 	async Task SignUpNewUser()
@@ -66,102 +88,123 @@
 		{
 			if (Password.Count() > 5)
 			{
-
-				try
+				if (Password != PasswordRe)
 				{
-					Email = Email.ToLower();
-					if (Username == String.Empty)
-					{
-						var userCredential = await FirebaseAuthService.FirebaseAuthClient.CreateUserWithEmailAndPasswordAsync(Email, Password);	
-					}
-					else
-					{
-						var userCredential = await FirebaseAuthService.FirebaseAuthClient.CreateUserWithEmailAndPasswordAsync(Email, Password, Username);
-						
-					}
-					// Console.WriteLine(userCredential.User.ToString());
-
-					// Add starting notes to the new user's account
-
-					var key = "X00162027";
-					var baseURI = "https://user-web-api-tn.azurewebsites.net";
-					var content = "[[\"How to make the most of TomaNota?\", \"Learning a new topic? Take notes from classes or books and add them here!\"],[\"What do the numbers in the buttons on the home screen mean?\", \"As you learn stored notes the current score out of 10 is displayed in the lower left. Hours since the last session are displayed on the right\"],[\"Why is the score not increasing on my notes?\", \"Only after 4 hours have passed can progress be made on notes! This is to help you space everything out.\"],[\"I typed the correct answer but it got marked as incorrect!\",\"By design the answers you typr should exactly match the specified answer, and are case sensitive!\"],[\"Should I delete this note from my account?\",\"This note is here only as a guide and is recommened to be deleted as well as the other default exmaple notes.\"]]";
-					var Content = new StringContent(content, Encoding.UTF8, "application/json");
-
-					var uri = $"{baseURI}/userNotes/newNote/key/{key}/userIn/{Email}/titleIn/Welcome to TomaNota! User guide/scoreIn/9";
-
-					try
-					{
-						await client.PostAsync(uri, Content);
-					}
-					catch (Exception e)
-					{
-						// Console.WriteLine(e.Message);
-					}
-
-					content = "[[\"TIG stands for what welding technique?\", \"Tungston Inert Gas\"],[\"What two factors have the largest impact on material degradation?\", \"Time and temperature\"]]";
-					Content = new StringContent(content, Encoding.UTF8, "application/json");
-
-					uri = $"{baseURI}/userNotes/newNote/key/{key}/userIn/{Email}/titleIn/Example Notes - Engineering/scoreIn/4";
-
-					try
-					{
-						await client.PostAsync(uri, Content);
-					}
-					catch (Exception e)
-					{
-						// Console.WriteLine(e.Message);
-					}
-
-					content = "[[\"There is always space for more Spanish notes\", \"Siempre hay espacio para mas notas del español\"],[\"And why not add german notes and more languages\", \"Y por que no añadir el aleman y mas idiomas\"]]";
-					Content = new StringContent(content, Encoding.UTF8, "application/json");
-
-					uri = $"{baseURI}/userNotes/newNote/key/{key}/userIn/{Email}/titleIn/Example Notes - Spanish/scoreIn/7";
-
-					bool created = false;
-					try
-					{
-						await client.PostAsync(uri, Content);
-						created = true;
-					}
-					catch (Exception e)
-					{
-						// Console.WriteLine(e.Message);
-					}
-
-					content = "[[\"Why make use of spaced learning?\", \"The idea is that by spacing out the intervals of study, learners are better able to remember information over the long term.\"],[\"What are the most applicable topics for spaced learning?\", \"This technique has been shown to be particularly effective for memorizing vocabulary and other factual information, and can also be applied to other types of learning, such as math and science.\"]]";
-					Content = new StringContent(content, Encoding.UTF8, "application/json");
-
-					uri = $"{baseURI}/userNotes/newNote/key/{key}/userIn/{Email}/titleIn/Example Notes - Spaced learning/scoreIn/1";
-
-					try
-					{
-						await client.PostAsync(uri, Content);
-					}
-					catch (Exception e)
-					{
-						// Console.WriteLine(e.Message);
-					}
-
-					// Set a time for each of the example notes
-					try
-					{
-						await Http.PutAsync($"{baseURI}/userNotes/setTime/key/{key}/userIn/{Email}/titleIn/Example Notes - Engineering", null);
-						await Http.PutAsync($"{baseURI}/userNotes/setTime/key/{key}/userIn/{Email}/titleIn/Example Notes - Spanish", null);
-						await Http.PutAsync($"{baseURI}/userNotes/setTime/key/{key}/userIn/{Email}/titleIn/Example Notes - Spaced learning", null);
-					}
-					catch (Exception e)
-					{
-						// Console.WriteLine(e.Message);
-					}
-
-					NavigationManager.NavigateTo("/");
+					ErrorText = "Passwords do not match";
 				}
-				catch (Exception e)
+				else
 				{
-					// Console.WriteLine(e.Message);
-					ErrorText = "Email already in use";
+					try
+					{
+						Email = Email.ToLower();
+						if (Username == String.Empty)
+						{
+							var userCredential = await FirebaseAuthService.FirebaseAuthClient.CreateUserWithEmailAndPasswordAsync(Email, Password);
+						}
+						else
+						{
+							var userCredential = await FirebaseAuthService.FirebaseAuthClient.CreateUserWithEmailAndPasswordAsync(Email, Password, Username);
 
+						}
+
+						String baseURI = "https://user-web-api-tn.azurewebsites.net";
+						// String baseURI = "https://localhost:7080";
+						var key = "X00162027";
+
+						var uriNewUser = $"{baseURI}/userNotes/newUser/keyIn/{key}/userIn/{Email}";
+						var langContent = new StringContent(JsonSerializer.Serialize(UserLang), Encoding.UTF8, "application/json");
+
+						try
+						{
+							// Create user on API with language preference
+							await client.PostAsync(uriNewUser, langContent);
+						}
+						catch
+						{
+
+						}
+						// Console.WriteLine(userCredential.User.ToString());
+
+						// Add starting notes to the new user's account
+
+						var content = "[[\"How to make the most of TomaNota?\", \"Learning a new topic? Take notes from classes or books and add them here!\"],[\"What do the numbers in the buttons on the home screen mean?\", \"As you learn stored notes the current score out of 10 is displayed in the lower left. Hours since the last session are displayed on the right\"],[\"Why is the score not increasing on my notes?\", \"Only after 4 hours have passed can progress be made on notes! This is to help you space everything out.\"],[\"I typed the correct answer but it got marked as incorrect!\",\"By design the answers you typr should exactly match the specified answer, and are case sensitive!\"],[\"Should I delete this note from my account?\",\"This note is here only as a guide and is recommened to be deleted as well as the other default exmaple notes.\"]]";
+						var Content = new StringContent(content, Encoding.UTF8, "application/json");
+
+						var uri = $"{baseURI}/userNotes/newNote/key/{key}/userIn/{Email}/titleIn/Welcome to TomaNota! User guide/scoreIn/9";
+
+						try
+						{
+							await client.PostAsync(uri, Content);
+						}
+						catch (Exception e)
+						{
+							// Console.WriteLine(e.Message);
+						}
+
+						content = "[[\"TIG stands for what welding technique?\", \"Tungston Inert Gas\"],[\"What two factors have the largest impact on material degradation?\", \"Time and temperature\"]]";
+						Content = new StringContent(content, Encoding.UTF8, "application/json");
+
+						uri = $"{baseURI}/userNotes/newNote/key/{key}/userIn/{Email}/titleIn/Example Notes - Engineering/scoreIn/4";
+
+						try
+						{
+							await client.PostAsync(uri, Content);
+						}
+						catch (Exception e)
+						{
+							// Console.WriteLine(e.Message);
+						}
+
+						content = "[[\"There is always space for more Spanish notes\", \"Siempre hay espacio para mas notas del español\"],[\"And why not add german notes and more languages\", \"Y por que no añadir el aleman y mas idiomas\"]]";
+						Content = new StringContent(content, Encoding.UTF8, "application/json");
+
+						uri = $"{baseURI}/userNotes/newNote/key/{key}/userIn/{Email}/titleIn/Example Notes - Spanish/scoreIn/7";
+
+						bool created = false;
+						try
+						{
+							await client.PostAsync(uri, Content);
+							created = true;
+						}
+						catch (Exception e)
+						{
+							// Console.WriteLine(e.Message);
+						}
+
+						content = "[[\"Why make use of spaced learning?\", \"The idea is that by spacing out the intervals of study, learners are better able to remember information over the long term.\"],[\"What are the most applicable topics for spaced learning?\", \"This technique has been shown to be particularly effective for memorizing vocabulary and other factual information, and can also be applied to other types of learning, such as math and science.\"]]";
+						Content = new StringContent(content, Encoding.UTF8, "application/json");
+
+						uri = $"{baseURI}/userNotes/newNote/key/{key}/userIn/{Email}/titleIn/Example Notes - Spaced learning/scoreIn/1";
+
+						try
+						{
+							await client.PostAsync(uri, Content);
+						}
+						catch (Exception e)
+						{
+							// Console.WriteLine(e.Message);
+						}
+
+						// Set a time for each of the example notes
+						try
+						{
+							await Http.PutAsync($"{baseURI}/userNotes/setTime/key/{key}/userIn/{Email}/titleIn/Example Notes - Engineering", null);
+							await Http.PutAsync($"{baseURI}/userNotes/setTime/key/{key}/userIn/{Email}/titleIn/Example Notes - Spanish", null);
+							await Http.PutAsync($"{baseURI}/userNotes/setTime/key/{key}/userIn/{Email}/titleIn/Example Notes - Spaced learning", null);
+						}
+						catch (Exception e)
+						{
+							// Console.WriteLine(e.Message);
+						}
+
+						NavigationManager.NavigateTo("/");
+					}
+					catch (Exception e)
+					{
+						// Console.WriteLine(e.Message);
+						ErrorText = "Email already in use";
+
+					}
 				}
 			}
 			else

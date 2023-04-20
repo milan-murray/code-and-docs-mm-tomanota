@@ -129,7 +129,15 @@
 	{
 		if (Premade)
 		{
-			var jsonString = await Http.GetStringAsync("https://europe-west1-tomanota-374115.cloudfunctions.net/get-prompts?q=" + Title.ToString());
+			var jsonString = "[[]]";
+			try
+			{
+				jsonString = await Http.GetStringAsync("https://europe-west1-tomanota-374115.cloudfunctions.net/get-prompts?q=" + Title.ToString());
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e.Message);
+			}
 			returnedPrompts.Prompts = JsonSerializer.Deserialize<List<List<object>>>(jsonString);
 			ContainsScore = returnedPrompts.Prompts[0].Count < 2;
 		}

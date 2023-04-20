@@ -77,12 +77,12 @@
 									<div class="clearfix">
 										<div class="min-height-title">@HttpUtility.HtmlDecode(groupedTitle.Title)</div>
 										<br />
-										<div class="float-start rounded bg-danger text-light border border-dark px-1">
+										<div class="float-start rounded bg-danger text-light px-2">
 											<small>@groupedTitle.Score</small>
 										</div>
 										@if (groupedTitle.LastProgressed < TimeSpan.FromHours(4))
 										{
-											<div class="float-end rounded bg-secondary text-light border border-dark px-1">
+											<div class="float-end rounded bg-secondary text-light px-2">
 												<small>
 													@string.Format("{0:%h}h ago", groupedTitle.LastProgressed)
 												</small>
@@ -90,7 +90,7 @@
 										}
 										else
 										{
-											<div class="float-end rounded bg-success text-light border border-dark px-1">
+											<div class="float-end rounded bg-success text-light px-2">
 												<small>
 													@string.Format("{0:%h}h ago", groupedTitle.LastProgressed)
 												</small>
@@ -105,12 +105,12 @@
 									<div class="clearfix">
 										<div class="min-height-title">@HttpUtility.HtmlDecode(groupedTitle.Title)</div>
 										<br />
-										<div class="float-start rounded bg-warning text-light border border-dark px-1">
+										<div class="float-start rounded bg-warning text-light px-2">
 											<small>@groupedTitle.Score</small>
 										</div>
 										@if (groupedTitle.LastProgressed < TimeSpan.FromHours(4))
 										{
-											<div class="float-end rounded bg-secondary text-light border border-dark px-1">
+											<div class="float-end rounded bg-secondary text-light px-2">
 												<small>
 													@string.Format("{0:%h}h ago", groupedTitle.LastProgressed)
 												</small>
@@ -118,7 +118,7 @@
 										}
 										else
 										{
-											<div class="float-end rounded bg-success text-light border border-dark px-1">
+											<div class="float-end rounded bg-success text-light px-2">
 												<small>
 													@string.Format("{0:%h}h ago", groupedTitle.LastProgressed)
 												</small>
@@ -133,12 +133,12 @@
 									<div class="clearfix">
 										<div class="min-height-title">@HttpUtility.HtmlDecode(groupedTitle.Title)</div>
 										<br />
-										<div class="float-start rounded bg-primary text-light border border-dark px-1">
+										<div class="float-start rounded bg-primary text-light px-2">
 											<small>@groupedTitle.Score</small>
 										</div>
 										@if (groupedTitle.LastProgressed < TimeSpan.FromHours(4))
 										{
-											<div class="float-end rounded bg-secondary text-light border border-dark px-1">
+											<div class="float-end rounded bg-secondary text-light px-2">
 												<small>
 													@string.Format("{0:%h}h ago", groupedTitle.LastProgressed)
 												</small>
@@ -146,7 +146,7 @@
 										}
 										else
 										{
-											<div class="float-end rounded bg-success text-light border border-dark px-1">
+											<div class="float-end rounded bg-success text-light px-2">
 												<small>
 													@string.Format("{0:%h}h ago", groupedTitle.LastProgressed)
 												</small>
@@ -161,12 +161,12 @@
 									<div class="clearfix">
 										<div class="min-height-title">@HttpUtility.HtmlDecode(groupedTitle.Title)</div>
 										<br />
-										<div class="float-start rounded bg-success text-light border border-dark px-1">
+										<div class="float-start rounded bg-success text-light px-2">
 											<small>@groupedTitle.Score</small>
 										</div>
 										@if (groupedTitle.LastProgressed < TimeSpan.FromHours(4))
 										{
-											<div class="float-end rounded bg-secondary text-light border border-dark px-1">
+											<div class="float-end rounded bg-secondary text-light px-2">
 												<small>
 													@string.Format("{0:%h}h ago", groupedTitle.LastProgressed)
 												</small>
@@ -174,7 +174,7 @@
 										}
 										else
 										{
-											<div class="float-end rounded bg-success text-light border border-dark px-1">
+											<div class="float-end rounded bg-success text-light px-2">
 												<small>
 													@string.Format("{0:%h}h ago", groupedTitle.LastProgressed)
 												</small>
@@ -202,7 +202,7 @@
 		</div>
 	}
 	<Accordion>
-		<Collapse Visible="@collapse1Visible">
+		<Collapse Visible="@englishVisible">
 			<CollapseHeader>
 				<Heading Size="HeadingSize.Is5">
 					<AccordionToggle>Premade notes for English speakers</AccordionToggle>
@@ -285,7 +285,7 @@
 			</CollapseBody>
 		</Collapse>
 
-		<Collapse Visible="@collapse2Visible">
+		<Collapse Visible="@spanishVisible">
 			<CollapseHeader>
 				<Heading Size="HeadingSize.Is5">
 					<AccordionToggle>Notas prehechas para hispanohablantes</AccordionToggle>
@@ -338,7 +338,7 @@
 				</div>
 			</CollapseBody>
 		</Collapse>
-		<Collapse Visible="@collapse3Visible">
+		<Collapse Visible="@germanVisible">
 			<CollapseHeader>
 				<Heading Size="HeadingSize.Is5">
 					<AccordionToggle>vorgefertigte Notizen ~ Deutschsprachige</AccordionToggle>
@@ -428,9 +428,16 @@
 	// String baseURI = "https://localhost:7080";
 
 	// Accordion
-	bool collapse1Visible = true;
-	bool collapse2Visible = false;
-	bool collapse3Visible = false;
+	bool englishVisible = true;
+	bool spanishVisible = false;
+	bool germanVisible = false;
+
+	public enum Language
+	{
+		English,
+		Spanish,
+		German
+	}
 
 	public class TitleGroup
 	{
@@ -459,19 +466,52 @@
 					// Console.WriteLine(JSONResponse.ToString());
 					GroupedUserTitles = JsonSerializer.Deserialize<List<TitleGroup>>(JSONResponse);
 				}
-				catch (Exception e)
+				catch
 				{
 					// Console.WriteLine(e.Message);
 				}
 
 				awaitingTitles = false;
+
+				try
+				{
+					var langUri = $"{baseURI}/userNotes/language/keyIn/{key}/userIn/{user}";
+					Language tempLang = await Http.GetFromJsonAsync<Language>(langUri);
+					if (tempLang == Language.English)
+					{
+						englishVisible = true;
+						spanishVisible = false;
+						germanVisible = false;
+					}
+					else if (tempLang == Language.Spanish)
+					{
+						englishVisible = false;
+						spanishVisible = true;
+						germanVisible = false;
+					}
+					else if (tempLang == Language.German)
+					{
+						englishVisible = false;
+						spanishVisible = false;
+						germanVisible = true;
+					}
+				}
+				catch (Exception e)
+				{
+					Console.WriteLine(e.Message);
+				}
 			}
 			string url_EN_titles_ES = "https://europe-west1-tomanota-374115.cloudfunctions.net/get-EN-titles-ES";
+			string url_ES_titles_EN = "https://europe-west1-tomanota-374115.cloudfunctions.net/get-ES-titles-EN";
 			string url_EN_titles_DE = "https://europe-west1-tomanota-374115.cloudfunctions.net/get-EN-titles-DE";
 			string url_EN_titles_IE = "https://europe-west1-tomanota-374115.cloudfunctions.net/get-EN-titles-IE";
+			string url_DE_titles_EN = "https://europe-west1-tomanota-374115.cloudfunctions.net/get-DE-titles-EN";
 			SpanishTitlesEN = await Http.GetFromJsonAsync<String[]?>(url_EN_titles_ES);
 			GermanTitlesEN = await Http.GetFromJsonAsync<String[]?>(url_EN_titles_DE);
 			IrishTitlesEN = await Http.GetFromJsonAsync<String[]?>(url_EN_titles_IE);
+
+			EnglishTitlesES = await Http.GetFromJsonAsync<String[]?>(url_ES_titles_EN);
+			EnglishTitlesDE = await Http.GetFromJsonAsync<String[]?>(url_EN_titles_DE);
 		}
 		catch (HttpRequestException e)
 		{
@@ -569,8 +609,8 @@
 	}
 
 	string[] Labels = { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
-	List<string> backgroundColors = new List<string> { ChartColor.FromRgba(75, 192, 192, 0.2f) };
-	List<string> borderColors = new List<string> { ChartColor.FromRgba(75, 192, 192, 1f) };
+	List<string> backgroundColors = new List<string> { ChartColor.FromRgba(13, 110, 253, 0.6f) };
+	List<string> borderColors = new List<string> { ChartColor.FromRgba(13, 110, 253, 1f) };
 
 	public async Task<List<int>> WeeklyData()
 	{

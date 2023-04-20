@@ -203,7 +203,7 @@ public class userNotesController : ControllerBase
 			User user = userStorage.FirstOrDefault(u => u.UserName == userIn);
 			if (user == null)
 			{
-				user = new User() { UserName = userIn, CurrentDate = DateTime.Now, MonthProgress = new List<int> { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, WeekProgress = new List<int> { 0, 0, 0, 0, 0, 0, 0 } };
+				user = new User() { UserName = userIn, CurrentDate = DateTime.Now, MonthProgress = new List<int> { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, WeekProgress = new List<int> { 0, 0, 0, 0, 0, 0, 0 }, Language = Language.English };
 				userStorage.Add(user);
 			}
 
@@ -405,6 +405,67 @@ public class userNotesController : ControllerBase
 				return Ok(noteStorage.Remove(noteToDelete));
 			}
 			return NotFound();
+		}
+		return Unauthorized();
+	}
+
+	[HttpDelete("deleteUser/key/{keyIn}/user/{userIn}")]
+	[ProducesResponseType(StatusCodes.Status404NotFound)]
+	[ProducesResponseType(StatusCodes.Status200OK)]
+	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+	public IActionResult deleteUser([FromRoute] string keyIn, [FromRoute] string userIn)
+	{
+		if (keyIn == APIKEY)
+		{
+			User userToDelete = userStorage.FirstOrDefault(u => u.UserName == userIn);
+
+			if (userToDelete != null)
+			{
+				if (noteStorage.FirstOrDefault(n => n.UserInfo.UserName == userIn) != null )
+				{
+					noteStorage.RemoveAll(n => n.UserInfo.UserName == userIn);
+				}
+
+				return Ok(userStorage.Remove(userToDelete));
+			}
+			return NotFound();
+		}
+		return Unauthorized();
+	}
+
+	[HttpPost("newUser/keyIn/{keyIn}/userIn/{userIn}")]
+	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+	[ProducesResponseType(StatusCodes.Status400BadRequest)]
+	[ProducesResponseType(StatusCodes.Status200OK)]
+	public IActionResult newUser([FromRoute] string keyIn, [FromRoute] string userIn, [FromBody] Language languageIn)
+	{
+		if (keyIn == APIKEY)
+		{
+			if (userStorage.FirstOrDefault(u => u.UserName == userIn) != null)
+			{
+				return BadRequest();
+			}
+
+			userStorage.Add(new User { UserName = userIn, CurrentDate = DateTime.Now, Language = languageIn, MonthProgress = new List<int> { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, WeekProgress = new List<int> { 0, 0, 0, 0, 0, 0, 0 } });
+			return Ok();
+		}
+		return Unauthorized();
+	}
+
+	[HttpGet("language/keyIn/{keyIn}/userIn/{userIn}")]
+	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+	[ProducesResponseType(StatusCodes.Status400BadRequest)]
+	[ProducesResponseType(StatusCodes.Status200OK)]
+	public IActionResult getLang([FromRoute] string keyIn, [FromRoute] string userIn)
+	{
+		if (keyIn == APIKEY)
+		{
+			User user = userStorage.FirstOrDefault(u => u.UserName == userIn);
+			if (user != null)
+			{
+				return Ok(user.Language);
+			}
+			return BadRequest();
 		}
 		return Unauthorized();
 	}

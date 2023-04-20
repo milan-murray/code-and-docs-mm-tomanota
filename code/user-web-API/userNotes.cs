@@ -10,10 +10,17 @@ public class userNotes
 	public DateTime? LastProgressed { get; set; }
 }
 
+public enum Language
+{
+	English,
+	Spanish,
+	German
+}
 public class User
 {
 	public string UserName { get; set; } = string.Empty;
 	public DateTime CurrentDate { get; set; }
 	public List<int> WeekProgress { get; set; }
 	public List<int> MonthProgress { get; set; }
+	public Language Language { get; set; }
 }

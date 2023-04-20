@@ -15,7 +15,7 @@
 			<h4>Note learning progress for @DateTime.Now.ToString("yyyy")</h4>
 		</div>
 		<div class="card-body">
-			<div class="container">
+			<div class="container text-light">
 				<Chart @ref="barChart" Type="ChartType.Bar" TItem="int" Clicked="@OnClicked" />
 			</div>
 		</div>
@@ -65,6 +65,7 @@
 	* Monthly Chart Code
 	*/
 	String baseURI = "https://user-web-api-tn.azurewebsites.net";
+	// String baseURI = "https://localhost:7080";
 
 	Chart<int> barChart;
 
@@ -96,8 +97,8 @@
 	}
 
 	string[] Labels = { "January", "Febuary", "March", "April", "May", "June", "July", "August", "Spetember", "October", "November", "December" };
-	List<string> backgroundColors = new List<string> { ChartColor.FromRgba(75, 192, 192, 0.2f) };
-	List<string> borderColors = new List<string> { ChartColor.FromRgba(75, 192, 192, 1f) };
+	List<string> backgroundColors = new List<string> { ChartColor.FromRgba(13, 110, 253, 0.6f) };
+	List<string> borderColors = new List<string> { ChartColor.FromRgba(13, 110, 253, 1f) };
 
 	async Task<List<int>> MonthlyData()
 	{
@@ -119,8 +120,8 @@
 	}
 
 	/*
-	 * End of chart code
-	 */
+		* End of chart code
+		*/
 
 
 	protected String UserPass1 { get; set; } = String.Empty;
@@ -183,7 +184,11 @@
 			{
 				try
 				{
+
+					string key = "X00162027";
+					string user = FirebaseAuthService.FirebaseAuthClient.User.Info.Email;
 					await FirebaseAuthService.FirebaseAuthClient.User.DeleteAsync();
+					await Http.DeleteAsync($"{baseURI}/userNotes/deleteUser/key/{key}/user/{user}");
 					NavigationManager.NavigateTo("/");
 				}
 				catch (Exception e)
