@@ -327,7 +327,7 @@
 
 @code
 {
-	String baseURI = "https://user-web-api-tn.azurewebsites.net";
+	String baseURI = "https://user-web-api20230425222103.azurewebsites.net";
 	// String baseURI = "https://localhost:7080";
 
 	[Parameter]
@@ -854,6 +854,24 @@
 								string uri = $"{baseURI}/userNotes/decScore/key/{key}/userIn/{user}/titleIn/{Title}";
 								await Http.PutAsync(uri, null);
 							}
+						}
+					}
+				}
+				else
+				{
+					if (FirebaseAuthService.FirebaseAuthClient.User != null)
+					{
+						string key = "X00162027";
+						string user = FirebaseAuthService.FirebaseAuthClient.User.Info.Email.ToString();
+						string uri = $"{baseURI}/userNotes/compeltePremade/keyIn/{key}/userIn/{user}/noteTitle/{Title}";
+						try
+						{
+							await Http.PutAsync(uri, null);		
+							await Http.PutAsync($"{baseURI}/userNotes/userProgress/key/{key}/userIn/{user}", null);
+						}
+						catch(Exception e)
+						{
+							Console.WriteLine(e.Message);
 						}
 					}
 				}

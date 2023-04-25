@@ -222,6 +222,32 @@
       ],
       "value": "1234567"
     }, {
+      "id": "77f8b80c-75e7-452d-8101-220f1bb71dc6",
+      "comment": "",
+      "command": "click",
+      "target": "id=passwordRe",
+      "targets": [
+        ["id=passwordRe", "id"],
+        ["css=#passwordRe", "css:finder"],
+        ["xpath=//input[@id='passwordRe']", "xpath:attributes"],
+        ["xpath=//div[@id='app']/main/div/div[2]/div/div/div[2]/div/form/div[4]/input", "xpath:idRelative"],
+        ["xpath=//div[4]/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "181b673c-cb97-4214-837b-30fce1165a3d",
+      "comment": "",
+      "command": "type",
+      "target": "id=passwordRe",
+      "targets": [
+        ["id=passwordRe", "id"],
+        ["css=#passwordRe", "css:finder"],
+        ["xpath=//input[@id='passwordRe']", "xpath:attributes"],
+        ["xpath=//div[@id='app']/main/div/div[2]/div/div/div[2]/div/form/div[4]/input", "xpath:idRelative"],
+        ["xpath=//div[4]/input", "xpath:position"]
+      ],
+      "value": "1234567"
+    }, {
       "id": "b8c7af8f-770f-4c46-b27a-9fc1629f04ad",
       "comment": "",
       "command": "click",
@@ -3993,6 +4019,32 @@
         ["xpath=//input[@id='password']", "xpath:attributes"],
         ["xpath=//div[@id='app']/main/div/div[2]/div/div/div[2]/div/form/div[3]/input", "xpath:idRelative"],
         ["xpath=//div[3]/input", "xpath:position"]
+      ],
+      "value": "1234567"
+    }, {
+      "id": "bcc80a38-a6ac-473d-85c3-d0cec9af120c",
+      "comment": "",
+      "command": "click",
+      "target": "id=passwordRe",
+      "targets": [
+        ["id=passwordRe", "id"],
+        ["css=#passwordRe", "css:finder"],
+        ["xpath=//input[@id='passwordRe']", "xpath:attributes"],
+        ["xpath=//div[@id='app']/main/div/div[2]/div/div/div[2]/div/form/div[4]/input", "xpath:idRelative"],
+        ["xpath=//div[4]/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "2caebfbb-a3af-4d99-a458-1374fa868844",
+      "comment": "",
+      "command": "type",
+      "target": "id=passwordRe",
+      "targets": [
+        ["id=passwordRe", "id"],
+        ["css=#passwordRe", "css:finder"],
+        ["xpath=//input[@id='passwordRe']", "xpath:attributes"],
+        ["xpath=//div[@id='app']/main/div/div[2]/div/div/div[2]/div/form/div[4]/input", "xpath:idRelative"],
+        ["xpath=//div[4]/input", "xpath:position"]
       ],
       "value": "1234567"
     }, {

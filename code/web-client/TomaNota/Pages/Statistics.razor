@@ -1,0 +1,82 @@
+﻿@page "/statistics"
+@using Microsoft.JSInterop
+@using System
+@using System.Web
+@using System.Text.Json
+@using System.Text.Json.Serialization
+@inject IJSRuntime IJSRuntime
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@inject IFirebaseAuthService FirebaseAuthService
+
+<!-- Weekly chart -->
+<div class="container">
+	<div class="card bg-light shadown mb-5 mx-5">
+		<div class="card-body">
+			<Chart @ref="barChart" Type="ChartType.Bar" TItem="int" Clicked="@OnClicked" />
+		</div>
+	</div>
+</div>
+
+
+@code {
+	String baseURI = "https://user-web-api20230425222103.azurewebsites.net";
+
+	/*
+	* Weekly chart code
+	*/
+
+	Chart<int> barChart;
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender && FirebaseAuthService.FirebaseAuthClient.User != null)
+		{
+			await HandleRedraw();
+		}
+	}
+
+	async Task HandleRedraw()
+	{
+		await barChart.Clear();
+
+		await barChart.AddLabelsDatasetsAndUpdate(Labels, await GetBarChartDataset());
+
+
+	}
+
+	private async Task<BarChartDataset<int>> GetBarChartDataset()
+	{
+		return new()
+			{
+				Label = "Note progress this week",
+				Data = await WeeklyData(),
+				BackgroundColor = backgroundColors,
+				BorderColor = borderColors,
+				BorderWidth = 1
+			};
+	}
+
+	string[] Labels = { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
+	List<string> backgroundColors = new List<string> { ChartColor.FromRgba(13, 110, 253, 0.6f) };
+	List<string> borderColors = new List<string> { ChartColor.FromRgba(13, 110, 253, 1f) };
+
+	public async Task<List<int>> WeeklyData()
+	{
+		string key = "X00162027";
+		string user = HttpUtility.HtmlEncode(FirebaseAuthService.FirebaseAuthClient.User.Info.Email.ToString());
+		string url = $"{baseURI}/userNotes/userWeekProgress/key/{key}/userIn/{user}";
+		Console.WriteLine(url);
+		var httpRes = await Http.GetFromJsonAsync<List<int>>(url);
+
+		return httpRes;
+	}
+
+	Task OnClicked(ChartMouseEventArgs e)
+	{
+		var model = e.Model as BarChartModel;
+
+		Console.WriteLine($"Handling event for {nameof(BarChartModel)}: x:{model.X} y:{model.Y}");
+		return Task.CompletedTask;
+	}
+}

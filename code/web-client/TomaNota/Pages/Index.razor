@@ -192,14 +192,6 @@
 				</div>
 			</div>
 		</div>
-
-		<div class="container">
-			<div class="card bg-light shadown mb-5 mx-5">
-				<div class="card-body">
-					<Chart @ref="barChart" Type="ChartType.Bar" TItem="int" Clicked="@OnClicked" />
-				</div>
-			</div>
-		</div>
 	}
 	<Accordion>
 		<Collapse Visible="@englishVisible">
@@ -227,12 +219,18 @@
 								{
 									@foreach (var title in SpanishTitlesEN)
 									{
-										<button class="btn btn-primary m-1" @onclick="@(e => SelectNote(title, true))">@title</button>
+										@if (FirebaseAuthService.FirebaseAuthClient.User != null && completedPremadeNotes.Contains(title))
+										{
+											<button class="btn btn-success m-1" @onclick="@(e => SelectNote(title, true))">@title</button>
+										}
+										else{
+											<button class="btn btn-primary m-1" @onclick="@(e => SelectNote(title, true))">@title</button>
+										}
 									}
 								}
 								catch (Exception e)
 								{
-									// Console.WriteLine(e.Message);
+									Console.WriteLine(e.Message);
 								}
 							}
 						</div>
@@ -254,7 +252,14 @@
 							{
 								@foreach (var title in GermanTitlesEN)
 								{
-									<button class="btn btn-primary m-1" @onclick="@(e => SelectNote(title, true))">@title</button>
+									@if (FirebaseAuthService.FirebaseAuthClient.User != null && completedPremadeNotes.Contains(title))
+									{
+										<button class="btn btn-success m-1" @onclick="@(e => SelectNote(title, true))">@title</button>
+									}
+									else
+									{
+										<button class="btn btn-primary m-1" @onclick="@(e => SelectNote(title, true))">@title</button>
+									}
 								}
 							}
 						</div>
@@ -276,7 +281,14 @@
 							{
 								@foreach (var title in IrishTitlesEN)
 								{
-									<button class="btn btn-primary m-1" @onclick="@(e => SelectNote(title, true))">@title</button>
+									@if (FirebaseAuthService.FirebaseAuthClient.User != null && completedPremadeNotes.Contains(title))
+									{
+										<button class="btn btn-success m-1" @onclick="@(e => SelectNote(title, true))">@title</button>
+									}
+									else
+									{
+										<button class="btn btn-primary m-1" @onclick="@(e => SelectNote(title, true))">@title</button>
+									}
 								}
 							}
 						</div>
@@ -308,7 +320,14 @@
 							{
 								@foreach (var title in EnglishTitlesES)
 								{
-									<button class="btn btn-primary m-1" @onclick="@(e => SelectNote(title, true))">@title</button>
+									@if (FirebaseAuthService.FirebaseAuthClient.User != null && completedPremadeNotes.Contains(title))
+									{
+										<button class="btn btn-success m-1" @onclick="@(e => SelectNote(title, true))">@title</button>
+									}
+									else
+									{
+										<button class="btn btn-primary m-1" @onclick="@(e => SelectNote(title, true))">@title</button>
+									}
 								}
 							}
 						</div>
@@ -330,7 +349,14 @@
 							{
 								@foreach (var title in GermanTitlesES)
 								{
-									<button class="btn btn-primary m-1" @onclick="@(e => SelectNote(title, true))">@title</button>
+									@if (FirebaseAuthService.FirebaseAuthClient.User != null && completedPremadeNotes.Contains(title))
+									{
+										<button class="btn btn-success m-1" @onclick="@(e => SelectNote(title, true))">@title</button>
+									}
+									else
+									{
+										<button class="btn btn-primary m-1" @onclick="@(e => SelectNote(title, true))">@title</button>
+									}
 								}
 							}
 						</div>
@@ -361,7 +387,14 @@
 							{
 								@foreach (var title in EnglishTitlesDE)
 								{
-									<button class="btn btn-primary m-1" @onclick="@(e => SelectNote(title, true))">@title</button>
+									@if (FirebaseAuthService.FirebaseAuthClient.User != null && completedPremadeNotes.Contains(title))
+									{
+										<button class="btn btn-success m-1" @onclick="@(e => SelectNote(title, true))">@title</button>
+									}
+									else
+									{
+										<button class="btn btn-primary m-1" @onclick="@(e => SelectNote(title, true))">@title</button>
+									}
 								}
 							}
 						</div>
@@ -383,7 +416,14 @@
 							{
 								@foreach (var title in SpanishTitlesDE)
 								{
-									<button class="btn btn-light">@title</button>
+									@if (FirebaseAuthService.FirebaseAuthClient.User != null && completedPremadeNotes.Contains(title))
+									{
+										<button class="btn btn-success m-1" @onclick="@(e => SelectNote(title, true))">@title</button>
+									}
+									else
+									{
+										<button class="btn btn-primary m-1" @onclick="@(e => SelectNote(title, true))">@title</button>
+									}
 								}
 							}
 						</div>
@@ -417,6 +457,7 @@
 	Boolean TitleIsPremade { get; set; }
 	Boolean awaitingTitles = true;
 	List<TitleGroup>? GroupedUserTitles { get; set; }
+	List<string> completedPremadeNotes { get; set; } = new();
 	String[]? EnglishTitlesES { get; set; }
 	String[]? GermanTitlesES { get; set; }
 	String[]? SpanishTitlesEN { get; set; }
@@ -424,7 +465,7 @@
 	String[]? IrishTitlesEN { get; set; }
 	String[]? SpanishTitlesDE { get; set; }
 	String[]? EnglishTitlesDE { get; set; }
-	String baseURI = "https://user-web-api-tn.azurewebsites.net";
+	String baseURI = "https://user-web-api20230425222103.azurewebsites.net";
 	// String baseURI = "https://localhost:7080";
 
 	// Accordion
@@ -471,6 +512,23 @@
 					// Console.WriteLine(e.Message);
 				}
 
+
+				// If user has completed a premade note
+				string url_CompletedTiltes = $"{baseURI}/userNotes/completedPremades/keyIn/{key}/userIn/{user}";
+
+				try
+				{
+					var Response = await Http.GetAsync(url_CompletedTiltes);
+
+					var JSONResponse = await Response.Content.ReadAsStringAsync();
+					// Console.WriteLine(JSONResponse.ToString());
+					completedPremadeNotes = JsonSerializer.Deserialize<List<string>>(JSONResponse);
+				}
+				catch
+				{
+					
+				}
+
 				awaitingTitles = false;
 
 				try
@@ -512,6 +570,7 @@
 
 			EnglishTitlesES = await Http.GetFromJsonAsync<String[]?>(url_ES_titles_EN);
 			EnglishTitlesDE = await Http.GetFromJsonAsync<String[]?>(url_EN_titles_DE);
+
 		}
 		catch (HttpRequestException e)
 		{
@@ -571,63 +630,5 @@
 		SelectedTitle = titleIn;
 		TitleIsNotReady = false;
 		TitleIsPremade = premadeIn;
-	}
-
-	/*
-	* Chart code
-	*/
-
-	Chart<int> barChart;
-
-	protected override async Task OnAfterRenderAsync(bool firstRender)
-	{
-		if (firstRender && FirebaseAuthService.FirebaseAuthClient.User != null)
-		{
-			await HandleRedraw();
-		}
-	}
-
-	async Task HandleRedraw()
-	{
-		await barChart.Clear();
-
-		await barChart.AddLabelsDatasetsAndUpdate(Labels, await GetBarChartDataset());
-
-
-	}
-
-	private async Task<BarChartDataset<int>> GetBarChartDataset()
-	{
-		return new()
-			{
-				Label = "Note progress this week",
-				Data = await WeeklyData(),
-				BackgroundColor = backgroundColors,
-				BorderColor = borderColors,
-				BorderWidth = 1
-			};
-	}
-
-	string[] Labels = { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
-	List<string> backgroundColors = new List<string> { ChartColor.FromRgba(13, 110, 253, 0.6f) };
-	List<string> borderColors = new List<string> { ChartColor.FromRgba(13, 110, 253, 1f) };
-
-	public async Task<List<int>> WeeklyData()
-	{
-		string key = "X00162027";
-		string user = HttpUtility.HtmlEncode(FirebaseAuthService.FirebaseAuthClient.User.Info.Email.ToString());
-		string url = $"{baseURI}/userNotes/userWeekProgress/key/{key}/userIn/{user}";
-		Console.WriteLine(url);
-		var httpRes = await Http.GetFromJsonAsync<List<int>>(url);
-
-		return httpRes;
-	}
-
-	Task OnClicked(ChartMouseEventArgs e)
-	{
-		var model = e.Model as BarChartModel;
-
-		Console.WriteLine($"Handling event for {nameof(BarChartModel)}: x:{model.X} y:{model.Y}");
-		return Task.CompletedTask;
 	}
 }

@@ -469,4 +469,52 @@ public class userNotesController : ControllerBase
 		}
 		return Unauthorized();
 	}
+
+    [HttpGet("completedPremades/keyIn/{keyIn}/userIn/{userIn}")]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public IActionResult getCompletedPremades([FromRoute] string keyIn, [FromRoute] string userIn)
+    {
+        if (keyIn == APIKEY)
+        {
+            User user = userStorage.FirstOrDefault(u => u.UserName == userIn);
+            if (user != null)
+            {
+				if (user.CompletedPremade.Count > 0)
+				{
+					return Ok(user.CompletedPremade);
+				}
+				return NoContent();
+            }
+            return BadRequest();
+        }
+        return Unauthorized();
+    }
+
+    [HttpPut("compeltePremade/keyIn/{keyIn}/userIn/{userIn}/noteTitle/{titleIn}")]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+	public IActionResult completeNote([FromRoute] string keyIn, [FromRoute] string userIn, [FromRoute] string titleIn)
+    {
+        if (keyIn == APIKEY)
+        {
+            User user = userStorage.FirstOrDefault(u => u.UserName == userIn);
+            if (user == null)
+            {
+                return BadRequest();
+            }
+			if (user.CompletedPremade.Contains(titleIn))
+			{
+				return NoContent();
+			}
+			user.CompletedPremade.Add(titleIn);
+			return Ok();
+            
+        }
+        return Unauthorized();
+    }
 }

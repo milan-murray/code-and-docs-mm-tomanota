@@ -52,6 +52,7 @@
 						}
 						else
 						{
+							<button class="btn btn-dark mx-1" @onclick="NavigateToStats">Weekly progress</button>
 							@*<h5 class="mx-2 align-middle mt-2 text-dark">Hello @FirebaseAuthService.FirebaseAuthClient.User.Info.DisplayName.ToString()</h5>*@
 							@if (FirebaseAuthService.FirebaseAuthClient.User.Info.DisplayName != null)
 							{
@@ -100,5 +101,10 @@
 	void NavigateToAccount()
 	{
 		NavigationManager.NavigateTo("/account");
+	}
+
+	void NavigateToStats()
+	{
+		NavigationManager.NavigateTo("/statistics");
 	}
 }
