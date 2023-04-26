@@ -327,8 +327,8 @@
 
 @code
 {
-	String baseURI = "https://user-web-api20230425222103.azurewebsites.net";
-	// String baseURI = "https://localhost:7080";
+	// String baseURI = "https://user-web-api20230425222103.azurewebsites.net";
+	String baseURI = "https://localhost:7080";
 
 	[Parameter]
 	public string Title { get; set; } = string.Empty;
@@ -581,8 +581,8 @@
 					string user = FirebaseAuthService.FirebaseAuthClient.User.Info.Email.ToString();
 					var jsonString = await Http.GetStringAsync($"{baseURI}/userNotes/key/{key}/user/{user}/title/{Title.ToString()}");
 					var jsonScoreDetail = await Http.GetStringAsync($"{baseURI}/userNotes/scoreDetail/key/{key}/user/{user}/title/{Title.ToString()}");
-					var indivScoresRes = JsonSerializer.Deserialize<List<List<int>>>(jsonScoreDetail);
-					individualScores = indivScoresRes.ElementAt(0);
+					individualScores = JsonSerializer.Deserialize<List<int>>(jsonScoreDetail);
+					// individualScores = indivScoresRes.ElementAt(0);
 
 					bool indivPerfect = true;
 					foreach (var score in individualScores.Select((value, index) => new { value, index }))

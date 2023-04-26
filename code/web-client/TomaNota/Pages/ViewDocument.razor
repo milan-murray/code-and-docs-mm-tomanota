@@ -115,8 +115,8 @@
 	public bool Premade { get; set; }
 	private DocPrompts? returnedPrompts = new DocPrompts();
 	bool ContainsScore { get; set; } = false;
-	String baseURI = "https://user-web-api20230425222103.azurewebsites.net";
-	// String baseURI = "https://localhost:7080";
+	// String baseURI = "https://user-web-api20230425222103.azurewebsites.net";
+	String baseURI = "https://localhost:7080";
 	List<int> individualScores = new();
 
 	public class DocPrompts
@@ -147,12 +147,27 @@
 			{
 				string key = "X00162027";
 				string user = HttpUtility.HtmlEncode(FirebaseAuthService.FirebaseAuthClient.User.Info.Email.ToString());
-				var jsonString = await Http.GetStringAsync($"{baseURI}/userNotes/key/{key}/user/{user}/title/{Title.ToString()}");
-				var scoreDetail = await Http.GetStringAsync($"{baseURI}/userNotes/scoreDetail/key/{key}/user/{user}/title/{Title.ToString()}");
-				var scoreResponse = JsonSerializer.Deserialize<List<List<int>>>(scoreDetail);
-				individualScores = scoreResponse.ElementAt(0);
-				returnedPrompts.Score = Int32.Parse(await Http.GetStringAsync($"{baseURI}/userNotes/score/key/{key}/user/{user}/title/{Title.ToString()}"));
-				returnedPrompts.Prompts = JsonSerializer.Deserialize<List<List<object>>>(jsonString);
+				try
+				{
+					var jsonString = await Http.GetStringAsync($"{baseURI}/userNotes/key/{key}/user/{user}/title/{Title.ToString()}");
+					returnedPrompts.Score = Int32.Parse(await Http.GetStringAsync($"{baseURI}/userNotes/score/key/{key}/user/{user}/title/{Title.ToString()}"));
+					returnedPrompts.Prompts = JsonSerializer.Deserialize<List<List<object>>>(jsonString);
+				}
+				catch
+				{
+					Console.WriteLine("Unable to get content");
+				}
+				try
+				{
+					var scoreDetail = await Http.GetStringAsync($"{baseURI}/userNotes/scoreDetail/key/{key}/user/{user}/title/{Title.ToString()}");	
+					individualScores = JsonSerializer.Deserialize<List<int>>(scoreDetail);
+				}
+				catch
+				{
+					Console.WriteLine("Unable to get score detail");
+				}
+				// individualScores = scoreResponse.ElementAt(0);
+				
 				ContainsScore = true;
 			}
 			else
