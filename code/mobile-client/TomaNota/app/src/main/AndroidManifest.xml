@@ -27,6 +27,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".SelectionActivity">
+
+        </activity>
+        <activity
+            android:name=".CreateAccountActivity">
+
+        </activity>
     </application>
 
 </manifest>

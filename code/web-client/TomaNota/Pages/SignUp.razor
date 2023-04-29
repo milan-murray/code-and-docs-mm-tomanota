@@ -32,22 +32,22 @@
 			<div class="container">
 				<form>
 					<div class="form-group">
-						<label for="username">Username:</label>
+						<label for="username" class="mb-1">Username:</label>
 						<input class="form-control" id="username" type="text" @bind="@Username" autocomplete="off" />
 					</div>
 					<div class="form-group">
-						<label for="email"><span class="text-danger">*</span> Email:</label>
+						<label for="email" class="mb-1"><span class="text-danger">*</span> Email:</label>
 						<input class="form-control" id="email" type="email" @bind="@Email" autocomplete="off" />
 					</div>
 					<div class="form-group">
-						<label for="password"><span class="text-danger">*</span> Password:</label>
+						<label for="password" class="mb-1"><span class="text-danger">*</span> Password:</label>
 						<input class="form-control" id="password" type="password" @bind="@Password" />
 					</div><div class="form-group">
-						<label for="passwordRe"><span class="text-danger">*</span> Repeat password:</label>
+						<label for="passwordRe" class="mb-1"><span class="text-danger">*</span> Repeat password:</label>
 						<input class="form-control" id="passwordRe" type="password" @bind="@PasswordRe" />
 					</div>
 					<div class="form-group">
-						<label class="me-1" for="userLang"><span class="text-danger">*</span> Native language: </label>
+						<label class="me-1 mb-1" for="userLang"><span class="text-danger">*</span> Native language: </label>
 						<select id="userLang" @bind="UserLang">
 							<option value="@Language.English">English</option>
 							<option value="@Language.Spanish">Spanish</option>
@@ -107,11 +107,11 @@
 
 						}
 
-						// String baseURI = "https://user-web-api20230425222103.azurewebsites.net";
-						String baseURI = "https://localhost:7080";
+						String baseURI = "https://user-web-api.azurewebsites.net/db";
+						// String baseURI = "https://localhost:7080";
 						var key = "X00162027";
 
-						var uriNewUser = $"{baseURI}/userNotes/newUser/keyIn/{key}/userIn/{Email}";
+						var uriNewUser = $"{baseURI}/newUser/keyIn/{key}/userIn/{Email}";
 						var langContent = new StringContent(JsonSerializer.Serialize(UserLang), Encoding.UTF8, "application/json");
 
 						try
@@ -130,7 +130,7 @@
 						var content = "[[\"How to make the most of TomaNota?\", \"Learning a new topic? Take notes from classes or books and add them here!\"],[\"What do the numbers in the buttons on the home screen mean?\", \"As you learn stored notes the current score out of 10 is displayed in the lower left. Hours since the last session are displayed on the right\"],[\"Why is the score not increasing on my notes?\", \"Only after 4 hours have passed can progress be made on notes! This is to help you space everything out.\"],[\"I typed the correct answer but it got marked as incorrect!\",\"By design the answers you typr should exactly match the specified answer, and are case sensitive!\"],[\"Should I delete this note from my account?\",\"This note is here only as a guide and is recommened to be deleted as well as the other default exmaple notes.\"]]";
 						var Content = new StringContent(content, Encoding.UTF8, "application/json");
 
-						var uri = $"{baseURI}/userNotes/newNote/key/{key}/userIn/{Email}/titleIn/Welcome to TomaNota! User guide/scoreIn/9";
+						var uri = $"{baseURI}/newNote/key/{key}/userIn/{Email}/titleIn/Welcome to TomaNota! User guide/scoreIn/9";
 
 						try
 						{
@@ -144,7 +144,7 @@
 						content = "[[\"TIG stands for what welding technique?\", \"Tungston Inert Gas\"],[\"What two factors have the largest impact on material degradation?\", \"Time and temperature\"]]";
 						Content = new StringContent(content, Encoding.UTF8, "application/json");
 
-						uri = $"{baseURI}/userNotes/newNote/key/{key}/userIn/{Email}/titleIn/Example Notes - Engineering/scoreIn/4";
+						uri = $"{baseURI}/newNote/key/{key}/userIn/{Email}/titleIn/Example Notes - Engineering/scoreIn/4";
 
 						try
 						{
@@ -158,7 +158,7 @@
 						content = "[[\"There is always space for more Spanish notes\", \"Siempre hay espacio para mas notas del español\"],[\"And why not add german notes and more languages\", \"Y por que no añadir el aleman y mas idiomas\"]]";
 						Content = new StringContent(content, Encoding.UTF8, "application/json");
 
-						uri = $"{baseURI}/userNotes/newNote/key/{key}/userIn/{Email}/titleIn/Example Notes - Spanish/scoreIn/7";
+						uri = $"{baseURI}/newNote/key/{key}/userIn/{Email}/titleIn/Example Notes - Spanish/scoreIn/7";
 
 						bool created = false;
 						try
@@ -174,7 +174,7 @@
 						content = "[[\"Why make use of spaced learning?\", \"The idea is that by spacing out the intervals of study, learners are better able to remember information over the long term.\"],[\"What are the most applicable topics for spaced learning?\", \"This technique has been shown to be particularly effective for memorizing vocabulary and other factual information, and can also be applied to other types of learning, such as math and science.\"]]";
 						Content = new StringContent(content, Encoding.UTF8, "application/json");
 
-						uri = $"{baseURI}/userNotes/newNote/key/{key}/userIn/{Email}/titleIn/Example Notes - Spaced learning/scoreIn/1";
+						uri = $"{baseURI}/newNote/key/{key}/userIn/{Email}/titleIn/Example Notes - Spaced learning/scoreIn/1";
 
 						try
 						{
@@ -188,9 +188,9 @@
 						// Set a time for each of the example notes
 						try
 						{
-							await Http.PutAsync($"{baseURI}/userNotes/setTime/key/{key}/userIn/{Email}/titleIn/Example Notes - Engineering", null);
-							await Http.PutAsync($"{baseURI}/userNotes/setTime/key/{key}/userIn/{Email}/titleIn/Example Notes - Spanish", null);
-							await Http.PutAsync($"{baseURI}/userNotes/setTime/key/{key}/userIn/{Email}/titleIn/Example Notes - Spaced learning", null);
+							await Http.PutAsync($"{baseURI}/setTime/key/{key}/userIn/{Email}/titleIn/Example Notes - Engineering", null);
+							await Http.PutAsync($"{baseURI}/setTime/key/{key}/userIn/{Email}/titleIn/Example Notes - Spanish", null);
+							await Http.PutAsync($"{baseURI}/setTime/key/{key}/userIn/{Email}/titleIn/Example Notes - Spaced learning", null);
 						}
 						catch (Exception e)
 						{

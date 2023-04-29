@@ -70,8 +70,8 @@
 	string noteTitle = "";
 	int inputs = 1;
 	private static readonly HttpClient client = new HttpClient();
-	// String baseURI = "https://user-web-api20230425222103.azurewebsites.net";
-	String baseURI = "https://localhost:7080";
+	String baseURI = "https://user-web-api.azurewebsites.net/db";
+	// String baseURI = "https://localhost:7080";
 	String TitleErrorText { get; set; } = String.Empty;
 	String BodyErrorText { get; set; } = String.Empty;
 
@@ -120,7 +120,7 @@
 			List<String> existingTitles = new List<String>();
 			string key = "X00162027";
 			string user = FirebaseAuthService.FirebaseAuthClient.User.Info.Email.ToString();
-			string url_user_titles = $"{baseURI}/userNotes/key/{key}/user/{user}";
+			string url_user_titles = $"{baseURI}/key/{key}/user/{user}";
 			try
 			{
 				var Response = await Http.GetAsync(url_user_titles);
@@ -168,13 +168,13 @@
 			{
 				var Content = new StringContent(content, Encoding.UTF8, "application/json");
 
-				var uriNewNote = $"{baseURI}/userNotes/newNote/key/{key}/userIn/{user}/titleIn/{HttpUtility.HtmlEncode(noteTitle)}/scoreIn/0";
+				var uriNewNote = $"{baseURI}/newNote/key/{key}/userIn/{user}/titleIn/{HttpUtility.HtmlEncode(noteTitle)}/scoreIn/0";
 
 				try
 				{
 					await client.PostAsync(uriNewNote, Content);
 
-					NavigationManager.NavigateTo("/");
+					NavigationManager.NavigateTo("/home");
 				}
 				catch (Exception e)
 				{

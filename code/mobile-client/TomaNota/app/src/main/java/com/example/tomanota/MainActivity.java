@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.ScrollView;
@@ -38,168 +39,43 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private String selectedTitle = "";
-
+    Button login, create, guest_continue;
+    EditText email_input;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_login);
 
-        final TableLayout userTitlesList = (TableLayout) findViewById(R.id.user_table_titles);
+        login = findViewById(R.id.login_btn);
+        create = findViewById(R.id.sign_up);
+        guest_continue = findViewById(R.id.guest_continue);
+        email_input = findViewById(R.id.editTextTextEmailAddress);
 
-        final TextView textViewSelected = (TextView) findViewById(R.id.selectedTextID);
-        textViewSelected.setText(selectedTitle);
-
-        final Button btnReview = (Button) findViewById(R.id.btnReview);
-        btnReview.setEnabled(false);
-
-        String key = "X00162027";
-        String user = "bob@gmail.com"; // TODO: Login with firebase
-        String baseURI = "https://user-web-api-tn.azurewebsites.net";
-        String URL = baseURI + "/userNotes/key/" + key + "/user/" + user;
-        List<String> titles = new ArrayList<>();
-        // Gson gson = new Gson();
-
-        RequestQueue requestQueue = Volley.newRequestQueue(MainActivity.this);
-
-        JsonArrayRequest objectRequest = new JsonArrayRequest(
-                Request.Method.GET,
-                URL,
-                null,
-                response -> {
-                    for (int i = 0; i < response.length(); i++) {
-                        try {
-                            String title = response.getString(i);
-                            titles.add(title);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    Log.d("Expected", "List of titles: " + titles.toString());
-
-                    for (int i = 0; i < titles.size(); i++) {
-                        Button button = new Button(MainActivity.this);
-                        button.setText(titles.get(i));
-
-                        button.setLayoutParams(new LinearLayout.LayoutParams(
-                                LinearLayout.LayoutParams.MATCH_PARENT,
-                                LinearLayout.LayoutParams.WRAP_CONTENT));
-                        userTitlesList.addView(button);
-
-                        button.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                selectedTitle = button.getText().toString();
-                                textViewSelected.setText(selectedTitle);
-                                btnReview.setEnabled(true);
-                            }
-                        });
-                    }
-                },
-                error -> {
-                    Log.e("TAG", "Error: " + error.getMessage());
-                }
-        );
-
-        requestQueue.add(objectRequest);
-
-        btnReview.setOnClickListener(new View.OnClickListener() {
+        login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, ReviewActivity.class);
-                Bundle b = new Bundle();
-                b.putString("Title", selectedTitle);
-                intent.putExtras(b);
+                Intent intent = new Intent(MainActivity.this, SelectionActivity.class);
+                intent.putExtra("email", email_input.getText());
                 startActivity(intent);
             }
         });
 
-        final Button btnTest = (Button) findViewById(R.id.btnTest);
-        btnTest.setEnabled(false);
-
-        btnTest.setOnClickListener(new View.OnClickListener() {
+        create.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this, TestActivity.class));
+                Intent intent = new Intent(MainActivity.this, CreateAccountActivity.class);
+
+                startActivity(intent);
             }
         });
 
-        final Button btnSpanish = (Button)  findViewById(R.id.btnSpanish);
-        btnSpanish.setOnClickListener(new View.OnClickListener() {
+        guest_continue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DisplayMetrics displayMetrics = new DisplayMetrics();
-                getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-                int screenWidth = displayMetrics.widthPixels;
-                int screenHeight = displayMetrics.heightPixels;
-
-                int width = (int) (screenWidth * 0.8f);
-                int height = (int) (screenHeight * 0.8f);
-
-                // Get titles
-                View popupView = getLayoutInflater().inflate(R.layout.popup_titles, null);
-                ScrollView popupScrollView = popupView.findViewById(R.id.popupScrollView);
-                LinearLayout popupLayout = popupScrollView.findViewById(R.id.linearLayoutTitles);
-
-                String URL = "https://europe-west1-tomanota-374115.cloudfunctions.net/get-EN-titles-ES";
-                List<String> titles = new ArrayList<>();
-                // Gson gson = new Gson();
-
-                RequestQueue requestQueue = Volley.newRequestQueue(MainActivity.this);
-
-                JsonArrayRequest objectRequest = new JsonArrayRequest(
-                        Request.Method.GET,
-                        URL,
-                        null,
-                        response -> {
-                            for (int i = 0; i < response.length(); i++) {
-                                try {
-                                    String title = response.getString(i);
-                                    titles.add(title);
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-
-                            Log.d("Expected", "List of titles: " + titles.toString());
-
-                            boolean focusable = true;
-                            final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
-
-                            popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
-                            for (int i = 0; i < titles.size(); i++) {
-                                Button button = new Button(MainActivity.this);
-                                button.setText(titles.get(i));
-
-                                button.setLayoutParams(new LinearLayout.LayoutParams(
-                                        LinearLayout.LayoutParams.MATCH_PARENT,
-                                        LinearLayout.LayoutParams.WRAP_CONTENT));
-                                popupLayout.addView(button);
-
-                                button.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        selectedTitle = button.getText().toString();
-                                        popupWindow.dismiss();
-                                        textViewSelected.setText(selectedTitle);
-                                        btnReview.setEnabled(true);
-                                    }
-                                });
-                            }
-                        },
-                        error -> {
-                            Log.e("TAG", "Error: " + error.getMessage());
-                        }
-                );
-
-                requestQueue.add(objectRequest);
-
-
+                Intent intent = new Intent(MainActivity.this, SelectionActivity.class);
+                startActivity(intent);
             }
         });
-
-
 
     }
 

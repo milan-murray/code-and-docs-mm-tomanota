@@ -327,8 +327,8 @@
 
 @code
 {
-	// String baseURI = "https://user-web-api20230425222103.azurewebsites.net";
-	String baseURI = "https://localhost:7080";
+	String baseURI = "https://user-web-api.azurewebsites.net/db";
+	// String baseURI = "https://localhost:7080";
 
 	[Parameter]
 	public string Title { get; set; } = string.Empty;
@@ -579,8 +579,8 @@
 				{
 					string key = "X00162027";
 					string user = FirebaseAuthService.FirebaseAuthClient.User.Info.Email.ToString();
-					var jsonString = await Http.GetStringAsync($"{baseURI}/userNotes/key/{key}/user/{user}/title/{Title.ToString()}");
-					var jsonScoreDetail = await Http.GetStringAsync($"{baseURI}/userNotes/scoreDetail/key/{key}/user/{user}/title/{Title.ToString()}");
+					var jsonString = await Http.GetStringAsync($"{baseURI}/key/{key}/user/{user}/title/{Title.ToString()}");
+					var jsonScoreDetail = await Http.GetStringAsync($"{baseURI}/scoreDetail/key/{key}/user/{user}/title/{Title.ToString()}");
 					individualScores = JsonSerializer.Deserialize<List<int>>(jsonScoreDetail);
 					// individualScores = indivScoresRes.ElementAt(0);
 
@@ -598,7 +598,7 @@
 						}
 					}
 
-					returnedPrompts.CurrentScore = Int32.Parse(await Http.GetStringAsync($"{baseURI}/userNotes/score/key/{key}/user/{user}/title/{Title.ToString()}"));
+					returnedPrompts.CurrentScore = Int32.Parse(await Http.GetStringAsync($"{baseURI}/score/key/{key}/user/{user}/title/{Title.ToString()}"));
 
 					if (returnedPrompts.CurrentScore >= 10 && !indivPerfect)
 					{
@@ -792,27 +792,27 @@
 					string user = FirebaseAuthService.FirebaseAuthClient.User.Info.Email.ToString();
 					var scoreDetailContent = new StringContent(JsonSerializer.Serialize(individualScores), Encoding.UTF8, "application/json");
 
-					await Http.PutAsync($"{baseURI}/userNotes/scoreDetail/key/{key}/userIn/{user}/titleIn/{Title}", scoreDetailContent);
-					await Http.PutAsync($"{baseURI}/userNotes/userProgress/key/{key}/userIn/{user}", null);
+					await Http.PutAsync($"{baseURI}/scoreDetail/key/{key}/userIn/{user}/titleIn/{Title}", scoreDetailContent);
+					await Http.PutAsync($"{baseURI}/userProgress/key/{key}/userIn/{user}", null);
 
-					bool started = await Http.GetFromJsonAsync<bool>($"{baseURI}/userNotes/started/key/{key}/user/{user}/title/{Title}");
+					bool started = await Http.GetFromJsonAsync<bool>($"{baseURI}/started/key/{key}/user/{user}/title/{Title}");
 					if (started)
 					{
-						TimeSpan lastModified = await Http.GetFromJsonAsync<TimeSpan>($"{baseURI}/userNotes/timeDelta/key/{key}/user/{user}/title/{Title}");
+						TimeSpan lastModified = await Http.GetFromJsonAsync<TimeSpan>($"{baseURI}/timeDelta/key/{key}/user/{user}/title/{Title}");
 						if (lastModified > TimeSpan.FromHours(4))
 						{
-							await Http.PutAsync($"{baseURI}/userNotes/setTime/key/{key}/userIn/{user}/titleIn/{Title}", null);
+							await Http.PutAsync($"{baseURI}/setTime/key/{key}/userIn/{user}/titleIn/{Title}", null);
 							if (errorIndexes.Count() < (returnedPrompts.numOfPrompts - (returnedPrompts.numOfPrompts / 3)))
 							{
 								if (PerfectResult && returnedPrompts.CurrentScore <= 8)
 								{
-									string uri = $"{baseURI}/userNotes/incScore/key/{key}/userIn/{user}/titleIn/{Title}";
+									string uri = $"{baseURI}/incScore/key/{key}/userIn/{user}/titleIn/{Title}";
 									await Http.PutAsync(uri, null);
 									await Http.PutAsync(uri, null);
 								}
 								else if (returnedPrompts.CurrentScore < 10)
 								{
-									string uri = $"{baseURI}/userNotes/incScore/key/{key}/userIn/{user}/titleIn/{Title}";
+									string uri = $"{baseURI}/incScore/key/{key}/userIn/{user}/titleIn/{Title}";
 									await Http.PutAsync(uri, null);
 								}
 							}
@@ -820,7 +820,7 @@
 							{
 								if (returnedPrompts.CurrentScore > 0)
 								{
-									string uri = $"{baseURI}/userNotes/decScore/key/{key}/userIn/{user}/titleIn/{Title}";
+									string uri = $"{baseURI}/decScore/key/{key}/userIn/{user}/titleIn/{Title}";
 									await Http.PutAsync(uri, null);
 								}
 							}
@@ -832,18 +832,18 @@
 					}
 					else
 					{
-						await Http.PutAsync($"{baseURI}/userNotes/setTime/key/{key}/userIn/{user}/titleIn/{Title}", null);
+						await Http.PutAsync($"{baseURI}/setTime/key/{key}/userIn/{user}/titleIn/{Title}", null);
 						if (errorIndexes.Count() < (returnedPrompts.numOfPrompts - (returnedPrompts.numOfPrompts / 3)))
 						{
 							if (PerfectResult && returnedPrompts.CurrentScore <= 8)
 							{
-								string uri = $"{baseURI}/userNotes/incScore/key/{key}/userIn/{user}/titleIn/{Title}";
+								string uri = $"{baseURI}/incScore/key/{key}/userIn/{user}/titleIn/{Title}";
 								await Http.PutAsync(uri, null);
 								await Http.PutAsync(uri, null);
 							}
 							else if (returnedPrompts.CurrentScore < 10)
 							{
-								string uri = $"{baseURI}/userNotes/incScore/key/{key}/userIn/{user}/titleIn/{Title}";
+								string uri = $"{baseURI}/incScore/key/{key}/userIn/{user}/titleIn/{Title}";
 								await Http.PutAsync(uri, null);
 							}
 						}
@@ -851,7 +851,7 @@
 						{
 							if (returnedPrompts.CurrentScore > 0)
 							{
-								string uri = $"{baseURI}/userNotes/decScore/key/{key}/userIn/{user}/titleIn/{Title}";
+								string uri = $"{baseURI}/decScore/key/{key}/userIn/{user}/titleIn/{Title}";
 								await Http.PutAsync(uri, null);
 							}
 						}
@@ -863,11 +863,11 @@
 					{
 						string key = "X00162027";
 						string user = FirebaseAuthService.FirebaseAuthClient.User.Info.Email.ToString();
-						string uri = $"{baseURI}/userNotes/compeltePremade/keyIn/{key}/userIn/{user}/noteTitle/{Title}";
+						string uri = $"{baseURI}/compeltePremade/keyIn/{key}/userIn/{user}/noteTitle/{Title}";
 						try
 						{
 							await Http.PutAsync(uri, null);		
-							await Http.PutAsync($"{baseURI}/userNotes/userProgress/key/{key}/userIn/{user}", null);
+							await Http.PutAsync($"{baseURI}/userProgress/key/{key}/userIn/{user}", null);
 						}
 						catch(Exception e)
 						{
@@ -881,7 +881,7 @@
 
 	private void NavigateToHome()
 	{
-		NavigationManager.NavigateTo("/");
+		NavigationManager.NavigateTo("/home");
 	}
 
 	public class TitleGroup
@@ -906,7 +906,7 @@
 				NewTitleErrorText = String.Empty;
 				List<TitleGroup> existingTitleGroups = new List<TitleGroup>();
 				List<String> existingTitles = new List<String>();
-				string url_user_titles = $"{baseURI}/userNotes/key/{key}/user/{user}";
+				string url_user_titles = $"{baseURI}/key/{key}/user/{user}";
 				try
 				{
 					var Response = await Http.GetAsync(url_user_titles);
@@ -956,7 +956,7 @@
 						// Console.WriteLine("Making new");
 						var Content = new StringContent(content, Encoding.UTF8, "application/json");
 
-						var uri = $"{baseURI}/userNotes/newNote/key/{key}/userIn/{user}/titleIn/{HttpUtility.HtmlEncode(NewTitle)}/scoreIn/1";
+						var uri = $"{baseURI}/newNote/key/{key}/userIn/{user}/titleIn/{HttpUtility.HtmlEncode(NewTitle)}/scoreIn/1";
 
 						try
 						{
@@ -978,11 +978,11 @@
 						{
 							try
 							{
-								string url = $"{baseURI}/userNotes/delete/key/{key}/user/{user}/title/{HttpUtility.HtmlEncode(NewTitle)}";
+								string url = $"{baseURI}/delete/key/{key}/user/{user}/title/{HttpUtility.HtmlEncode(NewTitle)}";
 								await Http.DeleteAsync(url);
 								var Content = new StringContent(content, Encoding.UTF8, "application/json");
 
-								var uri = $"{baseURI}/userNotes/newNote/key/{key}/userIn/{user}/titleIn/{HttpUtility.HtmlEncode(NewTitle)}/scoreIn/1";
+								var uri = $"{baseURI}/newNote/key/{key}/userIn/{user}/titleIn/{HttpUtility.HtmlEncode(NewTitle)}/scoreIn/1";
 
 								// Console.WriteLine("Looks good");
 								// Console.WriteLine(content);

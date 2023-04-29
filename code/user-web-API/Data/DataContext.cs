@@ -17,7 +17,7 @@ namespace user_web_API.Data
             optionsBuilder.UseSqlServer("Server=tcp:tn-server.database.windows.net,1433;Initial Catalog=tn-db;Persist Security Info=False;User ID=tomanota-admin;Password=SqYHE8Y9k3aGPRG;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
 		}
 
-        public DbSet<Prompt> Propmts { get; set; }
+        public DbSet<Prompt> Prompts { get; set; }
         public DbSet<User> Users { get; set; }
 		public DbSet<PromptBody> PromptBodies { get; set; }
 		public DbSet<WeekProgress> WeekProgresses { get; set; }

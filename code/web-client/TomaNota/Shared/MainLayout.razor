@@ -35,6 +35,11 @@
 		font-size: 120%;
 	}
 
+	.prj-name:hover
+	{
+		cursor:pointer;
+	}
+
 </style>
 
 <main class="secondary-bg text-light">
@@ -42,13 +47,13 @@
 		<div class="bg-light rounded-bottom px-2 shadow">
 			<div class="bg-light p-2 nav-text">
 				<div class="d-flex justify-content-between align-items-center flex-wrap">
-					<a href="#" class="text-dark"><b>TomaNota</b></a>
+					<a @onclick="NavigateToHome" class="text-dark prj-name"><b>TomaNota</b></a>
 					<div class="d-flex align-items-center">
 						@if (FirebaseAuthService.FirebaseAuthClient.User == null)
 						{
-							<h5 class="mx-2 align-middle mt-2 text-dark">Welcome!</h5>
-							<button class="btn btn-dark mx-1" @onclick="NavigateToLogin">Log In</button>
-							<button class="btn btn-dark mx-1" @onclick="NavigateToSignUp">Sign Up</button>
+							<!--<h5 class="mx-2 align-middle mt-2 text-dark">Welcome!</h5>-->
+							<button class="btn btn-dark mx-1" @onclick="NavigateToLogin">Log in</button>
+							<button class="btn btn-dark mx-1" @onclick="NavigateToSignUp">Sign up</button>
 						}
 						else
 						{
@@ -90,7 +95,12 @@
 
 	void NavigateToLogin()
 	{
-		NavigationManager.NavigateTo("/log-in");
+		NavigationManager.NavigateTo("/");
+	}
+
+	void NavigateToHome()
+	{
+		NavigationManager.NavigateTo("/home");
 	}
 
 	void NavigateToSignUp()

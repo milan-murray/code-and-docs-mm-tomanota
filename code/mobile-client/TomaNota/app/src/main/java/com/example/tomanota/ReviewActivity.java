@@ -42,7 +42,7 @@ public class ReviewActivity extends AppCompatActivity {
             title = b.getString("Title");
         }
 
-        final Button btnBack = (Button) findViewById(R.id.buttonBack);
+        final Button btnBack = findViewById(R.id.buttonBack);
 
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -51,7 +51,7 @@ public class ReviewActivity extends AppCompatActivity {
             }
         });
 
-        final TableLayout promptList = (TableLayout) findViewById(R.id.promptTable);
+        final TableLayout promptList = findViewById(R.id.promptTable);
 
         String URL = "https://europe-west1-tomanota-374115.cloudfunctions.net/get-prompts?q=" + title;
         List<List<String>> prompts = new ArrayList<>();

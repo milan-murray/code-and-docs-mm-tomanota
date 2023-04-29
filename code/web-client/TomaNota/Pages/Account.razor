@@ -48,7 +48,6 @@
 					<small class="text-success">@ChangedText</small>
 					<br />
 					<button class="btn btn-light my-3" @onclick="ChangePass">Change password</button>
-
 				</div>
 
 				<button class="btn btn-danger" @onclick="DeleteAccount">Delete Account</button>
@@ -64,8 +63,8 @@
 	/*
 	* Monthly Chart Code
 	*/
-	// String baseURI = "https://user-web-api20230425222103.azurewebsites.net";
-	String baseURI = "https://localhost:7080";
+	String baseURI = "https://user-web-api.azurewebsites.net/db";
+	// String baseURI = "https://localhost:7080";
 
 	Chart<int> barChart;
 
@@ -104,7 +103,7 @@
 	{
 		string key = "X00162027";
 		string user = HttpUtility.HtmlEncode(FirebaseAuthService.FirebaseAuthClient.User.Info.Email.ToString());
-		string url = $"{baseURI}/userNotes/userMonthProgress/key/{key}/userIn/{user}";
+		string url = $"{baseURI}/userMonthProgress/key/{key}/userIn/{user}";
 		Console.WriteLine(url);
 		var httpRes = await Http.GetFromJsonAsync<List<int>>(url);
 
@@ -188,7 +187,7 @@
 					string key = "X00162027";
 					string user = FirebaseAuthService.FirebaseAuthClient.User.Info.Email;
 					await FirebaseAuthService.FirebaseAuthClient.User.DeleteAsync();
-					await Http.DeleteAsync($"{baseURI}/userNotes/deleteUser/key/{key}/user/{user}");
+					await Http.DeleteAsync($"{baseURI}/deleteUser/key/{key}/user/{user}");
 					NavigationManager.NavigateTo("/");
 				}
 				catch (Exception e)

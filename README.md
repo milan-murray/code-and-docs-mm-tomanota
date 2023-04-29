@@ -4,7 +4,7 @@
 
 ### Web Client (Deployed)
 
-URL: https://tomanota.azurewebsites.net/
+URL: https://tomanota2023mm.azurewebsites.net/
 
 ### Web Client (Local)
 
