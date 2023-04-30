@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, SelectionActivity.class);
-                intent.putExtra("email", email_input.getText());
+                intent.putExtra("email", email_input.getText().toString());
                 startActivity(intent);
             }
         });

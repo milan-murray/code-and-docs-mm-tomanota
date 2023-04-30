@@ -10,4 +10,16 @@
     <string name="destroyNotes">Delete</string>
     <string name="CreateNotes">Create new</string>
     <string name="users_titles_tip">Your notes</string>
+    <string name="log_in">Log in</string>
+    <string name="create_an_account">Create an account</string>
+    <string name="continue_without_an_account">Continue without an account</string>
+    <string name="don_t_have_an_account">Don\'t have an account?</string>
+    <string name="email">Email:</string>
+    <string name="password">Password:</string>
+    <string name="textview">TextView</string>
+    <string name="sign_up">Sign up</string>
+    <string name="username">Username:</string>
+    <string name="pass_label">Password:</string>
+    <string name="email_label">Email:</string>
+    <string name="repeat_password">Repeat password:</string>
 </resources>

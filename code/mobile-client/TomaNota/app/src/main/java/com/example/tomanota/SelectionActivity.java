@@ -38,7 +38,7 @@ public class SelectionActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
 
-        String user = "user@example.com";
+        String user = "";
         if (intent.getStringExtra("email") != null)
         {
             user = intent.getStringExtra("email");

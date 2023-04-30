@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TomaNota</string>
+    <string name="Welcome">Bienvenido</string>
+    <string name="reviewBtn">Revisar notas</string>
+    <string name="testBtn">Empezar prueba</string>
+    <string name="spanishBtn">Notas de español</string>
+    <string name="germanBtn">Notas de aléman</string>
+    <string name="Return">Volver</string>
+    <string name="signInPrompt">Iniciar sesión para crear notoas y ver su progreso</string>
+    <string name="destroyNotes">Borrar</string>
+    <string name="CreateNotes">Crear</string>
+    <string name="users_titles_tip">Tus notas</string>
+    <string name="log_in">Inciar sesión</string>
+    <string name="create_an_account">Crear cuenta</string>
+    <string name="continue_without_an_account">Seguir sin crear cuenta</string>
+    <string name="don_t_have_an_account">¿Ya no tienes cuenta?</string>
+    <string name="email">Correo:</string>
+    <string name="password">Contraseña:</string>
+    <string name="sign_up">Crear cuenta</string>
+    <string name="username">Nombre de usuario:</string>
+    <string name="pass_label">Contraseña</string>
+    <string name="email_label">Correo:</string>
+    <string name="repeat_password">Repetir contraseña:</string>
+</resources>

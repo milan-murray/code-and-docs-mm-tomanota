@@ -26,7 +26,7 @@ TomaNota is a note learning application aimed at languages that helps memorise t
 
 ### Scope
 
-This project is aimed at a wide range of users and focuses on the desktop environment where users have both increased control over their documents as well as more time to dedicate to a study session. However it is also possible to support multiple other devices such as mobile devices as the application is planned to be ran server side.
+This project is aimed at a wide range of users and focuses on the desktop environment where users have both increased control over their documents as well as more time to dedicate to a study session. As the application makes use of cloud functions as well as a RESTful api, these existing systems can be reused to create new clients such as the android client.
 
 ### Functional requirements
 
@@ -38,9 +38,9 @@ The application’s non-functional requirements are to be intuitive and easy to 
 
 ### Future options
 
-Additional advanced features such as voice synthesis or machine learning may also add
-more opportunities for expanding the functionality of the software and increase options for learning methods.
+- Additional advanced features such as voice synthesis or machine learning may also add more opportunities for expanding the functionality of the software and increase options for learning methods.
+- Admin interface to manage content of the application as well as the database.
 
 ### Language support plans
 
-Finally, the software is also aimed to be created allowing for the interface to be displayed in multiple languages, allowing for increased accessibility to many people from different backgrounds.
+The software is also aimed to be created allowing for the interface to be displayed in multiple languages, allowing for increased accessibility to more people.
